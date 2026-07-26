@@ -1,0 +1,6 @@
+{
+  "appId": "com.daettox.lightningsclarity",
+  "appName": "Lightning Clarity",
+  "webDir": ".",
+  "bundledWebRuntime": false
+}
