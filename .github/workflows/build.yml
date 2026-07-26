@@ -29,8 +29,9 @@ jobs:
         run: |
           npm install
 
-      - name: Initialize Capacitor Android
+      - name: Initialize Capacitor and Add Android
         run: |
+          npx cap init "My App" "com.myapp.app" --web-dir .
           npx cap add android
           npx cap sync android
 
