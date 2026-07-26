@@ -34,10 +34,10 @@ jobs:
         run: |
           npx cap init "Lightning's Clarity" "com.lightningsclarity.app" --web-dir www
           npx cap add android
-          
+
       - name: Generate App Icons
         run: |
-          npx cap-assets generate --android
+          npx @capacitor/assets generate --android
 
       - name: Sync Android Project
         run: |
