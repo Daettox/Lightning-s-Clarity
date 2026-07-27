@@ -45,9 +45,6 @@
     overflow: hidden;
     transition: background 0.3s ease, color 0.3s ease;
   }
-  
-  /* Блокируем перехват кликов иконками, чтобы всегда нажималась кнопка */
-  svg { pointer-events: none; }
 
   .app {
     display: flex;
@@ -559,7 +556,6 @@
 
   .trigger-btn span {
     font-size: 20px;
-    pointer-events: none; /* Защита от перехвата кликов */
   }
 
   .checkbox-wrap {
@@ -580,7 +576,6 @@
     height: 20px;
     accent-color: var(--accent);
     cursor: pointer;
-    pointer-events: auto;
   }
   
   /* Urges Diary */
@@ -807,4 +802,424 @@
     
     <div class="modal-label">What triggered this feeling?</div>
     <div class="trigger-grid">
-      <button class="trigger-btn" data-trigger="Loneli
+      <button class="trigger-btn" data-trigger="Loneliness"><span>😔</span> Loneliness</button>
+      <button class="trigger-btn" data-trigger="Boredom"><span>🥱</span> Boredom</button>
+      <button class="trigger-btn" data-trigger="Fatigue"><span>😫</span> Fatigue</button>
+      <button class="trigger-btn" data-trigger="Social Media"><span>📱</span> Social Media</button>
+      <button class="trigger-btn" data-trigger="Flashbacks"><span>🎞️</span> Flashbacks</button>
+      <button class="trigger-btn" data-trigger="Anxiety"><span>😰</span> Anxiety</button>
+      <button class="trigger-btn" data-trigger="Anger"><span>😡</span> Anger</button>
+      <button class="trigger-btn" data-trigger="Envy"><span>😒</span> Envy</button>
+      <button class="trigger-btn" data-trigger="Other"><span>❓</span> Other</button>
+    </div>
+    
+    <label class="checkbox-wrap">
+      <input type="checkbox" id="urgeOvercome" checked />
+      I successfully overcame this urge
+    </label>
+    
+    <div class="modal-actions">
+      <button class="btn primary" id="saveUrgeBtn" style="width: 100%;">Log Urge</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // --- Storage ---
+  const STORAGE_KEY = 'lightnings_clarity_v1';
+  const defaultData = {
+    startTime: Date.now(),
+    bestStreak: 0,
+    history: [], 
+    urges: [],
+    theme: 'light'
+  };
+
+  function loadData() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return { ...defaultData };
+      const parsed = JSON.parse(raw);
+      if(!parsed.urges) parsed.urges = [];
+      return { ...defaultData, ...parsed };
+    } catch (e) {
+      return { ...defaultData };
+    }
+  }
+
+  function saveData() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  let state = loadData();
+
+  // --- Theme ---
+  const themeBtn = document.getElementById('themeBtn');
+  const themeIcon = document.getElementById('themeIcon');
+
+  function applyTheme() {
+    document.documentElement.setAttribute('data-theme', state.theme);
+    if (state.theme === 'dark') {
+      themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+    } else {
+      themeIcon.innerHTML = '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>';
+    }
+  }
+
+  themeBtn.addEventListener('click', () => {
+    state.theme = state.theme === 'light' ? 'dark' : 'light';
+    saveData();
+    applyTheme();
+  });
+
+  applyTheme();
+
+  // --- Navigation ---
+  const navButtons = document.querySelectorAll('.nav-btn');
+  const screens = document.querySelectorAll('.screen');
+
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.screen;
+      navButtons.forEach(b => b.classList.toggle('active', b === btn));
+      screens.forEach(s => s.classList.toggle('active', s.id === target));
+      if (target === 'screenInfo') renderInfo();
+    });
+  });
+
+  // --- Timer ---
+  const cDays = document.getElementById('cDays');
+  const cHours = document.getElementById('cHours');
+  const cMins = document.getElementById('cMins');
+  const cSecs = document.getElementById('cSecs');
+  const streakNote = document.getElementById('streakNote');
+
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+  function getCurrentStreakMs() {
+    return Math.max(0, Date.now() - state.startTime);
+  }
+
+  function getCurrentStreakDays() {
+    return Math.floor(getCurrentStreakMs() / (1000 * 60 * 60 * 24));
+  }
+
+  function updateCounter() {
+    const ms = getCurrentStreakMs();
+    const totalSec = Math.floor(ms / 1000);
+    const d = Math.floor(totalSec / 86400);
+    const h = Math.floor((totalSec % 86400) / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = totalSec % 60;
+
+    cDays.textContent = pad(d);
+    cHours.textContent = pad(h);
+    cMins.textContent = pad(m);
+    cSecs.textContent = pad(s);
+
+    streakNote.innerHTML = 'Current streak: <strong>' + d + ' day' + (d === 1 ? '' : 's') + '</strong>';
+  }
+
+  setInterval(updateCounter, 1000);
+  updateCounter();
+
+  // --- Modals ---
+  function openModal(id) {
+    document.getElementById(id).classList.add('show');
+  }
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('show');
+  }
+
+  document.querySelectorAll('[data-close]').forEach(el => {
+    el.addEventListener('click', () => closeModal(el.dataset.close));
+  });
+
+  document.querySelectorAll('.modal-overlay').forEach(ov => {
+    ov.addEventListener('click', (e) => {
+      if (e.target === ov) ov.classList.remove('show');
+    });
+  });
+
+  // --- Reset ---
+  const resetBtn = document.getElementById('resetBtn');
+  const resetTimeInput = document.getElementById('resetTime');
+  const confirmReset = document.getElementById('confirmReset');
+
+  function openResetModal() {
+    const now = new Date();
+    const offset = now.getTimezoneOffset();
+    const local = new Date(now.getTime() - offset * 60000);
+    resetTimeInput.value = local.toISOString().slice(0, 16);
+    openModal('resetModal');
+  }
+
+  resetBtn.addEventListener('click', openResetModal);
+
+  confirmReset.addEventListener('click', () => {
+    const val = resetTimeInput.value;
+    if (!val) return;
+    const newStart = new Date(val).getTime();
+    if (isNaN(newStart) || newStart > Date.now()) {
+      alert('Please choose a time in the past.');
+      return;
+    }
+
+    const prevStreakDays = Math.floor((Date.now() - state.startTime) / (1000 * 60 * 60 * 24));
+    if (prevStreakDays > 0) {
+      state.history.push({ start: state.startTime, end: Date.now() });
+    }
+    if (prevStreakDays > state.bestStreak) {
+      state.bestStreak = prevStreakDays;
+    }
+
+    state.startTime = newStart;
+    saveData();
+    closeModal('resetModal');
+    updateCounter();
+  });
+
+  // --- Emergency phrases ---
+  const phrases = [
+    "Is that what you wanted as a kid?",
+    "Will giving in make you proud tomorrow?",
+    "Look at yourself. Don't throw it all away for 5 minutes of numbness.",
+    "Your future self is begging you to stay strong right now.",
+    "Are you a slave to your impulses?",
+    "Every relapse starts with a lie you tell yourself.",
+    "Do you want to start over from zero? Again?",
+    "Think of the shame you'll feel right after. Is it worth it?",
+    "You're trading your long-term happiness for a cheap thrill.",
+    "Remember why you started. Don't betray that.",
+    "Pain is temporary, but the regret of relapsing will linger.",
+    "Are you really going to let a temporary feeling destroy your progress?",
+    "Don't let your weakness win. You are better than this.",
+    "This is exactly the moment that defines your character. Choose wisely.",
+    "You have survived 100% of your bad days without giving in. Keep going.",
+    "If you quit now, you'll end up right back where you first began.",
+    "The addiction wants you weak. Prove it wrong.",
+    "You owe it to yourself to be free.",
+    "Imagine the disappointment in the eyes of those who believe in you.",
+    "A moment of weakness will cost you everything you've built.",
+    "Don't ruin a good today by thinking about a bad yesterday.",
+    "If it was easy, everyone would do it. Be the exception.",
+    "You are literally fighting for your life. Act like it.",
+    "Is this craving stronger than your desire to be free?",
+    "Look in the mirror. Are you going to let that person down?",
+    "You didn't come this far to only come this far. Hold the line."
+  ];
+
+  const phraseText = document.getElementById('phraseText');
+  const nextPhraseBtn = document.getElementById('nextPhrase');
+  let lastPhraseIdx = -1;
+
+  function showRandomPhrase() {
+    let idx;
+    do { idx = Math.floor(Math.random() * phrases.length); } while (idx === lastPhraseIdx);
+    lastPhraseIdx = idx;
+    phraseText.textContent = `"${phrases[idx]}"`;
+  }
+
+  document.getElementById('emergencyBtn').addEventListener('click', () => {
+    showRandomPhrase();
+    openModal('emergencyModal');
+  });
+
+  nextPhraseBtn.addEventListener('click', showRandomPhrase);
+
+  // --- Urge Tracker ---
+  const urgeBtn = document.getElementById('urgeBtn');
+  const triggerBtns = document.querySelectorAll('.trigger-btn');
+  const saveUrgeBtn = document.getElementById('saveUrgeBtn');
+  let selectedTrigger = null;
+
+  urgeBtn.addEventListener('click', () => {
+    selectedTrigger = null;
+    triggerBtns.forEach(b => b.classList.remove('active'));
+    document.getElementById('urgeOvercome').checked = true;
+    openModal('urgeModal');
+  });
+
+  triggerBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      triggerBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedTrigger = btn.dataset.trigger;
+      
+      const emojiSpan = btn.querySelector('span').innerText;
+      selectedTrigger = `${emojiSpan} ${selectedTrigger}`;
+    });
+  });
+
+  saveUrgeBtn.addEventListener('click', () => {
+    if (!selectedTrigger) {
+      alert('Please select what triggered your urge.');
+      return;
+    }
+    const isOvercome = document.getElementById('urgeOvercome').checked;
+    
+    state.urges.push({
+      time: Date.now(),
+      trigger: selectedTrigger,
+      overcome: isOvercome
+    });
+    
+    saveData();
+    closeModal('urgeModal');
+    
+    if (document.getElementById('screenInfo').classList.contains('active')) {
+      renderUrgesDiary();
+    }
+    
+    if (!isOvercome) {
+      setTimeout(() => {
+        if(confirm("You didn't overcome the urge. Do you want to start your timer over?")) {
+          openResetModal();
+        }
+      }, 300);
+    }
+  });
+
+  // --- Info screen ---
+  const achievementsEl = document.getElementById('achievements');
+  const bestStreakValue = document.getElementById('bestStreakValue');
+  const urgesDiaryList = document.getElementById('urgesDiaryList');
+
+  const milestones = [
+    { days: 1, label: '1 Day', icon: '🌱' },
+    { days: 3, label: '3 Days', icon: '🌿' },
+    { days: 7, label: '1 Week', icon: '🌳' },
+    { days: 30, label: '1 Month', icon: '⭐' },
+    { days: 90, label: '3 Months', icon: '🔥' },
+    { days: 100, label: '100 Days', icon: '💎' },
+    { days: 180, label: '6 Months', icon: '🏆' },
+    { days: 365, label: '1 Year', icon: '👑' },
+    { days: 730, label: '2 Years', icon: '⚡' }
+  ];
+
+  function renderAchievements() {
+    const current = getCurrentStreakDays();
+    const best = Math.max(state.bestStreak, current);
+    achievementsEl.innerHTML = milestones.map(m => {
+      const unlocked = current >= m.days;
+      const cls = unlocked ? 'achievement unlocked' : 'achievement locked';
+      return `
+        <div class="${cls}">
+          <div class="achievement-icon">${m.icon}</div>
+          <div class="achievement-label">${m.label}</div>
+          <div class="achievement-sub">${unlocked ? 'Unlocked' : (m.days - current) + ' to go'}</div>
+        </div>
+      `;
+    }).join('');
+    bestStreakValue.textContent = best;
+  }
+  
+  function renderUrgesDiary() {
+    if (state.urges.length === 0) {
+      urgesDiaryList.innerHTML = `<div style="text-align: center; color: var(--text-soft); font-size: 13px; padding: 20px 0;">No urges recorded yet.</div>`;
+      return;
+    }
+    
+    const html = state.urges.slice().reverse().map(u => {
+      const dateObj = new Date(u.time);
+      const dateStr = dateObj.toLocaleDateString() + ' at ' + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      const statusClass = u.overcome ? 'success' : 'fail';
+      const statusText = u.overcome ? '✅ Overcame' : '❌ Failed';
+      
+      return `
+        <div class="urge-entry ${statusClass}">
+          <div class="urge-info">
+            <span class="urge-trigger">${u.trigger}</span>
+            <span class="urge-date">${dateStr}</span>
+          </div>
+          <div class="urge-status">${statusText}</div>
+        </div>
+      `;
+    }).join('');
+    
+    urgesDiaryList.innerHTML = html;
+  }
+
+  // --- Calendar ---
+  const calTitle = document.getElementById('calTitle');
+  const calDays = document.getElementById('calDays');
+  const calPrev = document.getElementById('calPrev');
+  const calNext = document.getElementById('calNext');
+
+  let calView = new Date();
+  calView.setDate(1);
+
+  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  function isCleanOnDate(date) {
+    const dayStart = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+    const dayEnd = dayStart + 86400000;
+    const today = new Date();
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+    if (dayStart > todayStart) return false; 
+
+    if (dayStart >= state.startTime) return true;
+
+    for (let i = 0; i < state.history.length; i++) {
+      const h = state.history[i];
+      if (dayStart >= h.start && dayStart < h.end) return true;
+    }
+    return false;
+  }
+
+  function renderCalendar() {
+    const year = calView.getFullYear();
+    const month = calView.getMonth();
+    calTitle.textContent = MONTHS[month] + ' ' + year;
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const today = new Date();
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+
+    let html = '';
+    for (let i = 0; i < firstDay; i++) {
+      html += '<div class="cal-day empty"></div>';
+    }
+    for (let d = 1; d <= daysInMonth; d++) {
+      const date = new Date(year, month, d);
+      const dayStart = date.getTime();
+      const classes = ['cal-day'];
+      if (dayStart === todayStart) classes.push('today');
+      if (dayStart > todayStart) classes.push('future');
+      else if (isCleanOnDate(date)) classes.push('clean');
+      html += '<div class="' + classes.join(' ') + '">' + d + '</div>';
+    }
+    calDays.innerHTML = html;
+  }
+
+  calPrev.addEventListener('click', () => {
+    calView.setMonth(calView.getMonth() - 1);
+    renderCalendar();
+  });
+  calNext.addEventListener('click', () => {
+    calView.setMonth(calView.getMonth() + 1);
+    renderCalendar();
+  });
+
+  function renderInfo() {
+    renderAchievements();
+    renderCalendar();
+    renderUrgesDiary();
+  }
+
+  // Initial render
+  renderInfo();
+
+  setInterval(() => {
+    if (document.getElementById('screenInfo').classList.contains('active')) {
+      renderAchievements();
+    }
+  }, 60000);
+})();
+</script>
+</body>
+</html>
