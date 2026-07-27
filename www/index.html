@@ -45,6 +45,9 @@
     overflow: hidden;
     transition: background 0.3s ease, color 0.3s ease;
   }
+  
+  /* Блокируем перехват кликов иконками, чтобы всегда нажималась кнопка */
+  svg { pointer-events: none; }
 
   .app {
     display: flex;
@@ -556,6 +559,7 @@
 
   .trigger-btn span {
     font-size: 20px;
+    pointer-events: none; /* Защита от перехвата кликов */
   }
 
   .checkbox-wrap {
@@ -576,6 +580,7 @@
     height: 20px;
     accent-color: var(--accent);
     cursor: pointer;
+    pointer-events: auto;
   }
   
   /* Urges Diary */
@@ -802,6 +807,4 @@
     
     <div class="modal-label">What triggered this feeling?</div>
     <div class="trigger-grid">
-      <button class="trigger-btn" data-trigger="Loneliness"><span>😔</span> Loneliness</button>
-      <button class="trigger-btn" data-trigger="Boredom"><span>🥱</span> Boredom</button>
-      <button class="trigger-btn" data-trigger="Fatigue"><span>
+      <button class="trigger-btn" data-trigger="Loneli
