@@ -25,10 +25,6 @@
     --surface-2: #1d212c;
     --text: #f1f2f6;
     --text-soft: #9aa0b4;
-    --accent: #ffc933;
-    --accent-soft: rgba(255, 201, 51, 0.15);
-    --success: #34d399;
-    --success-soft: rgba(52, 211, 153, 0.18);
     --border: rgba(255, 255, 255, 0.06);
     --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
   }
@@ -54,7 +50,34 @@
     margin: 0 auto;
     position: relative;
     background: var(--bg);
+    transition: background 0.5s ease;
   }
+
+  /* --- Seasonal Theme Gradients --- */
+  .app.season-spring { background: linear-gradient(180deg, rgba(167, 250, 219, 0.3) 0%, var(--bg) 300px), var(--bg); }
+  [data-theme="dark"] .app.season-spring { background: linear-gradient(180deg, rgba(16, 185, 129, 0.1) 0%, var(--bg) 300px), var(--bg); }
+
+  .app.season-summer { background: linear-gradient(180deg, rgba(255, 243, 171, 0.4) 0%, var(--bg) 300px), var(--bg); }
+  [data-theme="dark"] .app.season-summer { background: linear-gradient(180deg, rgba(251, 191, 36, 0.1) 0%, var(--bg) 300px), var(--bg); }
+
+  .app.season-autumn { background: linear-gradient(180deg, rgba(253, 198, 104, 0.3) 0%, var(--bg) 300px), var(--bg); }
+  [data-theme="dark"] .app.season-autumn { background: linear-gradient(180deg, rgba(217, 119, 6, 0.1) 0%, var(--bg) 300px), var(--bg); }
+
+  .app.season-winter { background: linear-gradient(180deg, rgba(186, 222, 255, 0.4) 0%, var(--bg) 300px), var(--bg); }
+  [data-theme="dark"] .app.season-winter { background: linear-gradient(180deg, rgba(96, 165, 250, 0.1) 0%, var(--bg) 300px), var(--bg); }
+
+  /* --- Live Themes Gradients (Time Based) --- */
+  .app.live-morning { background: linear-gradient(180deg, rgba(251, 207, 232, 0.5) 0%, rgba(253, 242, 248, 0.2) 280px, var(--bg) 380px), var(--bg); }
+  [data-theme="dark"] .app.live-morning { background: linear-gradient(180deg, rgba(244, 114, 182, 0.16) 0%, rgba(244, 114, 182, 0.04) 280px, var(--bg) 380px), var(--bg); }
+
+  .app.live-day { background: linear-gradient(180deg, rgba(125, 211, 252, 0.5) 0%, rgba(224, 242, 254, 0.2) 280px, var(--bg) 380px), var(--bg); }
+  [data-theme="dark"] .app.live-day { background: linear-gradient(180deg, rgba(56, 189, 248, 0.18) 0%, rgba(56, 189, 248, 0.04) 280px, var(--bg) 380px), var(--bg); }
+
+  .app.live-evening { background: linear-gradient(180deg, rgba(253, 186, 116, 0.5) 0%, rgba(255, 237, 213, 0.2) 280px, var(--bg) 380px), var(--bg); }
+  [data-theme="dark"] .app.live-evening { background: linear-gradient(180deg, rgba(251, 146, 60, 0.16) 0%, rgba(251, 146, 60, 0.04) 280px, var(--bg) 380px), var(--bg); }
+
+  .app.live-night { background: linear-gradient(180deg, rgba(30, 58, 138, 0.22) 0%, rgba(37, 99, 235, 0.08) 280px, var(--bg) 380px), var(--bg); }
+  [data-theme="dark"] .app.live-night { background: linear-gradient(180deg, rgba(30, 58, 138, 0.38) 0%, rgba(15, 23, 42, 0.6) 280px, var(--bg) 380px), var(--bg); }
 
   /* Header */
   .header {
@@ -62,7 +85,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 18px 20px 14px;
-    background: var(--bg);
+    background: transparent;
     z-index: 5;
   }
 
@@ -73,21 +96,27 @@
     font-weight: 700;
     font-size: 18px;
     letter-spacing: 0.2px;
+    user-select: none;
   }
 
   .logo-icon {
     width: 30px;
     height: 30px;
     border-radius: 9px;
-    background: linear-gradient(135deg, var(--accent), #ff8a00);
+    background: linear-gradient(135deg, var(--accent), var(--accent));
     display: grid;
     place-items: center;
     box-shadow: 0 4px 12px var(--accent-soft);
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
-  .logo-icon svg { width: 16px; height: 16px; }
+  .logo-icon:active { transform: scale(0.88); }
+  .logo-icon svg { width: 16px; height: 16px; pointer-events: none; }
 
-  .theme-btn {
+  .header-actions { display: flex; gap: 8px; }
+
+  .icon-btn {
     width: 40px;
     height: 40px;
     border-radius: 12px;
@@ -99,8 +128,8 @@
     place-items: center;
     transition: transform 0.2s ease, background 0.2s ease;
   }
-  .theme-btn:active { transform: scale(0.92); }
-  .theme-btn svg { width: 18px; height: 18px; }
+  .icon-btn:active { transform: scale(0.92); }
+  .icon-btn svg { width: 18px; height: 18px; }
 
   /* Content */
   .content {
@@ -109,6 +138,7 @@
     overflow-x: hidden;
     padding: 6px 20px 20px;
     scrollbar-width: none;
+    z-index: 3;
   }
   .content::-webkit-scrollbar { display: none; }
 
@@ -172,14 +202,6 @@
     color: var(--text-soft);
   }
 
-  .streak-note {
-    font-size: 13px;
-    color: var(--text-soft);
-    margin-bottom: 28px;
-    text-align: center;
-  }
-  .streak-note strong { color: var(--accent); }
-
   .counter-actions-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -207,17 +229,42 @@
   .btn svg { width: 16px; height: 16px; }
 
   .btn.primary {
-    background: linear-gradient(135deg, var(--accent), #ff8a00);
-    color: #1a1d29;
+    background: linear-gradient(135deg, var(--accent), var(--accent));
+    color: #ffffff;
     border-color: transparent;
     box-shadow: 0 6px 18px var(--accent-soft);
   }
+  [data-theme="light"] .btn.primary { color: #1a1d29; }
+  [data-theme="dark"] .btn.primary { color: #1a1d29; }
   
-  .btn.full {
-    grid-column: span 2;
+  .btn.full { grid-column: span 2; }
+
+  /* Segmented Control */
+  .segmented-control {
+    display: flex;
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 20px;
+  }
+  .segmented-btn {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-soft);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .segmented-btn.active {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   }
 
-  /* Info screen */
+  /* Info screen elements */
   .section-title {
     font-size: 12px;
     text-transform: uppercase;
@@ -226,12 +273,9 @@
     margin: 18px 0 10px;
   }
 
-  .achievements {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-  }
-
+  .achievements, .color-grid { display: flex; gap: 10px; }
+  .achievements { grid-template-columns: repeat(3, 1fr); display: grid; }
+  
   .achievement {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -242,15 +286,13 @@
     transition: transform 0.2s ease, opacity 0.3s ease;
   }
 
-  .achievement.locked {
-    opacity: 0.45;
-    filter: grayscale(0.8);
-  }
-
+  .achievement.locked { opacity: 0.45; filter: grayscale(0.8); cursor: default; }
   .achievement.unlocked {
     border-color: var(--accent);
     background: linear-gradient(180deg, var(--accent-soft), transparent);
+    cursor: pointer;
   }
+  .achievement.unlocked:active { transform: scale(0.95); }
 
   .achievement-icon {
     width: 36px;
@@ -262,21 +304,105 @@
     place-items: center;
     font-size: 18px;
   }
-  .achievement.unlocked .achievement-icon {
+  .achievement.unlocked .achievement-icon { background: var(--accent); color: #1a1d29; }
+
+  .achievement-label { font-size: 12px; font-weight: 600; color: var(--text); }
+  .achievement-sub { font-size: 10px; color: var(--text-soft); margin-top: 2px; }
+
+  /* Milestone Modal Styles */
+  .milestone-modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 4px 6px;
+    text-align: center;
+  }
+
+  .milestone-modal-icon {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
     background: var(--accent);
     color: #1a1d29;
+    display: grid;
+    place-items: center;
+    font-size: 34px;
+    margin-bottom: 14px;
+    box-shadow: 0 6px 20px var(--accent-soft);
   }
 
-  .achievement-label {
-    font-size: 12px;
-    font-weight: 600;
+  .milestone-modal-period {
+    font-size: 22px;
+    font-weight: 800;
     color: var(--text);
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
   }
 
-  .achievement-sub {
-    font-size: 10px;
+  .milestone-modal-date {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 6px 14px;
+    border-radius: 20px;
+    display: inline-block;
+  }
+
+  .milestone-modal-text {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--text);
+    font-weight: 500;
+    padding: 16px 18px;
+    background: var(--surface-2);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    margin-top: 18px;
+  }
+
+  /* Goal Progress */
+  .goal-progress-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+  }
+
+  .goal-progress-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .goal-progress-bar-bg {
+    height: 12px;
+    background: var(--surface-2);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .goal-progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--accent));
+    border-radius: 6px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .goal-progress-sub {
+    font-size: 12px;
     color: var(--text-soft);
-    margin-top: 2px;
+    text-align: center;
+    font-weight: 500;
   }
 
   .best-streak {
@@ -289,23 +415,14 @@
     justify-content: space-between;
     box-shadow: var(--shadow);
     margin-top: 10px;
+    cursor: pointer;
+    transition: transform 0.15s ease;
   }
+  .best-streak:active { transform: scale(0.98); }
 
-  .best-streak-label {
-    font-size: 13px;
-    color: var(--text-soft);
-  }
-  .best-streak-value {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--accent);
-    font-variant-numeric: tabular-nums;
-  }
-  .best-streak-unit {
-    font-size: 12px;
-    color: var(--text-soft);
-    margin-left: 4px;
-  }
+  .best-streak-label { font-size: 13px; color: var(--text-soft); }
+  .best-streak-value { font-size: 28px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .best-streak-unit { font-size: 12px; color: var(--text-soft); margin-left: 4px; }
 
   /* Calendar */
   .calendar {
@@ -316,22 +433,9 @@
     box-shadow: var(--shadow);
   }
 
-  .cal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-  }
-
-  .cal-title {
-    font-size: 15px;
-    font-weight: 600;
-  }
-
-  .cal-nav {
-    display: flex;
-    gap: 6px;
-  }
+  .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .cal-title { font-size: 15px; font-weight: 600; }
+  .cal-nav { display: flex; gap: 6px; }
   .cal-nav button {
     width: 30px;
     height: 30px;
@@ -343,23 +447,12 @@
     display: grid;
     place-items: center;
     font-size: 14px;
+    transition: transform 0.1s ease, background 0.2s ease;
   }
   .cal-nav button:active { transform: scale(0.9); }
 
-  .cal-weekdays, .cal-days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-  }
-
-  .cal-weekdays div {
-    text-align: center;
-    font-size: 10px;
-    color: var(--text-soft);
-    text-transform: uppercase;
-    padding: 4px 0;
-    letter-spacing: 1px;
-  }
+  .cal-weekdays, .cal-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cal-weekdays div { text-align: center; font-size: 10px; color: var(--text-soft); text-transform: uppercase; padding: 4px 0; letter-spacing: 1px; }
 
   .cal-day {
     aspect-ratio: 1;
@@ -370,21 +463,57 @@
     color: var(--text);
     background: var(--surface-2);
     font-variant-numeric: tabular-nums;
+    cursor: pointer;
+    transition: transform 0.1s ease, background 0.2s ease, color 0.2s ease;
   }
-  .cal-day.empty { background: transparent; }
-  .cal-day.today {
-    border: 1.5px solid var(--accent);
-    font-weight: 700;
+  .cal-day:active { transform: scale(0.9); }
+  .padding-empty { background: transparent; cursor: default; }
+  .padding-empty:active { transform: none; }
+  
+  .cal-day.today { border: 1.5px solid var(--accent); font-weight: 700; }
+  .cal-day.clean { background: var(--success-soft); color: var(--success); font-weight: 600; }
+  .cal-day.slip { background: rgba(239, 68, 68, 0.15); color: #ef4444; font-weight: 600; }
+  .cal-day.future { color: var(--text-soft); opacity: 0.4; cursor: default; }
+  .cal-day.future:active { transform: none; }
+
+  /* Trigger Chart & Diary */
+  .trigger-chart {
+    margin-bottom: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: var(--shadow);
   }
-  .cal-day.clean {
-    background: var(--success-soft);
-    color: var(--success);
-    font-weight: 600;
+  .chart-bar-wrap { display: flex; align-items: center; margin-bottom: 12px; }
+  .chart-bar-wrap:last-child { margin-bottom: 0; }
+  .chart-label { width: 100px; font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .chart-bar-bg { flex: 1; height: 12px; background: var(--surface-2); border-radius: 6px; margin: 0 10px; overflow: hidden; }
+  .chart-bar-fill { height: 100%; background: var(--accent); border-radius: 6px; width: 0%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+  .chart-value { width: 24px; font-size: 13px; font-weight: 700; color: var(--text); text-align: right; }
+
+  .urges-diary { display: flex; flex-direction: column; gap: 8px; }
+  .urge-entry {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 14px;
+    border-radius: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.15s ease;
   }
-  .cal-day.future {
-    color: var(--text-soft);
-    opacity: 0.4;
-  }
+  .urge-entry:active { transform: scale(0.98); }
+  .urge-entry.success { border-left: 4px solid var(--success); }
+  .urge-entry.fail { border-left: 4px solid #ef4444; }
+  .urge-info { display: flex; flex-direction: column; gap: 4px; text-align: left; }
+  .urge-trigger { font-size: 14px; font-weight: 600; color: var(--text); }
+  .urge-date { font-size: 11px; color: var(--text-soft); }
+  .urge-status { font-size: 12px; font-weight: 700; }
+  .urge-entry.success .urge-status { color: var(--success); }
+  .urge-entry.fail .urge-status { color: #ef4444; }
 
   /* Bottom nav */
   .bottom-nav {
@@ -394,6 +523,8 @@
     padding: 10px 20px calc(10px + env(safe-area-inset-bottom));
     background: var(--surface);
     border-top: 1px solid var(--border);
+    z-index: 5;
+    transition: transform 0.3s ease, opacity 0.3s ease;
   }
 
   .nav-btn {
@@ -408,13 +539,212 @@
     place-items: center;
     transition: color 0.2s ease, background 0.2s ease;
   }
-  .nav-btn.active {
-    color: var(--accent);
-    background: var(--accent-soft);
-  }
+  .nav-btn.active { color: var(--accent); background: var(--accent-soft); }
   .nav-btn svg { width: 22px; height: 22px; }
 
-  /* Modal */
+  /* =========================================================
+     BENTO-GRID MODERN LAYOUT STYLES (2025-2026 Mobile UI)
+     ========================================================= */
+  .app.layout-bento .bottom-nav {
+    display: none !important;
+  }
+
+  .bento-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 4px 0 28px;
+  }
+
+  .bento-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s ease, background 0.2s ease;
+    user-select: none;
+  }
+
+  .bento-card.clickable { cursor: pointer; }
+  .bento-card.clickable:active { transform: scale(0.965); }
+  .bento-card.span-2 { grid-column: span 2; }
+
+  .bento-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .bento-card-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-weight: 700;
+    color: var(--text-soft);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .bento-badge-tag {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 8px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Bento Hero Clean Time */
+  .bento-clean-time {
+    padding: 18px 18px 16px;
+    background: linear-gradient(145deg, var(--surface), var(--surface-2));
+    border-color: var(--border);
+  }
+
+  .bento-time-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .bento-time-unit {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 10px 4px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  }
+
+  .bento-time-val {
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bento-time-lbl {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-soft);
+    margin-top: 6px;
+    font-weight: 600;
+  }
+
+  /* Bento Goal */
+  .bento-goal-card { justify-content: space-between; }
+  .bento-goal-number {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--text);
+    margin: 4px 0 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .bento-goal-sub { font-size: 11px; color: var(--text-soft); font-weight: 500; margin-bottom: 8px; }
+  .bento-progress-bg { height: 7px; background: var(--surface-2); border-radius: 4px; overflow: hidden; width: 100%; }
+  .bento-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent)); border-radius: 4px; transition: width 0.4s ease; }
+
+  /* Bento Best Streak */
+  .bento-streak-card { justify-content: space-between; }
+  .bento-streak-number {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--accent);
+    margin: 4px 0 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .bento-streak-sub { font-size: 11px; color: var(--text-soft); font-weight: 500; }
+
+  /* Bento Calendar */
+  .bento-cal-card { padding: 14px 16px 16px; }
+  .bento-cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .bento-cal-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .bento-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3.5px; }
+  .bento-cal-grid .cal-day { aspect-ratio: 1; font-size: 11px; border-radius: 7px; }
+  .bento-cal-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3.5px; margin-bottom: 4px; }
+  .bento-cal-weekdays div { text-align: center; font-size: 9px; color: var(--text-soft); text-transform: uppercase; font-weight: 600; }
+
+  /* Bento Actions */
+  .bento-action-card { background: var(--surface); justify-content: space-between; }
+  .bento-action-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: var(--surface-2);
+    color: var(--text);
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border);
+  }
+  .bento-action-title { font-size: 14px; font-weight: 700; color: var(--text); margin-top: 10px; }
+  .bento-action-desc { font-size: 11px; color: var(--text-soft); margin-top: 2px; font-weight: 500; }
+
+  .bento-diary-card { justify-content: space-between; background: var(--surface); }
+  .bento-diary-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: var(--surface-2);
+    color: var(--text);
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border);
+  }
+  .bento-diary-count {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 8px;
+    border-radius: 10px;
+    align-self: flex-start;
+  }
+
+  /* Mode Switcher */
+  .layout-switcher-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+  .layout-card-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 10px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+  .layout-card-btn.active { border-color: var(--accent); background: var(--accent-soft); }
+  .layout-card-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: var(--surface);
+    display: grid;
+    place-items: center;
+    color: var(--text);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .layout-card-title { font-size: 13px; font-weight: 700; color: var(--text); }
+
+  /* Modals Setup */
   .modal-overlay {
     position: fixed;
     inset: 0;
@@ -438,25 +768,18 @@
     animation: slideUp 0.3s ease;
     max-height: 85vh;
     overflow-y: auto;
+    text-align: center;
   }
   @keyframes slideUp {
     from { transform: translateY(100%); }
     to { transform: translateY(0); }
   }
 
-  .modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-  }
-
-  .modal-title {
-    font-size: 18px;
-    font-weight: 700;
-  }
-
+  .modal-header { display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 16px; }
+  .modal-title { font-size: 18px; font-weight: 700; text-align: center; }
   .modal-close {
+    position: absolute;
+    right: 0;
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -468,14 +791,11 @@
     place-items: center;
     font-size: 18px;
   }
+  .modal-label { font-size: 13px; color: var(--text-soft); margin-bottom: 8px; margin-top: 16px; text-align: center; }
+  .modal-label:first-of-type { margin-top: 0; }
 
-  .modal-label {
-    font-size: 13px;
-    color: var(--text-soft);
-    margin-bottom: 8px;
-  }
-
-  .modal input[type="datetime-local"] {
+  .modal input[type="datetime-local"],
+  .modal input[type="number"] {
     width: 100%;
     padding: 12px 14px;
     border-radius: 12px;
@@ -485,14 +805,171 @@
     font-size: 14px;
     margin-bottom: 16px;
     font-family: inherit;
+    text-align: center;
   }
 
-  .modal-actions {
+  .modal-actions { display: flex; gap: 10px; justify-content: center; }
+  .modal-actions .btn { flex: 1; }
+
+  /* App Aesthetics Grid & Cards */
+  .aesthetics-grid {
     display: flex;
-    gap: 10px;
+    gap: 12px;
+    margin-bottom: 12px;
   }
   
-  .modal-actions .btn { flex: 1; }
+  .seasonal-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 12px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    flex: 1;
+  }
+  
+  .seasonal-card.active { border-color: var(--accent); background: var(--accent-soft); }
+  .seasonal-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--surface);
+    display: grid;
+    place-items: center;
+    color: var(--text);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  }
+  .seasonal-icon svg { width: 22px; height: 22px; }
+  .seasonal-info { width: 100%; text-align: center; }
+  .seasonal-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .seasonal-sub { font-size: 12px; color: var(--text-soft); }
+
+  /* Particle Effects Toggle Card */
+  .particle-toggle-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 20px;
+    text-align: left;
+  }
+  .particle-toggle-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .particle-toggle-card.active {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .particle-toggle-card.disabled {
+    opacity: 0.55;
+  }
+  .particle-toggle-status {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: var(--surface);
+    color: var(--text-soft);
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
+  }
+  .particle-toggle-card.active .particle-toggle-status {
+    background: var(--accent);
+    color: #1a1d29;
+    border-color: transparent;
+  }
+
+  /* Color Settings */
+  .color-card {
+    flex: 1;
+    padding: 12px 2px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 0;
+  }
+  .color-card.active { border-color: var(--accent); background: var(--accent-soft); }
+  .color-circle { width: 36px; height: 36px; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+  .color-name { font-size: 11px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; padding: 0 4px; text-align: center; }
+
+  /* Targets & Other components */
+  .target-carousel {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+    margin-bottom: 4px;
+    scrollbar-width: none;
+    justify-content: flex-start;
+  }
+  .target-carousel::-webkit-scrollbar { display: none; }
+  .target-card {
+    flex: 0 0 auto;
+    padding: 12px 18px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .target-card.active { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+
+  .dialog-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    animation: fadeIn 0.25s ease;
+  }
+  .dialog-overlay.show { display: flex; }
+  
+  .dialog-box {
+    background: var(--surface);
+    width: 85%;
+    max-width: 320px;
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    animation: popIn 0.3s ease;
+    text-align: center;
+  }
+  @keyframes popIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .dialog-title { font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 12px; }
+  .dialog-msg { font-size: 14px; color: var(--text-soft); text-align: center; margin-bottom: 24px; line-height: 1.5; white-space: pre-wrap; }
+  
+  .btn.destructive { background: #ef4444; color: white; border-color: #ef4444; }
+  [data-theme="light"] .btn.destructive { color: white; }
+  [data-theme="dark"] .btn.destructive { color: white; }
 
   .phrase-card {
     background: linear-gradient(135deg, var(--surface-2), var(--surface));
@@ -503,36 +980,11 @@
     text-align: center;
     box-shadow: var(--shadow);
   }
-  
-  .phrase-text {
-    font-size: 18px;
-    font-weight: 700;
-    line-height: 1.4;
-    color: var(--text);
-  }
-  
-  .phrase-refresh {
-    margin-top: 14px;
-    width: 100%;
-    padding: 14px;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    background: var(--surface-2);
-    color: var(--text);
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-  }
+  .phrase-text { font-size: 18px; font-weight: 700; line-height: 1.4; color: var(--text); text-align: center; }
+  .phrase-refresh { margin-top: 14px; width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); font-weight: 600; font-size: 14px; cursor: pointer; }
   .phrase-refresh:active { transform: scale(0.97); }
 
-  /* Urge Tracker Elements */
-  .trigger-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-bottom: 20px;
-  }
-
+  .trigger-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
   .trigger-btn {
     padding: 12px 4px;
     border-radius: 12px;
@@ -548,19 +1000,13 @@
     cursor: pointer;
     transition: all 0.2s ease;
   }
-
-  .trigger-btn.active {
-    border-color: var(--accent);
-    background: var(--accent-soft);
-  }
-
-  .trigger-btn span {
-    font-size: 20px;
-  }
+  .trigger-btn.active { border-color: var(--accent); background: var(--accent-soft); }
+  .trigger-btn span { font-size: 20px; }
 
   .checkbox-wrap {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
     margin-bottom: 20px;
     font-size: 15px;
@@ -569,93 +1015,220 @@
     padding: 14px;
     border-radius: 12px;
     cursor: pointer;
+    text-align: center;
   }
+  .checkbox-wrap input { width: 20px; height: 20px; accent-color: var(--accent); cursor: pointer; }
 
-  .checkbox-wrap input {
-    width: 20px;
-    height: 20px;
-    accent-color: var(--accent);
-    cursor: pointer;
-  }
-  
-  /* Urges Diary */
-  .urges-diary {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  
-  .urge-entry {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 14px;
-    border-radius: 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: var(--shadow);
-  }
-  
-  .urge-entry.success {
-    border-left: 4px solid var(--success);
-  }
-  
-  .urge-entry.fail {
-    border-left: 4px solid #ef4444;
-  }
-  
-  .urge-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  
-  .urge-trigger {
+  .toast-popup {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: var(--text);
+    color: var(--bg);
+    padding: 12px 24px;
+    border-radius: 20px;
     font-size: 14px;
     font-weight: 600;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+  .toast-popup.show { transform: translateX(-50%) translateY(0); opacity: 1; visibility: visible; }
+
+  /* Centered Welcome Pop-up */
+  .welcome-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 250;
+    padding: 20px;
+    animation: fadeIn 0.25s ease;
+  }
+  .welcome-overlay.show { display: flex; }
+
+  .welcome-box {
+    background: var(--surface);
+    width: 100%;
+    max-width: 380px;
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    padding: 28px 22px 24px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+    animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    text-align: center;
+    max-height: 90vh;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .welcome-box::-webkit-scrollbar { display: none; }
+
+  .welcome-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--accent), var(--accent));
+    display: grid;
+    place-items: center;
+    margin: 0 auto 16px;
+    box-shadow: 0 6px 18px var(--accent-soft);
+  }
+  .welcome-badge svg { width: 24px; height: 24px; }
+
+  .welcome-title {
+    font-size: 22px;
+    font-weight: 800;
     color: var(--text);
+    margin: 0 0 8px;
+    letter-spacing: -0.3px;
   }
-  
-  .urge-date {
-    font-size: 11px;
+
+  .welcome-subtitle {
+    font-size: 13.5px;
+    line-height: 1.5;
     color: var(--text-soft);
+    margin: 0 0 20px;
   }
-  
-  .urge-status {
+
+  .welcome-box .modal-label {
+    text-align: center;
+    margin-top: 14px;
+    margin-bottom: 8px;
     font-size: 12px;
     font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-soft);
   }
-  .urge-entry.success .urge-status { color: var(--success); }
-  .urge-entry.fail .urge-status { color: #ef4444; }
+  .welcome-box .modal-label:first-of-type { margin-top: 0; }
 
+  .welcome-box input[type="datetime-local"],
+  .welcome-box input[type="number"] {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text);
+    font-size: 14px;
+    margin-bottom: 14px;
+    font-family: inherit;
+    text-align: center;
+    transition: border-color 0.2s ease;
+  }
+  .welcome-box input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  /* About Modal GitHub Badge */
+  .about-github-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 12px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 13.5px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+  .about-github-badge:active { transform: scale(0.96); }
+  .about-github-badge:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Particles Container */
+  #particles-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 99;
+    overflow: hidden;
+  }
+
+  .particle {
+    position: absolute;
+    will-change: transform, opacity, top, left;
+    pointer-events: none;
+    user-select: none;
+  }
+  
+  .particle-autumn svg, .particle-winter svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  @keyframes particleFall {
+    0% { top: -30px; opacity: 0; transform: rotate(0deg); }
+    10% { opacity: 0.85; }
+    80% { opacity: 0.85; }
+    100% { top: 100vh; opacity: 0; transform: rotate(360deg); }
+  }
+
+  @keyframes particleSway {
+    0% { margin-left: -20px; }
+    50% { margin-left: 20px; }
+    100% { margin-left: -20px; }
+  }
+
+  @keyframes particleFly {
+    0% { left: -50px; opacity: 0; transform: scale(0.8) translateY(0); }
+    10% { opacity: 0.8; transform: scale(0.95) translateY(-10px); }
+    80% { opacity: 0.8; }
+    100% { left: 100vw; opacity: 0; transform: scale(1.05) translateY(-30px); }
+  }
+
+  .particle-spring { animation: particleFall 8s linear forwards, particleSway 3s ease-in-out infinite; }
+  .particle-summer { color: var(--text); opacity: 0.6; animation: particleFly 7.5s linear forwards; }
+  .particle-autumn { animation: particleFall 7s linear forwards, particleSway 4s ease-in-out infinite; }
+  .particle-winter { animation: particleFall 10s linear forwards, particleSway 5s ease-in-out infinite; }
 </style>
 </head>
 <body>
 <div class="app">
+  <div id="particles-container"></div>
+  
   <!-- Header -->
   <header class="header">
     <div class="logo">
-      <div class="logo-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#1a1d29" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/>
-        </svg>
-      </div>
+      <div class="logo-icon" id="lightningIcon" title="Lightning Clarity"></div>
       <span>Lightning's Clarity</span>
     </div>
-    <button class="theme-btn" id="themeBtn" aria-label="Toggle theme">
-      <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="4"/>
-        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
-      </svg>
-    </button>
+    <div class="header-actions">
+      <button class="icon-btn" id="settingsBtn" aria-label="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+      <button class="icon-btn" id="themeBtn" aria-label="Toggle theme">
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+        </svg>
+      </button>
+    </div>
   </header>
 
   <!-- Content -->
   <main class="content">
-    <!-- Counter Screen -->
+    <!-- MODE 1 (Standard): Counter Screen -->
     <section class="screen active" id="screenCounter">
       <div class="counter-wrap">
-        <div class="counter-label">You're clean for</div>
+        <div class="counter-label" id="counterMainLabel">You're clean for</div>
         <div class="counter-grid">
           <div class="counter-unit">
             <div class="counter-value" id="cDays">00</div>
@@ -674,7 +1247,6 @@
             <div class="counter-unit-label">Seconds</div>
           </div>
         </div>
-        <div class="streak-note" id="streakNote">Current streak: <strong>0 days</strong></div>
         
         <div class="counter-actions-grid">
           <button class="btn" id="resetBtn">
@@ -698,52 +1270,197 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/>
             </svg>
-            Urge Tracker
+            Track Urge
           </button>
         </div>
       </div>
     </section>
 
-    <!-- Info Screen -->
+    <!-- MODE 1 (Standard): Info Screen -->
     <section class="screen" id="screenInfo">
-      <div class="section-title">Achievements</div>
-      <div class="achievements" id="achievements"></div>
-
-      <div class="section-title">Best Streak</div>
-      <div class="best-streak">
-        <div>
-          <div class="best-streak-label">Your all-time record</div>
-        </div>
-        <div>
-          <span class="best-streak-value" id="bestStreakValue">0</span>
-          <span class="best-streak-unit">days</span>
-        </div>
+      <div class="segmented-control">
+        <div class="segmented-btn active" data-tab="info-tab-general">Information</div>
+        <div class="segmented-btn" data-tab="info-tab-diary">Diary</div>
       </div>
 
-      <div class="section-title">Calendar</div>
-      <div class="calendar">
-        <div class="cal-header">
-          <div class="cal-title" id="calTitle">July 2026</div>
-          <div class="cal-nav">
-            <button id="calPrev">‹</button>
-            <button id="calNext">›</button>
+      <!-- General Info Tab -->
+      <div id="info-tab-general">
+        <div class="section-title">Milestones</div>
+        <div class="achievements" id="achievements"></div>
+
+        <div class="section-title">Goal Progress</div>
+        <div class="goal-progress-wrap">
+          <div class="goal-progress-header">
+            <span id="goalCurrentDays">0 Days</span>
+            <span id="goalTargetDays">7 Days</span>
+          </div>
+          <div class="goal-progress-bar-bg">
+            <div class="goal-progress-bar-fill" id="goalProgressBar"></div>
+          </div>
+          <div class="goal-progress-sub" id="goalRemainingText">7 days left to reach your goal!</div>
+          <button class="btn" id="setNewGoalBtn" style="display: none; margin-top: 14px; width: 100%; font-size: 13px; padding: 10px; color: var(--accent); border-color: var(--accent-soft); background: var(--accent-soft);">Set a new goal</button>
+        </div>
+
+        <div class="section-title">Best Streak</div>
+        <div class="best-streak" id="standardBestStreakCard">
+          <div>
+            <div class="best-streak-label">Your all-time record</div>
+          </div>
+          <div>
+            <span class="best-streak-value" id="bestStreakValue">0</span>
+            <span class="best-streak-unit">days</span>
           </div>
         </div>
-        <div class="cal-weekdays">
-          <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+
+        <div class="section-title">Calendar</div>
+        <div class="calendar">
+          <div class="cal-header">
+            <div class="cal-title" id="calTitle">July 2026</div>
+            <div class="cal-nav">
+              <button id="calPrev">‹</button>
+              <button id="calNext">›</button>
+            </div>
+          </div>
+          <div class="cal-weekdays">
+            <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+          </div>
+          <div class="cal-days" id="calDays"></div>
         </div>
-        <div class="cal-days" id="calDays"></div>
       </div>
-      
-      <div class="section-title" style="margin-top: 24px;">Urges Diary</div>
-      <div class="urges-diary" id="urgesDiaryList">
-        <!-- Generated dynamically -->
+
+      <!-- Diary Tab -->
+      <div id="info-tab-diary" style="display: none;">
+        <div class="section-title">Trigger Statistics</div>
+        <div id="triggerChart" class="trigger-chart"></div>
+
+        <div class="section-title">Urges Diary</div>
+        <div class="urges-diary" id="urgesDiaryList"></div>
       </div>
-      
+    </section>
+
+    <!-- MODE 2: Bento-Grid Screen -->
+    <section class="screen" id="screenBento">
+      <div class="bento-container">
+        
+        <!-- 1. Hero Block: Clean Time (Clickable) -->
+        <div class="bento-card bento-clean-time span-2 clickable" id="bentoCleanTimeCard" title="Tap to adjust time">
+          <div class="bento-card-header">
+            <div class="bento-card-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              Clean Time
+            </div>
+            <div class="bento-badge-tag">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+              Tap to edit
+            </div>
+          </div>
+
+          <div class="bento-time-grid">
+            <div class="bento-time-unit">
+              <div class="bento-time-val" id="bentoCDays">00</div>
+              <div class="bento-time-lbl">Days</div>
+            </div>
+            <div class="bento-time-unit">
+              <div class="bento-time-val" id="bentoCHours">00</div>
+              <div class="bento-time-lbl">Hours</div>
+            </div>
+            <div class="bento-time-unit">
+              <div class="bento-time-val" id="bentoCMins">00</div>
+              <div class="bento-time-lbl">Mins</div>
+            </div>
+            <div class="bento-time-unit">
+              <div class="bento-time-val" id="bentoCSecs">00</div>
+              <div class="bento-time-lbl">Secs</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Goal Target (Clickable) -->
+        <div class="bento-card bento-goal-card clickable" id="bentoGoalCard" title="Tap to change goal">
+          <div class="bento-card-header">
+            <div class="bento-card-title">Goal</div>
+            <div class="bento-badge-tag">Change</div>
+          </div>
+          <div>
+            <div class="bento-goal-number" id="bentoGoalTarget">7d</div>
+            <div class="bento-goal-sub" id="bentoGoalRemaining">7 days left</div>
+          </div>
+          <div class="bento-progress-bg">
+            <div class="bento-progress-fill" id="bentoGoalProgressFill"></div>
+          </div>
+        </div>
+
+        <!-- 3. Record / Best Streak (Clickable -> Pop-up) -->
+        <div class="bento-card bento-streak-card clickable" id="bentoStreakCard" title="Tap to view streak details">
+          <div class="bento-card-header">
+            <div class="bento-card-title">Best Streak</div>
+            <div class="bento-badge-tag">Record</div>
+          </div>
+          <div>
+            <div class="bento-streak-number" id="bentoBestStreak">0</div>
+            <div class="bento-streak-sub">Days all-time record</div>
+          </div>
+        </div>
+
+        <!-- 4. Calendar (Interactive Bento Card) -->
+        <div class="bento-card bento-cal-card span-2">
+          <div class="bento-cal-header">
+            <div class="bento-card-title">Calendar</div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div class="bento-cal-title" id="bentoCalTitle">Month Year</div>
+              <div class="cal-nav">
+                <button id="bentoCalPrev" aria-label="Previous month">‹</button>
+                <button id="bentoCalNext" aria-label="Next month">›</button>
+              </div>
+            </div>
+          </div>
+          <div class="bento-cal-weekdays">
+            <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+          </div>
+          <div class="bento-cal-grid" id="bentoCalDays"></div>
+        </div>
+
+        <!-- 5. Track Urge (Clickable) -->
+        <div class="bento-card bento-action-card clickable" id="bentoTrackUrgeCard">
+          <div class="bento-action-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+          </div>
+          <div>
+            <div class="bento-action-title">Track Urge</div>
+            <div class="bento-action-desc">Log your trigger</div>
+          </div>
+        </div>
+
+        <!-- 6. Urges Diary (Clickable -> Pop-up) -->
+        <div class="bento-card bento-diary-card clickable" id="bentoUrgesDiaryCard">
+          <div class="bento-card-header">
+            <div class="bento-diary-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+            </div>
+            <div class="bento-diary-count" id="bentoUrgesCount">0 logs</div>
+          </div>
+          <div>
+            <div class="bento-action-title">Urges Diary</div>
+            <div class="bento-action-desc">View stats & entries</div>
+          </div>
+        </div>
+
+      </div>
     </section>
   </main>
 
-  <!-- Bottom Nav -->
+  <!-- Bottom Nav (Standard Mode) -->
   <nav class="bottom-nav">
     <button class="nav-btn active" data-screen="screenCounter" aria-label="Counter">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -762,23 +1479,276 @@
   </nav>
 </div>
 
-<!-- Reset Modal -->
+<!-- Bento Mode Diary & Statistics Pop-up Modal -->
+<div class="modal-overlay" id="bentoDiaryModal">
+  <div class="modal" style="max-height: 88vh; text-align: left;">
+    <div class="modal-header">
+      <div class="modal-title">Diary & Statistics</div>
+      <button class="modal-close" data-close="bentoDiaryModal">×</button>
+    </div>
+    
+    <div class="section-title" style="margin-top: 6px;">Trigger Statistics</div>
+    <div id="bentoTriggerChart" class="trigger-chart"></div>
+
+    <div class="section-title">Urges Diary</div>
+    <div class="urges-diary" id="bentoUrgesDiaryList" style="margin-bottom: 12px;"></div>
+  </div>
+</div>
+
+<!-- Bento Best Streak Details Pop-up Modal -->
+<div class="modal-overlay" id="bentoStreakModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Best Streak</div>
+      <button class="modal-close" data-close="bentoStreakModal">×</button>
+    </div>
+    <div class="milestone-modal-content">
+      <div class="milestone-modal-icon" id="bentoStreakModalIcon">🏆</div>
+      <div class="milestone-modal-period" id="bentoStreakModalValue">0 Days</div>
+      <div class="milestone-modal-date" id="bentoStreakModalDate" style="margin-bottom: 4px;">No record yet</div>
+    </div>
+    <div class="modal-actions" style="margin-top: 24px;">
+      <button class="btn primary" data-close="bentoStreakModal" style="width: 100%;">Got it</button>
+    </div>
+  </div>
+</div>
+
+<!-- Welcome Pop-up Modal (Centered) -->
+<div class="welcome-overlay" id="welcomeModal">
+  <div class="welcome-box">
+    <div class="welcome-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#1a1d29" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/>
+      </svg>
+    </div>
+    <div class="welcome-title">Welcome to Clarity</div>
+    <div class="welcome-subtitle">Every clean day is a flash.<br>Set your date and stay clean</div>
+
+    <div class="modal-label">Start Date & Time</div>
+    <input type="datetime-local" id="welcomeStartTime" />
+
+    <div class="modal-label">Choose Your Goal</div>
+    <div class="target-carousel" id="welcomeTargetCarousel"></div>
+    <input type="number" id="welcomeCustomTargetInput" placeholder="Enter number of days" style="display: none;" />
+
+    <div class="modal-label">App Mode</div>
+    <div class="layout-switcher-grid" id="welcomeLayoutSwitcher" style="margin-bottom: 8px;">
+      <div class="layout-card-btn active" id="welcomeLayoutStandard" data-mode="standard">
+        <div class="layout-card-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </div>
+        <div class="layout-card-title">Standard</div>
+      </div>
+
+      <div class="layout-card-btn" id="welcomeLayoutBento" data-mode="bento">
+        <div class="layout-card-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="7" rx="2"></rect>
+            <rect x="3" y="14" width="8" height="7" rx="2"></rect>
+            <rect x="13" y="14" width="8" height="7" rx="2"></rect>
+          </svg>
+        </div>
+        <div class="layout-card-title">Bento-Grid</div>
+      </div>
+    </div>
+
+    <div class="modal-label">App Color</div>
+    <div class="color-grid" id="welcomeColorGrid"></div>
+
+    <button class="btn primary" id="welcomeStartBtn" style="width: 100%; margin-top: 18px; padding: 14px 16px; font-size: 15px;">
+      Get Started
+    </button>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Settings</div>
+      <button class="modal-close" data-close="settingsModal">×</button>
+    </div>
+
+    <!-- Mode Switcher: Standard vs Bento-Grid -->
+    <div class="modal-label">App Mode</div>
+    <div class="layout-switcher-grid">
+      <div class="layout-card-btn active" id="layoutBtnStandard" data-mode="standard">
+        <div class="layout-card-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </div>
+        <div class="layout-card-title">Standard</div>
+      </div>
+
+      <div class="layout-card-btn" id="layoutBtnBento" data-mode="bento">
+        <div class="layout-card-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="7" rx="2"></rect>
+            <rect x="3" y="14" width="8" height="7" rx="2"></rect>
+            <rect x="13" y="14" width="8" height="7" rx="2"></rect>
+          </svg>
+        </div>
+        <div class="layout-card-title">Bento-Grid</div>
+      </div>
+    </div>
+    
+    <!-- Seasonal & Live Themes Switcher -->
+    <div class="modal-label">App Aesthetics</div>
+    <div class="aesthetics-grid">
+      <div class="seasonal-card" id="seasonalThemeBtn">
+        <div class="seasonal-icon" id="seasonalIcon"></div>
+        <div class="seasonal-info">
+          <div class="seasonal-title">Seasonal Themes</div>
+          <div class="seasonal-sub" id="seasonalSub">Off</div>
+        </div>
+      </div>
+
+      <div class="seasonal-card" id="liveThemeBtn">
+        <div class="seasonal-icon" id="liveIcon"></div>
+        <div class="seasonal-info">
+          <div class="seasonal-title">Live Themes</div>
+          <div class="seasonal-sub" id="liveSub">Off</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Particle effects toggle -->
+    <div class="particle-toggle-card" id="particlesThemeBtn">
+      <div class="particle-toggle-content">
+        <div class="seasonal-icon" id="particlesIcon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/>
+            <path d="M5 3v4M3 5h4M19 17v4M17 19h4"/>
+          </svg>
+        </div>
+        <div class="seasonal-info" style="text-align: left;">
+          <div class="seasonal-title">Particle effects</div>
+          <div class="seasonal-sub" id="particlesSub">Snow, birds, etc.</div>
+        </div>
+      </div>
+      <div class="particle-toggle-status" id="particlesBadge">On</div>
+    </div>
+
+    <div class="modal-label">App Color</div>
+    <div class="color-grid" id="colorGrid"></div>
+    
+    <div style="margin-top: 24px; display: flex; flex-direction: column; gap: 10px;">
+      <button class="btn" id="aboutBtn" style="width: 100%;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        About this app
+      </button>
+      <button class="btn" id="deleteAllBtn" style="width: 100%; color: #ef4444; border-color: rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.05);">Delete all records</button>
+    </div>
+  </div>
+</div>
+
+<!-- About Modal -->
+<div class="modal-overlay" id="aboutModal" style="z-index: 150;">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">About this app</div>
+      <button class="modal-close" data-close="aboutModal">×</button>
+    </div>
+    <div class="milestone-modal-content">
+      <div class="milestone-modal-icon" style="background: linear-gradient(135deg, var(--accent), var(--accent)); color: #1a1d29;">
+        <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#1a1d29" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/>
+        </svg>
+      </div>
+      <div class="milestone-modal-period" style="font-size: 20px; font-weight: 800; margin-bottom: 4px;">Lightning's Clarity</div>
+      <div style="font-size: 13px; font-weight: 600; color: var(--text-soft); margin-bottom: 16px;">Version 20261005-1835-Bento</div>
+      <a href="https://clck.ru/3WJsqj" target="_blank" rel="noopener noreferrer" class="about-github-badge">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+        <span>clck.ru/3WJsqj</span>
+      </a>
+    </div>
+    <div class="modal-actions" style="margin-top: 22px;">
+      <button class="btn primary" data-close="aboutModal" style="width: 100%;">Got it</button>
+    </div>
+  </div>
+</div>
+
+<!-- Milestone Details Modal -->
+<div class="modal-overlay" id="milestoneModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Milestone</div>
+      <button class="modal-close" data-close="milestoneModal">×</button>
+    </div>
+    <div class="milestone-modal-content">
+      <div class="milestone-modal-icon" id="milestoneModalIcon">🌱</div>
+      <div class="milestone-modal-period" id="milestoneModalPeriod">1 Day</div>
+      <div class="milestone-modal-date" id="milestoneModalDate">Unlocked on Oct 5, 2026</div>
+      <div class="milestone-modal-text" id="milestoneModalText">A small victory that each of us started with</div>
+    </div>
+    <div class="modal-actions" style="margin-top: 20px;">
+      <button class="btn primary" data-close="milestoneModal" style="width: 100%;">Got it</button>
+    </div>
+  </div>
+</div>
+
+<!-- Day Status Modal -->
+<div class="modal-overlay" id="dayStatusModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Select Day Status</div>
+      <button class="modal-close" data-close="dayStatusModal">×</button>
+    </div>
+    <div class="modal-actions" style="flex-direction: column; gap: 12px; margin-top: 10px;">
+      <button class="btn status-btn" data-status="clean" style="color: var(--success); border-color: var(--success-soft); background: var(--success-soft);">Clean Day</button>
+      <button class="btn status-btn" data-status="slip" style="color: #ef4444; border-color: rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.05);">Slip Day</button>
+      <button class="btn status-btn" data-status="blank">Blank Day</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="resetModal">
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title">Reset Timer</div>
       <button class="modal-close" data-close="resetModal">×</button>
     </div>
+    <div class="modal-label">Goal (Target Days)</div>
+    <div class="target-carousel" id="targetCarousel"></div>
+    <input type="number" id="customTargetInput" placeholder="Enter number of days" style="display: none;" />
+
     <div class="modal-label">Choose the start time for your new streak</div>
     <input type="datetime-local" id="resetTime" />
     <div class="modal-actions">
       <button class="btn" data-close="resetModal">Cancel</button>
-      <button class="btn primary" id="confirmReset">Start New Streak</button>
+      <button class="btn primary" id="confirmReset">Start Timer</button>
     </div>
   </div>
 </div>
 
-<!-- Emergency Modal -->
+<div class="modal-overlay" id="newGoalModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Set New Goal</div>
+      <button class="modal-close" data-close="newGoalModal">×</button>
+    </div>
+    <div class="modal-label">Select your next target</div>
+    <div class="target-carousel" id="newTargetCarousel"></div>
+    <input type="number" id="newCustomTargetInput" placeholder="Enter number of days" style="display: none;" />
+    
+    <div class="modal-actions" style="margin-top: 16px;">
+      <button class="btn" data-close="newGoalModal">Cancel</button>
+      <button class="btn primary" id="confirmNewGoal">Save Goal</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="emergencyModal">
   <div class="modal">
     <div class="modal-header">
@@ -792,11 +1762,10 @@
   </div>
 </div>
 
-<!-- Urge Tracker Modal -->
 <div class="modal-overlay" id="urgeModal">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">Track Your Urge</div>
+      <div class="modal-title" id="urgeModalTitle">Track Your Urge</div>
       <button class="modal-close" data-close="urgeModal">×</button>
     </div>
     
@@ -813,6 +1782,9 @@
       <button class="trigger-btn" data-trigger="Other"><span>❓</span> Other</button>
     </div>
     
+    <div class="modal-label">Time of Urge</div>
+    <input type="datetime-local" id="urgeTime" />
+
     <label class="checkbox-wrap">
       <input type="checkbox" id="urgeOvercome" checked />
       I successfully overcame this urge
@@ -824,39 +1796,383 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="urgeDetailsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Urge Details</div>
+      <button class="modal-close" data-close="urgeDetailsModal">×</button>
+    </div>
+    <div id="urgeDetailsContent" style="margin-bottom: 24px; padding: 0 4px; text-align: center;"></div>
+    <div class="modal-actions">
+      <button class="btn" id="deleteUrgeBtn" style="color: #ef4444; border-color: rgba(239,68,68,0.2);">Delete</button>
+      <button class="btn primary" id="editUrgeBtn">Edit</button>
+    </div>
+  </div>
+</div>
+
+<div class="dialog-overlay" id="customDialogOverlay">
+  <div class="dialog-box">
+    <div class="dialog-title" id="dialogTitle">Title</div>
+    <div class="dialog-msg" id="dialogMessage">Message</div>
+    <div class="modal-actions">
+      <button class="btn" id="dialogCancel">Cancel</button>
+      <button class="btn primary" id="dialogConfirm">OK</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast-popup"></div>
+
 <script>
 (function() {
   'use strict';
 
+  // --- App Colors ---
+  const appColors = [
+    { name: 'Sun', hex: '#f5b301', soft: 'rgba(245, 179, 1, 0.15)' },
+    { name: 'Sky', hex: '#3b82f6', soft: 'rgba(59, 130, 246, 0.15)' },
+    { name: 'Grass', hex: '#10b981', soft: 'rgba(16, 185, 129, 0.15)' },
+    { name: 'Lilac', hex: '#8b5cf6', soft: 'rgba(139, 92, 246, 0.15)' },
+    { name: 'Sunset', hex: '#f43f5e', soft: 'rgba(244, 63, 94, 0.15)' }
+  ];
+
+  // --- Seasonal & Holiday SVGs ---
+  const seasonalSVGs = {
+    spring: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/></svg>`,
+    summer: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>`,
+    autumn: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>`,
+    winter: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M19 5l-14 14M5 5l14 14"/></svg>`
+  };
+
+  const logoIcons = {
+    halloween: `<svg viewBox="0 0 24 24" fill="#1a1d29"><path d="M12 2c-.6 0-1 .4-1 1v2.3c-2.4.4-4.5 1.5-6.2 3.1-1.3 1.2-2 2.7-2.3 4.4-.2 1.5.1 3 .7 4.2C4.1 19 5.8 20.3 8 21.2c1.3.5 2.6.8 4 .8s2.7-.3 4-.8c2.2-.9 3.9-2.2 4.8-4.2.6-1.2.9-2.7.7-4.2-.3-1.7-1-3.2-2.3-4.4C17.5 6.8 15.4 5.7 13 5.3V3c0-.6-.4-1-1-1zm-3 8c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm6 0c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm-3 6c-2.2 0-4-1.3-4-3h8c0 1.7-1.8 3-4 3z"/></svg>`,
+    newyear: `<svg viewBox="0 0 24 24" fill="#1a1d29"><path d="M12 2l-7 9h4l-5 8h6v3h4v-3h6l-5-8h4l-7-9z"/></svg>`,
+    valentine: `<svg viewBox="0 0 24 24" fill="#1a1d29"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`,
+    lightning: `<svg viewBox="0 0 24 24" fill="none" stroke="#1a1d29" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg>`
+  };
+
+  const settingsIcons = {
+    halloween: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-.6 0-1 .4-1 1v2.3c-2.4.4-4.5 1.5-6.2 3.1-1.3 1.2-2 2.7-2.3 4.4-.2 1.5.1 3 .7 4.2C4.1 19 5.8 20.3 8 21.2c1.3.5 2.6.8 4 .8s2.7-.3 4-.8c2.2-.9 3.9-2.2 4.8-4.2.6-1.2.9-2.7.7-4.2-.3-1.7-1-3.2-2.3-4.4C17.5 6.8 15.4 5.7 13 5.3V3c0-.6-.4-1-1-1zm-3 8c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm6 0c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm-3 6c-2.2 0-4-1.3-4-3h8c0 1.7-1.8 3-4 3z"/></svg>`,
+    newyear: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l-7 9h4l-5 8h6v3h4v-3h6l-5-8h4l-7-9z"/></svg>`,
+    valentine: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`
+  };
+
+  // --- Live Theme SVGs ---
+  const livePhaseSVGs = {
+    morning: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M4.93 4.93l2.83 2.83M20 12h-4M2 12h4M19.07 4.93l-2.83 2.83M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12z"/></svg>`,
+    day: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>`,
+    evening: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 18a5 5 0 0 0-10 0"/><line x1="12" y1="2" x2="12" y2="9"/><line x1="4.22" y1="10.22" x2="5.64" y2="11.64"/><line x1="1" y1="18" x2="3" y2="18"/><line x1="21" y1="18" x2="23" y2="18"/><line x1="18.36" y1="11.64" x2="19.78" y2="10.22"/><line x1="23" y1="22" x2="1" y2="22"/></svg>`,
+    night: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`
+  };
+
+  // --- Goal Targets ---
+  const targets = [
+    { label: '1 Week', days: 7 }, { label: '2 Weeks', days: 14 },
+    { label: '1 Month', days: 30 }, { label: '3 Months', days: 90 },
+    { label: '6 Months', days: 180 }, { label: '1 Year', days: 365 },
+    { label: 'Other', days: 'custom' }
+  ];
+
   // --- Storage ---
-  const STORAGE_KEY = 'lightnings_clarity_v1';
+  const STORAGE_KEY = 'lightnings_clarity_v2';
   const defaultData = {
     startTime: Date.now(),
     bestStreak: 0,
-    history: [], 
-    urges: [],
-    theme: 'light'
+    bestStreakDate: null,
+    history: [], urges: [], deletedDays: [], dayStatuses: {},
+    targetDays: 7, theme: 'light', colorIndex: 0,
+    seasonalThemeEnabled: false,
+    liveThemeEnabled: false,
+    particlesEnabled: true,
+    hasSeenWelcome: false,
+    appMode: 'standard'
   };
 
   function loadData() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return { ...defaultData };
+      if (!raw) return { ...defaultData, hasSeenWelcome: false };
       const parsed = JSON.parse(raw);
       if(!parsed.urges) parsed.urges = [];
+      if(!parsed.deletedDays) parsed.deletedDays = [];
+      if(!parsed.dayStatuses) parsed.dayStatuses = {};
+      if(!parsed.targetDays) parsed.targetDays = 7;
+      if(parsed.colorIndex === undefined) parsed.colorIndex = 0;
+      if(parsed.seasonalThemeEnabled === undefined) parsed.seasonalThemeEnabled = false;
+      if(parsed.liveThemeEnabled === undefined) parsed.liveThemeEnabled = false;
+      if(parsed.particlesEnabled === undefined) parsed.particlesEnabled = true;
+      if(parsed.hasSeenWelcome === undefined) parsed.hasSeenWelcome = false;
+      if(!parsed.appMode) parsed.appMode = 'standard';
+      if(parsed.bestStreakDate === undefined) parsed.bestStreakDate = null;
       return { ...defaultData, ...parsed };
     } catch (e) {
-      return { ...defaultData };
+      return { ...defaultData, hasSeenWelcome: false };
     }
   }
 
-  function saveData() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }
-
+  function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
   let state = loadData();
 
-  // --- Theme ---
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  // --- Themes Logic ---
+  function getCurrentSeason() {
+    const month = new Date().getMonth();
+    if (month >= 2 && month <= 4) return 'spring';
+    if (month >= 5 && month <= 7) return 'summer';
+    if (month >= 8 && month <= 10) return 'autumn';
+    return 'winter';
+  }
+
+  function getCurrentHoliday() {
+    const today = new Date();
+    const m = today.getMonth();
+    const d = today.getDate();
+    if (m === 9 && d === 31) return 'halloween';
+    if ((m === 11 && d >= 25 && d <= 31) || (m === 0 && d === 1)) return 'newyear';
+    if (m === 1 && d === 14) return 'valentine';
+    return null;
+  }
+
+  function getCurrentLiveTimePhase() {
+    const now = new Date();
+    const h = now.getHours();
+    if (h >= 6 && h < 12) return 'morning';
+    if (h >= 12 && h < 18) return 'day';
+    if (h >= 18 && h < 22) return 'evening';
+    return 'night';
+  }
+
+  let currentSeason = getCurrentSeason();
+
+  function applyThemeBackgrounds() {
+    const app = document.querySelector('.app');
+    app.classList.remove(
+      'season-spring', 'season-summer', 'season-autumn', 'season-winter',
+      'live-morning', 'live-day', 'live-evening', 'live-night'
+    );
+
+    if (state.seasonalThemeEnabled) {
+      app.classList.add(`season-${currentSeason}`);
+    } else if (state.liveThemeEnabled) {
+      const phase = getCurrentLiveTimePhase();
+      app.classList.add(`live-${phase}`);
+    }
+
+    updateSeasonalUI();
+    updateLiveUI();
+    updateParticlesUI();
+    applyHolidayTheme();
+  }
+
+  function applyHolidayTheme() {
+    const logo = document.getElementById('lightningIcon');
+    if (!logo) return;
+    if (state.seasonalThemeEnabled) {
+      const h = getCurrentHoliday();
+      if (h && logoIcons[h]) {
+        logo.innerHTML = logoIcons[h];
+        return;
+      }
+    }
+    logo.innerHTML = logoIcons.lightning;
+  }
+
+  function updateSeasonalUI() {
+    const btn = document.getElementById('seasonalThemeBtn');
+    const iconContainer = document.getElementById('seasonalIcon');
+    const sub = document.getElementById('seasonalSub');
+    if (!btn) return;
+
+    const holiday = getCurrentHoliday();
+    if (holiday && settingsIcons[holiday]) {
+      iconContainer.innerHTML = settingsIcons[holiday];
+    } else {
+      iconContainer.innerHTML = seasonalSVGs[currentSeason];
+    }
+
+    if (state.seasonalThemeEnabled) {
+      btn.classList.add('active');
+      if (holiday) {
+        const holidayNames = { valentine: "Valentine's", halloween: 'Halloween', newyear: 'New Year' };
+        sub.textContent = `On (${holidayNames[holiday] || 'Holiday'})`;
+      } else {
+        sub.textContent = `On (${currentSeason.charAt(0).toUpperCase() + currentSeason.slice(1)})`;
+      }
+    } else {
+      btn.classList.remove('active');
+      sub.textContent = 'Off';
+    }
+  }
+
+  function updateLiveUI() {
+    const btn = document.getElementById('liveThemeBtn');
+    const iconContainer = document.getElementById('liveIcon');
+    const sub = document.getElementById('liveSub');
+    if (!btn) return;
+
+    const phase = getCurrentLiveTimePhase();
+    if (iconContainer && livePhaseSVGs[phase]) {
+      iconContainer.innerHTML = livePhaseSVGs[phase];
+    }
+
+    const phaseNames = {
+      morning: 'Morning',
+      day: 'Day',
+      evening: 'Evening',
+      night: 'Night'
+    };
+
+    if (state.liveThemeEnabled) {
+      btn.classList.add('active');
+      sub.textContent = `On (${phaseNames[phase]})`;
+    } else {
+      btn.classList.remove('active');
+      sub.textContent = 'Off';
+    }
+  }
+
+  function updateParticlesUI() {
+    const btn = document.getElementById('particlesThemeBtn');
+    const badge = document.getElementById('particlesBadge');
+    if (!btn || !badge) return;
+
+    if (!state.seasonalThemeEnabled) {
+      btn.classList.remove('active');
+      btn.classList.add('disabled');
+      badge.textContent = state.particlesEnabled ? 'Paused' : 'Off';
+    } else {
+      btn.classList.remove('disabled');
+      if (state.particlesEnabled) {
+        btn.classList.add('active');
+        badge.textContent = 'On';
+      } else {
+        btn.classList.remove('active');
+        badge.textContent = 'Off';
+      }
+    }
+  }
+
+  function checkTimeEvents() {
+    currentSeason = getCurrentSeason();
+    applyThemeBackgrounds();
+  }
+
+  document.getElementById('seasonalThemeBtn').addEventListener('click', () => {
+    state.seasonalThemeEnabled = !state.seasonalThemeEnabled;
+    if (state.seasonalThemeEnabled) {
+      state.liveThemeEnabled = false;
+    }
+    saveData();
+    checkTimeEvents();
+    if (state.seasonalThemeEnabled && state.particlesEnabled) {
+      spawnParticles();
+    } else {
+      const container = document.getElementById('particles-container');
+      if (container) container.innerHTML = '';
+    }
+  });
+
+  document.getElementById('liveThemeBtn').addEventListener('click', () => {
+    state.liveThemeEnabled = !state.liveThemeEnabled;
+    if (state.liveThemeEnabled) {
+      state.seasonalThemeEnabled = false;
+      const container = document.getElementById('particles-container');
+      if (container) container.innerHTML = '';
+    }
+    saveData();
+    checkTimeEvents();
+  });
+
+  const particlesThemeBtn = document.getElementById('particlesThemeBtn');
+  if (particlesThemeBtn) {
+    particlesThemeBtn.addEventListener('click', () => {
+      if (!state.seasonalThemeEnabled) {
+        showToast('Enable Seasonal Themes first');
+        return;
+      }
+      state.particlesEnabled = !state.particlesEnabled;
+      saveData();
+      updateParticlesUI();
+      if (state.particlesEnabled) {
+        spawnParticles();
+        showToast('Particle effects enabled');
+      } else {
+        const container = document.getElementById('particles-container');
+        if (container) container.innerHTML = '';
+        showToast('Particle effects disabled');
+      }
+    });
+  }
+
+  const lightningIcon = document.getElementById('lightningIcon');
+  if (lightningIcon) {
+    lightningIcon.addEventListener('click', () => {
+      if (state.seasonalThemeEnabled && state.particlesEnabled) {
+        spawnParticles();
+      }
+    });
+  }
+
+  function spawnParticles() {
+    if (!state.seasonalThemeEnabled || !state.particlesEnabled) return;
+    const container = document.getElementById('particles-container');
+    if (!container) return;
+
+    let count = 0;
+    let particleClass = '';
+    let svg = '';
+    let color = '';
+
+    if (currentSeason === 'spring') {
+      count = 2;
+      particleClass = 'particle-spring';
+      svg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="rgba(244, 114, 182, 0.75)" stroke="none"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/></svg>`;
+    } else if (currentSeason === 'summer') {
+      count = 1;
+      particleClass = 'particle-summer';
+      svg = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 14c3-3 6-3 9 0 3-3 6-3 9 0"/></svg>`;
+    } else if (currentSeason === 'autumn') {
+      count = 2;
+      particleClass = 'particle-autumn';
+      color = '#d97706';
+      svg = seasonalSVGs.autumn;
+    } else if (currentSeason === 'winter') {
+      count = 4;
+      particleClass = 'particle-winter';
+      color = '#93c5fd';
+      svg = seasonalSVGs.winter;
+    }
+
+    for (let i = 0; i < count; i++) {
+      setTimeout(() => {
+        if (!state.seasonalThemeEnabled || !state.particlesEnabled) return;
+        const p = document.createElement('div');
+        p.className = `particle ${particleClass}`;
+        p.innerHTML = svg;
+        if (color) p.style.color = color;
+
+        if (currentSeason === 'summer') {
+          p.style.top = Math.random() * 20 + 10 + 'vh';
+          p.style.animationDuration = '8s';
+        } else {
+          p.style.left = Math.random() * 80 + 10 + '%';
+          const baseDur = currentSeason === 'winter' ? 10 : 7;
+          p.style.animationDuration = (baseDur + Math.random() * 3) + 's';
+        }
+
+        container.appendChild(p);
+        setTimeout(() => p.remove(), 13000); 
+      }, i * 1500);
+    }
+  }
+
+  // --- Initializing App Visuals ---
   const themeBtn = document.getElementById('themeBtn');
   const themeIcon = document.getElementById('themeIcon');
 
@@ -869,15 +2185,145 @@
     }
   }
 
+  function applyAppColor() {
+    const color = appColors[state.colorIndex] || appColors[0];
+    document.documentElement.style.setProperty('--accent', color.hex);
+    document.documentElement.style.setProperty('--accent-soft', color.soft);
+  }
+
   themeBtn.addEventListener('click', () => {
     state.theme = state.theme === 'light' ? 'dark' : 'light';
     saveData();
     applyTheme();
   });
 
+  checkTimeEvents();
   applyTheme();
+  applyAppColor();
+  
+  if (state.seasonalThemeEnabled && state.particlesEnabled) {
+    setTimeout(spawnParticles, 500); 
+  }
 
-  // --- Navigation ---
+  setInterval(spawnParticles, 20000);
+  setInterval(checkTimeEvents, 120000);
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') checkTimeEvents();
+  });
+  window.addEventListener('focus', checkTimeEvents);
+
+  // --- Dialog System ---
+  const dialogOverlay = document.getElementById('customDialogOverlay');
+  const dTitle = document.getElementById('dialogTitle');
+  const dMessage = document.getElementById('dialogMessage');
+  const dCancel = document.getElementById('dialogCancel');
+  const dConfirm = document.getElementById('dialogConfirm');
+  let dialogConfirmCallback = null;
+  let dialogCancelCallback = null;
+
+  function showDialog({ title, message, type = 'alert', confirmText = 'OK', cancelText = 'Cancel', isDestructive = false, onConfirm, onCancel }) {
+    dTitle.textContent = title;
+    dMessage.textContent = message;
+    dConfirm.textContent = confirmText;
+    dCancel.textContent = cancelText;
+
+    if (isDestructive) {
+      dConfirm.classList.add('destructive');
+      dConfirm.classList.remove('primary');
+    } else {
+      dConfirm.classList.remove('destructive');
+      dConfirm.classList.add('primary');
+    }
+
+    dCancel.style.display = type === 'alert' ? 'none' : 'block';
+    dialogConfirmCallback = onConfirm;
+    dialogCancelCallback = onCancel;
+    dialogOverlay.classList.add('show');
+  }
+
+  dCancel.addEventListener('click', () => {
+    dialogOverlay.classList.remove('show');
+    if (dialogCancelCallback) dialogCancelCallback();
+  });
+  dConfirm.addEventListener('click', () => {
+    dialogOverlay.classList.remove('show');
+    if (dialogConfirmCallback) dialogConfirmCallback();
+  });
+
+  // --- App Mode (Standard vs Bento-Grid) ---
+  const layoutBtnStandard = document.getElementById('layoutBtnStandard');
+  const layoutBtnBento = document.getElementById('layoutBtnBento');
+  const welcomeLayoutStandard = document.getElementById('welcomeLayoutStandard');
+  const welcomeLayoutBento = document.getElementById('welcomeLayoutBento');
+  let welcomeSelectedMode = state.appMode || 'standard';
+
+  function updateWelcomeLayoutUI() {
+    if (welcomeLayoutStandard && welcomeLayoutBento) {
+      welcomeLayoutStandard.classList.toggle('active', welcomeSelectedMode === 'standard');
+      welcomeLayoutBento.classList.toggle('active', welcomeSelectedMode === 'bento');
+    }
+  }
+
+  if (welcomeLayoutStandard) {
+    welcomeLayoutStandard.addEventListener('click', () => {
+      welcomeSelectedMode = 'standard';
+      updateWelcomeLayoutUI();
+    });
+  }
+
+  if (welcomeLayoutBento) {
+    welcomeLayoutBento.addEventListener('click', () => {
+      welcomeSelectedMode = 'bento';
+      updateWelcomeLayoutUI();
+    });
+  }
+
+  function applyAppMode(mode) {
+    state.appMode = mode;
+    saveData();
+
+    const app = document.querySelector('.app');
+    const screenCounter = document.getElementById('screenCounter');
+    const screenInfo = document.getElementById('screenInfo');
+    const screenBento = document.getElementById('screenBento');
+
+    if (mode === 'bento') {
+      app.classList.add('layout-bento');
+      screenCounter.classList.remove('active');
+      screenInfo.classList.remove('active');
+      screenBento.classList.add('active');
+
+      layoutBtnStandard.classList.remove('active');
+      layoutBtnBento.classList.add('active');
+
+      renderBentoView();
+    } else {
+      app.classList.remove('layout-bento');
+      screenBento.classList.remove('active');
+      
+      screenCounter.classList.add('active');
+      screenInfo.classList.remove('active');
+      navButtons.forEach(b => b.classList.toggle('active', b.dataset.screen === 'screenCounter'));
+
+      layoutBtnStandard.classList.add('active');
+      layoutBtnBento.classList.remove('active');
+      
+      renderInfo();
+    }
+  }
+
+  layoutBtnStandard.addEventListener('click', () => {
+    applyAppMode('standard');
+    showToast('Switched to Standard layout');
+  });
+
+  layoutBtnBento.addEventListener('click', () => {
+    applyAppMode('bento');
+    showToast('Switched to Bento-Grid layout');
+  });
+
+  // --- Navigation & Tabs (Standard Mode) ---
   const navButtons = document.querySelectorAll('.nav-btn');
   const screens = document.querySelectorAll('.screen');
 
@@ -890,70 +2336,285 @@
     });
   });
 
-  // --- Timer ---
-  const cDays = document.getElementById('cDays');
-  const cHours = document.getElementById('cHours');
-  const cMins = document.getElementById('cMins');
-  const cSecs = document.getElementById('cSecs');
-  const streakNote = document.getElementById('streakNote');
+  const segBtns = document.querySelectorAll('.segmented-btn');
+  segBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      segBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const target = btn.dataset.tab;
+      document.getElementById('info-tab-general').style.display = target === 'info-tab-general' ? 'block' : 'none';
+      document.getElementById('info-tab-diary').style.display = target === 'info-tab-diary' ? 'block' : 'none';
+      if (target === 'info-tab-diary') renderTriggerChart();
+    });
+  });
+
+  // --- Timer Operations ---
+  const cDays = document.getElementById('cDays'), cHours = document.getElementById('cHours');
+  const cMins = document.getElementById('cMins'), cSecs = document.getElementById('cSecs');
+  const counterMainLabel = document.getElementById('counterMainLabel');
+
+  const bentoCDays = document.getElementById('bentoCDays');
+  const bentoCHours = document.getElementById('bentoCHours');
+  const bentoCMins = document.getElementById('bentoCMins');
+  const bentoCSecs = document.getElementById('bentoCSecs');
 
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
-
-  function getCurrentStreakMs() {
-    return Math.max(0, Date.now() - state.startTime);
-  }
-
+  function getTimerOffsetMs() { return Date.now() - state.startTime; }
   function getCurrentStreakDays() {
-    return Math.floor(getCurrentStreakMs() / (1000 * 60 * 60 * 24));
+    const ms = getTimerOffsetMs();
+    return ms > 0 ? Math.floor(ms / (1000 * 60 * 60 * 24)) : 0;
   }
 
   function updateCounter() {
-    const ms = getCurrentStreakMs();
-    const totalSec = Math.floor(ms / 1000);
+    const ms = getTimerOffsetMs();
+    const isFuture = ms < 0;
+    const absMs = Math.abs(ms);
+    const totalSec = Math.floor(absMs / 1000);
     const d = Math.floor(totalSec / 86400);
     const h = Math.floor((totalSec % 86400) / 3600);
     const m = Math.floor((totalSec % 3600) / 60);
     const s = totalSec % 60;
 
-    cDays.textContent = pad(d);
-    cHours.textContent = pad(h);
-    cMins.textContent = pad(m);
-    cSecs.textContent = pad(s);
+    const formattedD = (isFuture ? '-' : '') + pad(d);
+    const formattedH = pad(h);
+    const formattedM = pad(m);
+    const formattedS = pad(s);
 
-    streakNote.innerHTML = 'Current streak: <strong>' + d + ' day' + (d === 1 ? '' : 's') + '</strong>';
+    cDays.textContent = formattedD;
+    cHours.textContent = formattedH;
+    cMins.textContent = formattedM;
+    cSecs.textContent = formattedS;
+
+    if (bentoCDays) {
+      bentoCDays.textContent = formattedD;
+      bentoCHours.textContent = formattedH;
+      bentoCMins.textContent = formattedM;
+      bentoCSecs.textContent = formattedS;
+    }
+
+    if (isFuture) {
+      counterMainLabel.textContent = "Countdown to start:";
+    } else {
+      counterMainLabel.textContent = "You're clean for";
+    }
+
+    if (document.getElementById('screenInfo').classList.contains('active') && 
+        document.getElementById('info-tab-general').style.display !== 'none') {
+      renderGoalProgress();
+    }
+
+    if (state.appMode === 'bento') {
+      renderBentoGoal();
+    }
   }
 
   setInterval(updateCounter, 1000);
   updateCounter();
 
-  // --- Modals ---
-  function openModal(id) {
-    document.getElementById(id).classList.add('show');
-  }
-  function closeModal(id) {
-    document.getElementById(id).classList.remove('show');
-  }
+  // --- Modal Utilities ---
+  function openModal(id) { document.getElementById(id).classList.add('show'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
   document.querySelectorAll('[data-close]').forEach(el => {
     el.addEventListener('click', () => closeModal(el.dataset.close));
   });
 
-  document.querySelectorAll('.modal-overlay').forEach(ov => {
+  document.querySelectorAll('.modal-overlay:not(#customDialogOverlay)').forEach(ov => {
     ov.addEventListener('click', (e) => {
       if (e.target === ov) ov.classList.remove('show');
     });
   });
+  
+  // --- App Color Grids Rendering ---
+  function renderColorGrids() {
+    const grids = [
+      { container: document.getElementById('colorGrid'), showToastOnSelect: true },
+      { container: document.getElementById('welcomeColorGrid'), showToastOnSelect: false }
+    ];
 
-  // --- Reset ---
+    grids.forEach(({ container, showToastOnSelect }) => {
+      if (!container) return;
+      container.innerHTML = '';
+      appColors.forEach((color, idx) => {
+        const btn = document.createElement('div');
+        btn.className = 'color-card' + (idx === state.colorIndex ? ' active' : '');
+        btn.innerHTML = `<div class="color-circle" style="background-color: ${color.hex}"></div><div class="color-name">${color.name}</div>`;
+        btn.onclick = () => {
+          state.colorIndex = idx;
+          saveData();
+          applyAppColor();
+          document.querySelectorAll('.color-grid').forEach(g => {
+            const cards = g.querySelectorAll('.color-card');
+            cards.forEach((c, i) => c.classList.toggle('active', i === idx));
+          });
+          if (showToastOnSelect) {
+            showToast(`Theme changed to ${color.name}`);
+          }
+        };
+        container.appendChild(btn);
+      });
+    });
+  }
+
+  renderColorGrids();
+
+  document.getElementById('settingsBtn').addEventListener('click', () => {
+    checkTimeEvents();
+    renderColorGrids();
+    
+    if (state.appMode === 'bento') {
+      layoutBtnStandard.classList.remove('active');
+      layoutBtnBento.classList.add('active');
+    } else {
+      layoutBtnStandard.classList.add('active');
+      layoutBtnBento.classList.remove('active');
+    }
+
+    openModal('settingsModal');
+  });
+
+  // --- About Modal Handler ---
+  const aboutBtn = document.getElementById('aboutBtn');
+  if (aboutBtn) {
+    aboutBtn.addEventListener('click', () => {
+      openModal('aboutModal');
+    });
+  }
+  
+  // --- Delete All Records ---
+  document.getElementById('deleteAllBtn').addEventListener('click', () => {
+    showDialog({
+      title: 'Delete All Records',
+      message: 'Are you sure you want to delete all records? This action cannot be undone.',
+      type: 'confirm', confirmText: 'Delete', isDestructive: true,
+      onConfirm: () => {
+        state.startTime = Date.now();
+        state.bestStreak = 0;
+        state.bestStreakDate = null;
+        state.history = [];
+        state.urges = [];
+        state.deletedDays = [];
+        state.dayStatuses = {};
+        state.hasSeenWelcome = false;
+        saveData();
+        closeModal('settingsModal');
+        updateCounter();
+        renderInfo();
+        renderBentoView();
+        setTimeout(() => {
+          openWelcomeModal();
+        }, 200);
+      }
+    });
+  });
+
+  // --- Goal Setting & Carousels ---
+  let selectedTargetDays = state.targetDays || 7;
+  const targetCarousel = document.getElementById('targetCarousel');
+  const customTargetInput = document.getElementById('customTargetInput');
+
+  function renderTargetCarousel() {
+    const isCustom = !targets.find(x => x.days === selectedTargetDays && x.days !== 'custom') || selectedTargetDays === 'custom';
+    targetCarousel.innerHTML = targets.map(t => {
+      const isActive = (t.days === selectedTargetDays) || (t.days === 'custom' && isCustom);
+      return `<div class="target-card ${isActive ? 'active' : ''}" data-val="${t.days}">${t.label}</div>`;
+    }).join('');
+    
+    if (isCustom) {
+      customTargetInput.style.display = 'block';
+      if (selectedTargetDays !== 'custom') customTargetInput.value = selectedTargetDays;
+    } else { customTargetInput.style.display = 'none'; }
+  }
+
+  targetCarousel.addEventListener('click', (e) => {
+    if (e.target.classList.contains('target-card')) {
+      const val = e.target.dataset.val;
+      selectedTargetDays = val === 'custom' ? 'custom' : parseInt(val, 10);
+      renderTargetCarousel();
+    }
+  });
+
+  let newGoalSelectedTarget = state.targetDays || 7;
+  
+  function renderNewTargetCarousel() {
+    const carousel = document.getElementById('newTargetCarousel');
+    const customInp = document.getElementById('newCustomTargetInput');
+    const isCustom = !targets.find(x => x.days === newGoalSelectedTarget && x.days !== 'custom') || newGoalSelectedTarget === 'custom';
+    
+    carousel.innerHTML = targets.map(t => {
+      const isActive = (t.days === newGoalSelectedTarget) || (t.days === 'custom' && isCustom);
+      return `<div class="target-card ${isActive ? 'active' : ''}" data-val="${t.days}">${t.label}</div>`;
+    }).join('');
+    
+    if (isCustom) {
+      customInp.style.display = 'block';
+      if (newGoalSelectedTarget !== 'custom') customInp.value = newGoalSelectedTarget;
+    } else { customInp.style.display = 'none'; }
+  }
+
+  document.getElementById('newTargetCarousel').addEventListener('click', (e) => {
+    if (e.target.classList.contains('target-card')) {
+      const val = e.target.dataset.val;
+      newGoalSelectedTarget = val === 'custom' ? 'custom' : parseInt(val, 10);
+      renderNewTargetCarousel();
+    }
+  });
+
+  document.getElementById('confirmNewGoal').addEventListener('click', () => {
+    if (newGoalSelectedTarget === 'custom') {
+      const customVal = parseInt(document.getElementById('newCustomTargetInput').value, 10);
+      state.targetDays = (customVal && customVal > 0) ? customVal : 7;
+    } else { state.targetDays = newGoalSelectedTarget; }
+    saveData(); closeModal('newGoalModal'); 
+    renderGoalProgress();
+    renderBentoGoal();
+    showToast('New goal successfully set!');
+  });
+
+  document.getElementById('setNewGoalBtn').addEventListener('click', () => {
+    newGoalSelectedTarget = state.targetDays;
+    renderNewTargetCarousel();
+    openModal('newGoalModal');
+  });
+
+  function renderGoalProgress() {
+    const currentDays = getCurrentStreakDays();
+    const target = state.targetDays || 7;
+    let progress = (currentDays / target) * 100;
+    if(progress > 100) progress = 100;
+
+    document.getElementById('goalCurrentDays').textContent = currentDays + ' Day' + (currentDays === 1 ? '' : 's');
+    document.getElementById('goalTargetDays').textContent = target + ' Day' + (target === 1 ? '' : 's');
+    
+    setTimeout(() => { document.getElementById('goalProgressBar').style.width = progress + '%'; }, 50);
+
+    const remaining = target - currentDays;
+    const subText = document.getElementById('goalRemainingText');
+    const newGoalBtn = document.getElementById('setNewGoalBtn');
+
+    if (remaining > 0) {
+      subText.textContent = remaining + ' day' + (remaining === 1 ? '' : 's') + ' left to reach your goal!';
+      subText.style.color = 'var(--text-soft)';
+      newGoalBtn.style.display = 'none';
+    } else {
+      subText.textContent = 'Goal reached! Keep going! 🚀';
+      subText.style.color = 'var(--success)';
+      newGoalBtn.style.display = 'flex';
+    }
+  }
+
+  // --- Reset Timer Logic ---
   const resetBtn = document.getElementById('resetBtn');
   const resetTimeInput = document.getElementById('resetTime');
   const confirmReset = document.getElementById('confirmReset');
 
   function openResetModal() {
     const now = new Date();
-    const offset = now.getTimezoneOffset();
-    const local = new Date(now.getTime() - offset * 60000);
+    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
     resetTimeInput.value = local.toISOString().slice(0, 16);
+    
+    selectedTargetDays = state.targetDays || 7;
+    renderTargetCarousel();
     openModal('resetModal');
   }
 
@@ -963,23 +2624,103 @@
     const val = resetTimeInput.value;
     if (!val) return;
     const newStart = new Date(val).getTime();
-    if (isNaN(newStart) || newStart > Date.now()) {
-      alert('Please choose a time in the past.');
-      return;
-    }
 
-    const prevStreakDays = Math.floor((Date.now() - state.startTime) / (1000 * 60 * 60 * 24));
-    if (prevStreakDays > 0) {
-      state.history.push({ start: state.startTime, end: Date.now() });
+    if (selectedTargetDays === 'custom') {
+      const customVal = parseInt(customTargetInput.value, 10);
+      state.targetDays = (customVal && customVal > 0) ? customVal : 7;
+    } else { state.targetDays = selectedTargetDays; }
+
+    const prevStreakDays = getCurrentStreakDays();
+    if (prevStreakDays > 0) { 
+      state.history.push({ start: state.startTime, end: Date.now() }); 
     }
-    if (prevStreakDays > state.bestStreak) {
-      state.bestStreak = prevStreakDays;
+    if (prevStreakDays > state.bestStreak) { 
+      state.bestStreak = prevStreakDays; 
+      state.bestStreakDate = Date.now();
     }
 
     state.startTime = newStart;
+    saveData(); 
+    closeModal('resetModal'); 
+    updateCounter(); 
+    renderInfo();
+    renderBentoView();
+  });
+
+  // --- Welcome Pop-up Logic ---
+  let welcomeSelectedTargetDays = 7;
+  const welcomeModal = document.getElementById('welcomeModal');
+  const welcomeStartTimeInput = document.getElementById('welcomeStartTime');
+  const welcomeTargetCarousel = document.getElementById('welcomeTargetCarousel');
+  const welcomeCustomTargetInput = document.getElementById('welcomeCustomTargetInput');
+  const welcomeStartBtn = document.getElementById('welcomeStartBtn');
+
+  function renderWelcomeTargetCarousel() {
+    const isCustom = !targets.find(x => x.days === welcomeSelectedTargetDays && x.days !== 'custom') || welcomeSelectedTargetDays === 'custom';
+    welcomeTargetCarousel.innerHTML = targets.map(t => {
+      const isActive = (t.days === welcomeSelectedTargetDays) || (t.days === 'custom' && isCustom);
+      return `<div class="target-card ${isActive ? 'active' : ''}" data-val="${t.days}">${t.label}</div>`;
+    }).join('');
+    
+    if (isCustom) {
+      welcomeCustomTargetInput.style.display = 'block';
+      if (welcomeSelectedTargetDays !== 'custom') welcomeCustomTargetInput.value = welcomeSelectedTargetDays;
+    } else {
+      welcomeCustomTargetInput.style.display = 'none';
+    }
+  }
+
+  welcomeTargetCarousel.addEventListener('click', (e) => {
+    if (e.target.classList.contains('target-card')) {
+      const val = e.target.dataset.val;
+      welcomeSelectedTargetDays = val === 'custom' ? 'custom' : parseInt(val, 10);
+      renderWelcomeTargetCarousel();
+    }
+  });
+
+  function openWelcomeModal() {
+    const now = new Date();
+    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    welcomeStartTimeInput.value = local.toISOString().slice(0, 16);
+    welcomeSelectedTargetDays = state.targetDays || 7;
+    welcomeSelectedMode = state.appMode || 'standard';
+    updateWelcomeLayoutUI();
+    renderWelcomeTargetCarousel();
+    renderColorGrids();
+    welcomeModal.classList.add('show');
+  }
+
+  function closeWelcomeModal() {
+    welcomeModal.classList.remove('show');
+  }
+
+  welcomeStartBtn.addEventListener('click', () => {
+    const val = welcomeStartTimeInput.value;
+    const newStart = val ? new Date(val).getTime() : Date.now();
+
+    if (welcomeSelectedTargetDays === 'custom') {
+      const customVal = parseInt(welcomeCustomTargetInput.value, 10);
+      state.targetDays = (customVal && customVal > 0) ? customVal : 7;
+    } else {
+      state.targetDays = welcomeSelectedTargetDays;
+    }
+
+    state.appMode = welcomeSelectedMode;
+    state.startTime = newStart;
+    state.bestStreak = 0;
+    state.bestStreakDate = null;
+    state.history = [];
+    state.urges = [];
+    state.deletedDays = [];
+    state.dayStatuses = {};
+    state.hasSeenWelcome = true;
     saveData();
-    closeModal('resetModal');
+    closeWelcomeModal();
+    applyAppMode(state.appMode);
     updateCounter();
+    renderInfo();
+    renderBentoView();
+    showToast('Welcome to Clarity!');
   });
 
   // --- Emergency phrases ---
@@ -988,28 +2729,12 @@
     "Will giving in make you proud tomorrow?",
     "Look at yourself. Don't throw it all away for 5 minutes of numbness.",
     "Your future self is begging you to stay strong right now.",
-    "Are you a slave to your impulses?",
     "Every relapse starts with a lie you tell yourself.",
     "Do you want to start over from zero? Again?",
     "Think of the shame you'll feel right after. Is it worth it?",
-    "You're trading your long-term happiness for a cheap thrill.",
     "Remember why you started. Don't betray that.",
-    "Pain is temporary, but the regret of relapsing will linger.",
-    "Are you really going to let a temporary feeling destroy your progress?",
-    "Don't let your weakness win. You are better than this.",
-    "This is exactly the moment that defines your character. Choose wisely.",
-    "You have survived 100% of your bad days without giving in. Keep going.",
     "If you quit now, you'll end up right back where you first began.",
-    "The addiction wants you weak. Prove it wrong.",
-    "You owe it to yourself to be free.",
-    "Imagine the disappointment in the eyes of those who believe in you.",
-    "A moment of weakness will cost you everything you've built.",
-    "Don't ruin a good today by thinking about a bad yesterday.",
-    "If it was easy, everyone would do it. Be the exception.",
-    "You are literally fighting for your life. Act like it.",
-    "Is this craving stronger than your desire to be free?",
-    "Look in the mirror. Are you going to let that person down?",
-    "You didn't come this far to only come this far. Hold the line."
+    "You have survived 100% of your bad days without giving in. Keep going."
   ];
 
   const phraseText = document.getElementById('phraseText');
@@ -1023,91 +2748,157 @@
     phraseText.textContent = `"${phrases[idx]}"`;
   }
 
-  document.getElementById('emergencyBtn').addEventListener('click', () => {
-    showRandomPhrase();
-    openModal('emergencyModal');
-  });
-
+  document.getElementById('emergencyBtn').addEventListener('click', () => { showRandomPhrase(); openModal('emergencyModal'); });
   nextPhraseBtn.addEventListener('click', showRandomPhrase);
 
   // --- Urge Tracker ---
   const urgeBtn = document.getElementById('urgeBtn');
   const triggerBtns = document.querySelectorAll('.trigger-btn');
   const saveUrgeBtn = document.getElementById('saveUrgeBtn');
-  let selectedTrigger = null;
+  const urgeTimeInput = document.getElementById('urgeTime');
+  let selectedTriggers = [];
+  let editingUrgeIndex = -1;
 
-  urgeBtn.addEventListener('click', () => {
-    selectedTrigger = null;
+  function openTrackUrgeModal() {
+    editingUrgeIndex = -1;
+    selectedTriggers = [];
     triggerBtns.forEach(b => b.classList.remove('active'));
     document.getElementById('urgeOvercome').checked = true;
+    
+    const now = new Date();
+    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    urgeTimeInput.value = local.toISOString().slice(0, 16);
+    document.getElementById('urgeModalTitle').textContent = 'Track Your Urge';
+    saveUrgeBtn.textContent = 'Log Urge';
     openModal('urgeModal');
-  });
+  }
+
+  urgeBtn.addEventListener('click', openTrackUrgeModal);
 
   triggerBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-      triggerBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      selectedTrigger = btn.dataset.trigger;
-      
+      btn.classList.toggle('active');
       const emojiSpan = btn.querySelector('span').innerText;
-      selectedTrigger = `${emojiSpan} ${selectedTrigger}`;
+      const tName = btn.dataset.trigger;
+      const fullTrigger = `${emojiSpan} ${tName}`;
+      if (btn.classList.contains('active')) selectedTriggers.push(fullTrigger);
+      else selectedTriggers = selectedTriggers.filter(t => t !== fullTrigger);
     });
   });
 
   saveUrgeBtn.addEventListener('click', () => {
-    if (!selectedTrigger) {
-      alert('Please select what triggered your urge.');
-      return;
+    if (selectedTriggers.length === 0) {
+      showDialog({ title: 'Notice', message: 'Please select what triggered your urge.', type: 'alert' }); return;
     }
+    const finalTriggerString = selectedTriggers.join(', ');
     const isOvercome = document.getElementById('urgeOvercome').checked;
+    const logTime = urgeTimeInput.value ? new Date(urgeTimeInput.value).getTime() : Date.now();
     
-    state.urges.push({
-      time: Date.now(),
-      trigger: selectedTrigger,
-      overcome: isOvercome
-    });
+    if (editingUrgeIndex >= 0) {
+      state.urges[editingUrgeIndex] = { time: logTime, trigger: finalTriggerString, overcome: isOvercome };
+    } else { state.urges.push({ time: logTime, trigger: finalTriggerString, overcome: isOvercome }); }
     
-    saveData();
+    state.urges.sort((a, b) => a.time - b.time);
+    saveData(); 
     closeModal('urgeModal');
     
-    if (document.getElementById('screenInfo').classList.contains('active')) {
-      renderUrgesDiary();
-    }
+    renderUrgesDiary(); 
+    renderTriggerChart();
+    renderBentoView();
     
-    if (!isOvercome) {
+    if (editingUrgeIndex === -1 && !isOvercome) {
       setTimeout(() => {
-        if(confirm("You didn't overcome the urge. Do you want to start your timer over?")) {
-          openResetModal();
-        }
+        showDialog({
+          title: 'Reset Timer?',
+          message: "You didn't overcome the urge. Do you want to start your timer over?",
+          type: 'confirm', confirmText: 'Yes',
+          onConfirm: () => openResetModal()
+        });
       }, 300);
     }
   });
 
-  // --- Info screen ---
+  // --- Best Streak Details Calculation ---
+  function getBestStreakData() {
+    const current = getCurrentStreakDays();
+    let best = state.bestStreak || 0;
+    let recordDate = state.bestStreakDate ? new Date(state.bestStreakDate) : null;
+    let isCurrent = false;
+
+    if (state.history && state.history.length > 0) {
+      for (const h of state.history) {
+        const days = Math.floor((h.end - h.start) / 86400000);
+        if (days >= best) {
+          best = days;
+          recordDate = new Date(h.end);
+        }
+      }
+    }
+
+    if (current >= best && current > 0) {
+      best = current;
+      isCurrent = true;
+      const targetTs = state.startTime + best * 86400000;
+      recordDate = new Date(Math.min(targetTs, Date.now()));
+    }
+
+    return {
+      bestDays: best,
+      date: recordDate,
+      isCurrent: isCurrent
+    };
+  }
+
+  function openBestStreakModal() {
+    const { bestDays, date, isCurrent } = getBestStreakData();
+    const valEl = document.getElementById('bentoStreakModalValue');
+    const dateEl = document.getElementById('bentoStreakModalDate');
+    const iconEl = document.getElementById('bentoStreakModalIcon');
+
+    if (bestDays === 0) {
+      valEl.textContent = '0 Days';
+      dateEl.textContent = 'No record yet';
+      iconEl.textContent = '🌱';
+    } else {
+      valEl.textContent = `${bestDays} Day${bestDays === 1 ? '' : 's'}`;
+      const dateFormatted = date ? date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently';
+      dateEl.textContent = isCurrent ? `Achieved on ${dateFormatted} (Current)` : `Achieved on ${dateFormatted}`;
+      iconEl.textContent = isCurrent ? '🔥' : '🏆';
+    }
+
+    openModal('bentoStreakModal');
+  }
+
+  // --- Info screen functions ---
   const achievementsEl = document.getElementById('achievements');
   const bestStreakValue = document.getElementById('bestStreakValue');
   const urgesDiaryList = document.getElementById('urgesDiaryList');
+  const standardBestStreakCard = document.getElementById('standardBestStreakCard');
+
+  if (standardBestStreakCard) {
+    standardBestStreakCard.addEventListener('click', openBestStreakModal);
+  }
 
   const milestones = [
-    { days: 1, label: '1 Day', icon: '🌱' },
-    { days: 3, label: '3 Days', icon: '🌿' },
-    { days: 7, label: '1 Week', icon: '🌳' },
-    { days: 30, label: '1 Month', icon: '⭐' },
-    { days: 90, label: '3 Months', icon: '🔥' },
-    { days: 100, label: '100 Days', icon: '💎' },
-    { days: 180, label: '6 Months', icon: '🏆' },
-    { days: 365, label: '1 Year', icon: '👑' },
-    { days: 730, label: '2 Years', icon: '⚡' }
+    { days: 1, label: '1 Day', icon: '🌱', text: 'A small victory that each of us started with' },
+    { days: 3, label: '3 Days', icon: '🌿', text: 'Attention starts to feel less fragmented' },
+    { days: 7, label: '1 Week', icon: '🌳', text: 'Small things feel more satisfying' },
+    { days: 14, label: '2 Weeks', icon: '✨', text: 'Real-life things start to feel interesting again' },
+    { days: 30, label: '1 Month', icon: '⭐', text: "You notice you have spare time — and it's yours" },
+    { days: 60, label: '2 Months', icon: '💫', text: 'New routines feel natural, not forced' },
+    { days: 90, label: '3 Months', icon: '🔥', text: 'Confidence grows quietly' },
+    { days: 180, label: '6 Months', icon: '🏆', text: 'The old pattern rarely reaches for you' },
+    { days: 365, label: '1 Year', icon: '👑', text: "This isn't a streak anymore. It's just how you live" }
   ];
 
   function renderAchievements() {
     const current = getCurrentStreakDays();
     const best = Math.max(state.bestStreak, current);
-    achievementsEl.innerHTML = milestones.map(m => {
+    achievementsEl.innerHTML = milestones.map((m, idx) => {
       const unlocked = current >= m.days;
       const cls = unlocked ? 'achievement unlocked' : 'achievement locked';
       return `
-        <div class="${cls}">
+        <div class="${cls}" data-index="${idx}">
           <div class="achievement-icon">${m.icon}</div>
           <div class="achievement-label">${m.label}</div>
           <div class="achievement-sub">${unlocked ? 'Unlocked' : (m.days - current) + ' to go'}</div>
@@ -1116,58 +2907,169 @@
     }).join('');
     bestStreakValue.textContent = best;
   }
+
+  achievementsEl.addEventListener('click', (e) => {
+    const item = e.target.closest('.achievement.unlocked');
+    if (!item) return;
+    const idx = parseInt(item.dataset.index, 10);
+    const m = milestones[idx];
+    if (!m) return;
+
+    document.getElementById('milestoneModalIcon').textContent = m.icon;
+    document.getElementById('milestoneModalPeriod').textContent = m.label;
+    
+    const unlockTime = state.startTime + m.days * 86400000;
+    const unlockDate = new Date(unlockTime);
+    const dateStr = unlockDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    document.getElementById('milestoneModalDate').textContent = `Unlocked on ${dateStr}`;
+    document.getElementById('milestoneModalText').textContent = m.text;
+
+    openModal('milestoneModal');
+  });
   
-  function renderUrgesDiary() {
+  function getTriggerChartHTML() {
     if (state.urges.length === 0) {
-      urgesDiaryList.innerHTML = `<div style="text-align: center; color: var(--text-soft); font-size: 13px; padding: 20px 0;">No urges recorded yet.</div>`;
-      return;
+      return '<div style="text-align: center; color: var(--text-soft); font-size: 13px; padding: 20px 0;">Not enough data yet</div>';
     }
     
-    const html = state.urges.slice().reverse().map(u => {
-      const dateObj = new Date(u.time);
-      const dateStr = dateObj.toLocaleDateString() + ' at ' + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-      const statusClass = u.overcome ? 'success' : 'fail';
-      const statusText = u.overcome ? '✅ Overcame' : '❌ Failed';
-      
+    const counts = {};
+    state.urges.forEach(u => {
+      if (!u.trigger) return;
+      u.trigger.split(', ').forEach(t => counts[t] = (counts[t] || 0) + 1);
+    });
+    
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    if (sorted.length === 0) {
+      return '<div style="text-align: center; color: var(--text-soft); font-size: 13px; padding: 20px 0;">Not enough data yet</div>';
+    }
+    
+    const max = sorted[0][1];
+    return sorted.map(([trigger, count]) => {
+      const width = (count / max) * 100;
       return `
-        <div class="urge-entry ${statusClass}">
-          <div class="urge-info">
-            <span class="urge-trigger">${u.trigger}</span>
-            <span class="urge-date">${dateStr}</span>
-          </div>
-          <div class="urge-status">${statusText}</div>
+        <div class="chart-bar-wrap">
+          <div class="chart-label">${trigger}</div>
+          <div class="chart-bar-bg"><div class="chart-bar-fill" style="width: ${width}%"></div></div>
+          <div class="chart-value">${count}</div>
         </div>
       `;
     }).join('');
-    
-    urgesDiaryList.innerHTML = html;
   }
+
+  function renderTriggerChart() {
+    const html = getTriggerChartHTML();
+    const chartContainer = document.getElementById('triggerChart');
+    if (chartContainer) chartContainer.innerHTML = html;
+    const bentoChartContainer = document.getElementById('bentoTriggerChart');
+    if (bentoChartContainer) bentoChartContainer.innerHTML = html;
+  }
+
+  function getUrgesDiaryHTML() {
+    if (state.urges.length === 0) {
+      return `
+        <div style="text-align: center; color: var(--text-soft); font-size: 13px; padding: 30px 0; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.6;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          <span>No urges recorded yet</span>
+        </div>`;
+    }
+    
+    return state.urges.map((u, i) => ({u, i}))
+      .reverse().map(item => {
+        const dateObj = new Date(item.u.time);
+        const dateStr = dateObj.toLocaleDateString() + ' at ' + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        return `
+          <div class="urge-entry ${item.u.overcome ? 'success' : 'fail'}" data-index="${item.i}">
+            <div class="urge-info">
+              <span class="urge-trigger">${item.u.trigger}</span>
+              <span class="urge-date">${dateStr}</span>
+            </div>
+            <div class="urge-status">${item.u.overcome ? '✅ Overcame' : '❌ Failed'}</div>
+          </div>
+        `;
+      }).join('');
+  }
+
+  let selectedUrgeIndex = -1;
+  function renderUrgesDiary() {
+    const html = getUrgesDiaryHTML();
+    const list = document.getElementById('urgesDiaryList');
+    if (list) list.innerHTML = html;
+    const bentoList = document.getElementById('bentoUrgesDiaryList');
+    if (bentoList) bentoList.innerHTML = html;
+  }
+
+  function handleUrgeEntryClick(e) {
+    const entry = e.target.closest('.urge-entry');
+    if (!entry) return;
+    selectedUrgeIndex = parseInt(entry.dataset.index, 10);
+    const u = state.urges[selectedUrgeIndex];
+    const dateStr = new Date(u.time).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' });
+    
+    document.getElementById('urgeDetailsContent').innerHTML = `
+      <div style="font-size: 16px; font-weight: 600; margin-bottom: 10px; text-align: center;">Trigger(s): <span style="color: var(--accent); display: block; margin-top:4px;">${u.trigger}</span></div>
+      <div style="font-size: 14px; font-weight: 600; color: ${u.overcome ? 'var(--success)' : '#ef4444'}; margin-bottom: 8px; text-align: center;">${u.overcome ? '✅ Successfully Overcame' : '❌ Failed to Overcome'}</div>
+      <div style="font-size: 13px; color: var(--text-soft); margin-bottom: 8px; text-align: center;">Logged: ${dateStr}</div>
+    `;
+    openModal('urgeDetailsModal');
+  }
+
+  urgesDiaryList.addEventListener('click', handleUrgeEntryClick);
+
+  document.getElementById('deleteUrgeBtn').addEventListener('click', () => {
+    state.urges.splice(selectedUrgeIndex, 1); 
+    saveData(); 
+    renderUrgesDiary(); 
+    renderTriggerChart();
+    renderBentoView();
+    closeModal('urgeDetailsModal');
+  });
+
+  document.getElementById('editUrgeBtn').addEventListener('click', () => {
+    closeModal('urgeDetailsModal');
+    editingUrgeIndex = selectedUrgeIndex;
+    const u = state.urges[selectedUrgeIndex];
+    urgeTimeInput.value = new Date(u.time - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    document.getElementById('urgeOvercome').checked = u.overcome;
+    
+    selectedTriggers = [];
+    triggerBtns.forEach(b => {
+      const triggerName = b.dataset.trigger;
+      if (u.trigger.includes(triggerName)) {
+        b.classList.add('active');
+        selectedTriggers.push(`${b.querySelector('span').innerText} ${triggerName}`);
+      } else { b.classList.remove('active'); }
+    });
+    document.getElementById('urgeModalTitle').textContent = 'Edit Urge';
+    saveUrgeBtn.textContent = 'Save Changes';
+    openModal('urgeModal');
+  });
 
   // --- Calendar ---
   const calTitle = document.getElementById('calTitle');
   const calDays = document.getElementById('calDays');
   const calPrev = document.getElementById('calPrev');
   const calNext = document.getElementById('calNext');
-
   let calView = new Date();
   calView.setDate(1);
 
   const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-  function isCleanOnDate(date) {
+  function getDayStatus(date) {
     const dayStart = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
-    const dayEnd = dayStart + 86400000;
-    const today = new Date();
-    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
-    if (dayStart > todayStart) return false; 
+    const todayStart = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).getTime();
+    
+    if (dayStart > todayStart) return 'future';
+    if (state.dayStatuses && state.dayStatuses[dayStart]) return state.dayStatuses[dayStart];
+    if (state.deletedDays && state.deletedDays.includes(dayStart)) return 'blank';
 
-    if (dayStart >= state.startTime) return true;
+    const startDateObj = new Date(state.startTime);
+    const streakStartDay = new Date(startDateObj.getFullYear(), startDateObj.getMonth(), startDateObj.getDate()).getTime();
 
+    if (dayStart >= streakStartDay) return 'clean';
     for (let i = 0; i < state.history.length; i++) {
-      const h = state.history[i];
-      if (dayStart >= h.start && dayStart < h.end) return true;
+      if (dayStart >= state.history[i].start && dayStart < state.history[i].end) return 'clean';
     }
-    return false;
+    return 'blank';
   }
 
   function renderCalendar() {
@@ -1177,45 +3079,251 @@
 
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const today = new Date();
-    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+    const todayStart = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).getTime();
 
     let html = '';
-    for (let i = 0; i < firstDay; i++) {
-      html += '<div class="cal-day empty"></div>';
-    }
+    for (let i = 0; i < firstDay; i++) { html += '<div class="cal-day padding-empty"></div>'; }
     for (let d = 1; d <= daysInMonth; d++) {
       const date = new Date(year, month, d);
       const dayStart = date.getTime();
+      const status = getDayStatus(date);
+      
       const classes = ['cal-day'];
       if (dayStart === todayStart) classes.push('today');
-      if (dayStart > todayStart) classes.push('future');
-      else if (isCleanOnDate(date)) classes.push('clean');
-      html += '<div class="' + classes.join(' ') + '">' + d + '</div>';
+      
+      if (status === 'future') classes.push('future');
+      else if (status === 'clean') classes.push('clean');
+      else if (status === 'slip') classes.push('slip');
+      
+      html += `<div class="${classes.join(' ')}" data-date="${dayStart}">${d}</div>`;
     }
     calDays.innerHTML = html;
   }
 
-  calPrev.addEventListener('click', () => {
-    calView.setMonth(calView.getMonth() - 1);
-    renderCalendar();
+  let selectedCalendarDay = null;
+
+  function handleCalendarDayClick(e) {
+    if (!e.target.classList.contains('cal-day') || e.target.classList.contains('padding-empty') || e.target.classList.contains('future')) return;
+    selectedCalendarDay = parseInt(e.target.dataset.date, 10);
+    openModal('dayStatusModal');
+  }
+
+  calDays.addEventListener('click', handleCalendarDayClick);
+
+  document.querySelectorAll('.status-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const status = e.currentTarget.dataset.status;
+      closeModal('dayStatusModal');
+      if (!selectedCalendarDay) return;
+
+      const dayStart = selectedCalendarDay;
+      const currentStreakStartDay = new Date(new Date(state.startTime).setHours(0,0,0,0)).getTime();
+      const isInCurrentStreak = (dayStart >= currentStreakStartDay);
+
+      const d = new Date(currentStreakStartDay);
+      d.setDate(d.getDate() - 1);
+      const oneDayBefore = d.getTime();
+
+      if (isInCurrentStreak && (status === 'slip' || status === 'blank')) {
+        showDialog({
+          title: 'Reset Timer?',
+          message: 'You are marking a day in your current streak as failed or blank. Would you like to reset your timer and choose a new start date?',
+          type: 'confirm', confirmText: 'Reset Timer',
+          onConfirm: () => {
+            if(!state.dayStatuses) state.dayStatuses = {};
+            state.dayStatuses[dayStart] = status;
+            saveData(); openResetModal();
+          }
+        });
+        return;
+      }
+
+      if (status === 'clean' && dayStart === oneDayBefore) {
+        state.startTime = new Date(state.startTime).getTime() - 86400000;
+        if(!state.dayStatuses) state.dayStatuses = {};
+        state.dayStatuses[dayStart] = 'clean';
+        saveData(); updateCounter(); renderInfo(); renderBentoView();
+        showToast('Streak extended!');
+        return;
+      }
+
+      if(!state.dayStatuses) state.dayStatuses = {};
+      state.dayStatuses[dayStart] = status;
+      saveData(); renderInfo(); renderBentoView();
+    });
   });
-  calNext.addEventListener('click', () => {
-    calView.setMonth(calView.getMonth() + 1);
-    renderCalendar();
+
+  calPrev.addEventListener('click', () => { 
+    calView.setMonth(calView.getMonth() - 1); 
+    renderCalendar(); 
+    renderBentoCalendar();
+  });
+  calNext.addEventListener('click', () => { 
+    calView.setMonth(calView.getMonth() + 1); 
+    renderCalendar(); 
+    renderBentoCalendar();
   });
 
   function renderInfo() {
-    renderAchievements();
-    renderCalendar();
-    renderUrgesDiary();
+    renderAchievements(); 
+    renderGoalProgress();
+    renderCalendar(); 
+    renderUrgesDiary(); 
+    renderTriggerChart();
   }
 
-  // Initial render
+  // =========================================================
+  // BENTO-GRID MODE LOGIC & RENDERING
+  // =========================================================
+  const bentoGoalCard = document.getElementById('bentoGoalCard');
+  const bentoCleanTimeCard = document.getElementById('bentoCleanTimeCard');
+  const bentoStreakCard = document.getElementById('bentoStreakCard');
+  const bentoTrackUrgeCard = document.getElementById('bentoTrackUrgeCard');
+  const bentoUrgesDiaryCard = document.getElementById('bentoUrgesDiaryCard');
+  const bentoDiaryModal = document.getElementById('bentoDiaryModal');
+  const bentoUrgesDiaryList = document.getElementById('bentoUrgesDiaryList');
+  const bentoTriggerChart = document.getElementById('bentoTriggerChart');
+
+  const bentoCalDays = document.getElementById('bentoCalDays');
+  const bentoCalPrev = document.getElementById('bentoCalPrev');
+  const bentoCalNext = document.getElementById('bentoCalNext');
+
+  bentoCleanTimeCard.addEventListener('click', () => {
+    openResetModal();
+  });
+
+  bentoGoalCard.addEventListener('click', () => {
+    newGoalSelectedTarget = state.targetDays;
+    renderNewTargetCarousel();
+    openModal('newGoalModal');
+  });
+
+  if (bentoStreakCard) {
+    bentoStreakCard.addEventListener('click', () => {
+      openBestStreakModal();
+    });
+  }
+
+  bentoTrackUrgeCard.addEventListener('click', () => {
+    openTrackUrgeModal();
+  });
+
+  bentoUrgesDiaryCard.addEventListener('click', () => {
+    renderTriggerChart();
+    renderUrgesDiary();
+    openModal('bentoDiaryModal');
+  });
+
+  if (bentoUrgesDiaryList) {
+    bentoUrgesDiaryList.addEventListener('click', handleUrgeEntryClick);
+  }
+
+  if (bentoCalDays) {
+    bentoCalDays.addEventListener('click', handleCalendarDayClick);
+  }
+
+  if (bentoCalPrev) {
+    bentoCalPrev.addEventListener('click', () => {
+      calView.setMonth(calView.getMonth() - 1);
+      renderCalendar();
+      renderBentoCalendar();
+    });
+  }
+
+  if (bentoCalNext) {
+    bentoCalNext.addEventListener('click', () => {
+      calView.setMonth(calView.getMonth() + 1);
+      renderCalendar();
+      renderBentoCalendar();
+    });
+  }
+
+  function renderBentoGoal() {
+    const current = getCurrentStreakDays();
+    const target = state.targetDays || 7;
+    let progress = (current / target) * 100;
+    if (progress > 100) progress = 100;
+
+    const bentoGoalTarget = document.getElementById('bentoGoalTarget');
+    const bentoGoalRemaining = document.getElementById('bentoGoalRemaining');
+    const bentoGoalProgressFill = document.getElementById('bentoGoalProgressFill');
+
+    if (bentoGoalTarget) bentoGoalTarget.textContent = `${target}d`;
+    if (bentoGoalRemaining) {
+      const rem = target - current;
+      if (rem > 0) {
+        bentoGoalRemaining.textContent = `${rem} day${rem === 1 ? '' : 's'} left`;
+        bentoGoalRemaining.style.color = 'var(--text-soft)';
+      } else {
+        bentoGoalRemaining.textContent = 'Goal reached! 🎉';
+        bentoGoalRemaining.style.color = 'var(--success)';
+      }
+    }
+    if (bentoGoalProgressFill) {
+      bentoGoalProgressFill.style.width = `${progress}%`;
+    }
+  }
+
+  function renderBentoCalendar() {
+    const bentoCalTitle = document.getElementById('bentoCalTitle');
+    const bentoCalDaysEl = document.getElementById('bentoCalDays');
+    if (!bentoCalDaysEl || !bentoCalTitle) return;
+
+    const year = calView.getFullYear();
+    const month = calView.getMonth();
+    bentoCalTitle.textContent = MONTHS[month] + ' ' + year;
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const todayStart = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).getTime();
+
+    let html = '';
+    for (let i = 0; i < firstDay; i++) { html += '<div class="cal-day padding-empty"></div>'; }
+    for (let d = 1; d <= daysInMonth; d++) {
+      const date = new Date(year, month, d);
+      const dayStart = date.getTime();
+      const status = getDayStatus(date);
+      
+      const classes = ['cal-day'];
+      if (dayStart === todayStart) classes.push('today');
+      
+      if (status === 'future') classes.push('future');
+      else if (status === 'clean') classes.push('clean');
+      else if (status === 'slip') classes.push('slip');
+      
+      html += `<div class="${classes.join(' ')}" data-date="${dayStart}">${d}</div>`;
+    }
+    bentoCalDaysEl.innerHTML = html;
+  }
+
+  function renderBentoView() {
+    const current = getCurrentStreakDays();
+    const best = Math.max(state.bestStreak, current);
+
+    const bentoBestStreak = document.getElementById('bentoBestStreak');
+    if (bentoBestStreak) bentoBestStreak.textContent = best;
+
+    renderBentoGoal();
+    renderBentoCalendar();
+
+    const bentoUrgesCount = document.getElementById('bentoUrgesCount');
+    if (bentoUrgesCount) {
+      const count = state.urges.length;
+      bentoUrgesCount.textContent = `${count} log${count === 1 ? '' : 's'}`;
+    }
+  }
+
+  // --- Initial Render & Mode Setup ---
   renderInfo();
+  applyAppMode(state.appMode || 'standard');
+
+  if (!state.hasSeenWelcome) {
+    openWelcomeModal();
+  }
 
   setInterval(() => {
-    if (document.getElementById('screenInfo').classList.contains('active')) {
+    if (document.getElementById('screenInfo').classList.contains('active') && 
+        document.getElementById('info-tab-general').style.display !== 'none') {
       renderAchievements();
     }
   }, 60000);
