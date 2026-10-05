@@ -892,6 +892,48 @@
     border-color: transparent;
   }
 
+  /* Haptic Toggle Card */
+  .haptic-toggle-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 14px;
+    text-align: left;
+  }
+  .haptic-toggle-card:active {
+    transform: scale(0.98);
+  }
+  .haptic-toggle-card.active {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .haptic-toggle-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .haptic-toggle-status {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: var(--surface);
+    color: var(--text-soft);
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
+  }
+  .haptic-toggle-card.active .haptic-toggle-status {
+    background: var(--accent);
+    color: #1a1d29;
+    border-color: transparent;
+  }
+
   /* Color Settings */
   .color-card {
     flex: 1;
@@ -1636,8 +1678,27 @@
 
     <div class="modal-label">App Color</div>
     <div class="color-grid" id="colorGrid"></div>
+
+    <!-- Haptic feedback toggle -->
+    <div class="haptic-toggle-card active" id="hapticToggleBtn">
+      <div class="haptic-toggle-content">
+        <div class="seasonal-icon" id="hapticIcon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8a6 6 0 0 1 0 8"/>
+            <path d="M6 8a6 6 0 0 0 0 8"/>
+            <rect x="9" y="5" width="6" height="14" rx="2"/>
+          </svg>
+        </div>
+        <div class="seasonal-info" style="text-align: left;">
+          <div class="seasonal-title">Haptic feedback</div>
+          <div class="seasonal-sub" id="hapticSub">Vibration on tap</div>
+        </div>
+      </div>
+      <div class="haptic-toggle-status" id="hapticBadge">On</div>
+    </div>
     
     <div style="margin-top: 24px; display: flex; flex-direction: column; gap: 10px;">
+      <button class="btn" id="deleteAllBtn" style="width: 100%; color: #ef4444; border-color: rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.05);">Delete all records</button>
       <button class="btn" id="aboutBtn" style="width: 100%;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle>
@@ -1646,7 +1707,6 @@
         </svg>
         About this app
       </button>
-      <button class="btn" id="deleteAllBtn" style="width: 100%; color: #ef4444; border-color: rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.05);">Delete all records</button>
     </div>
   </div>
 </div>
@@ -1665,7 +1725,7 @@
         </svg>
       </div>
       <div class="milestone-modal-period" style="font-size: 20px; font-weight: 800; margin-bottom: 4px;">Lightning's Clarity</div>
-      <div style="font-size: 13px; font-weight: 600; color: var(--text-soft); margin-bottom: 16px;">Version 20261005-1835-Bento</div>
+      <div style="font-size: 13px; font-weight: 600; color: var(--text-soft); margin-bottom: 16px;">Version 20261005-1900-Haptic</div>
       <a href="https://clck.ru/3WJsqj" target="_blank" rel="noopener noreferrer" class="about-github-badge">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
@@ -1884,6 +1944,7 @@
     seasonalThemeEnabled: false,
     liveThemeEnabled: false,
     particlesEnabled: true,
+    hapticEnabled: true,
     hasSeenWelcome: false,
     appMode: 'standard'
   };
@@ -1901,6 +1962,7 @@
       if(parsed.seasonalThemeEnabled === undefined) parsed.seasonalThemeEnabled = false;
       if(parsed.liveThemeEnabled === undefined) parsed.liveThemeEnabled = false;
       if(parsed.particlesEnabled === undefined) parsed.particlesEnabled = true;
+      if(parsed.hapticEnabled === undefined) parsed.hapticEnabled = true;
       if(parsed.hasSeenWelcome === undefined) parsed.hasSeenWelcome = false;
       if(!parsed.appMode) parsed.appMode = 'standard';
       if(parsed.bestStreakDate === undefined) parsed.bestStreakDate = null;
@@ -1919,6 +1981,67 @@
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 3000);
   }
+
+  // --- Haptic Feedback System ---
+  function triggerHaptic(duration = 12) {
+    if (!state.hapticEnabled) return;
+    if (!('vibrate' in navigator)) return;
+    try {
+      navigator.vibrate(duration);
+    } catch (e) {}
+  }
+
+  function updateHapticUI() {
+    const btn = document.getElementById('hapticToggleBtn');
+    const badge = document.getElementById('hapticBadge');
+    const sub = document.getElementById('hapticSub');
+    if (!btn || !badge) return;
+
+    if (state.hapticEnabled) {
+      btn.classList.add('active');
+      badge.textContent = 'On';
+      if (sub) sub.textContent = 'Vibration on tap';
+    } else {
+      btn.classList.remove('active');
+      badge.textContent = 'Off';
+      if (sub) sub.textContent = 'Vibration off';
+    }
+  }
+
+  const hapticToggleBtn = document.getElementById('hapticToggleBtn');
+  if (hapticToggleBtn) {
+    hapticToggleBtn.addEventListener('click', () => {
+      state.hapticEnabled = !state.hapticEnabled;
+      saveData();
+      updateHapticUI();
+      if (state.hapticEnabled) {
+        triggerHaptic(16);
+        showToast('Haptic feedback enabled');
+      } else {
+        showToast('Haptic feedback disabled');
+      }
+    });
+  }
+
+  // Global tactile feedback on pressing any interactive object
+  document.addEventListener('pointerdown', (e) => {
+    if (!state.hapticEnabled) return;
+    if (e.target === document.documentElement || e.target === document.body || e.target.id === 'particles-container') {
+      return;
+    }
+    const targetEl = e.target.closest(
+      'button, a, input, label, select, textarea, [role="button"], [data-close], [data-screen], ' +
+      '[data-tab], [data-mode], [data-status], [data-val], [data-date], [data-trigger], [data-index], ' +
+      '.btn, .icon-btn, .nav-btn, .segmented-btn, .bento-card, .counter-unit, .achievement, .best-streak, ' +
+      '.cal-day, .cal-nav button, .color-card, .target-card, .trigger-btn, .phrase-refresh, .phrase-card, ' +
+      '.modal-close, .seasonal-card, .layout-card-btn, .particle-toggle-card, .haptic-toggle-card, ' +
+      '.checkbox-wrap, .logo-icon, .urge-entry, .about-github-badge'
+    ) || (window.getComputedStyle(e.target).cursor === 'pointer');
+
+    if (targetEl) {
+      triggerHaptic(12);
+    }
+  }, { capture: true, passive: true });
 
   // --- Themes Logic ---
   function getCurrentSeason() {
@@ -2200,6 +2323,7 @@
   checkTimeEvents();
   applyTheme();
   applyAppColor();
+  updateHapticUI();
   
   if (state.seasonalThemeEnabled && state.particlesEnabled) {
     setTimeout(spawnParticles, 500); 
@@ -2461,6 +2585,7 @@
   document.getElementById('settingsBtn').addEventListener('click', () => {
     checkTimeEvents();
     renderColorGrids();
+    updateHapticUI();
     
     if (state.appMode === 'bento') {
       layoutBtnStandard.classList.remove('active');
