@@ -476,6 +476,158 @@
   .cal-day.future { color: var(--text-soft); opacity: 0.4; cursor: default; }
   .cal-day.future:active { transform: none; }
 
+  /* Dot Calendar */
+  .dot-calendar-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+  }
+
+  /* Bento mode: the dot calendar sits inside the big bento card, so it must
+     not draw a second card background of its own. */
+  .dot-calendar-card-bento {
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .dot-calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .dot-calendar-title {
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .dot-calendar-open-badge {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 6px 10px;
+    border-radius: 12px;
+    white-space: nowrap;
+  }
+
+  .dot-grid {
+    /* Dot size is fixed. Column/row counts and horizontal gap are computed in JS
+       (renderDotCalendarGrid). Days are placed left-to-right, then move to the
+       next row, so a growing page fills horizontally from the top row down. */
+    --dot-size: 15px;
+    --dot-gap: 2px;
+    display: grid;
+    grid-template-columns: repeat(var(--dot-columns, 10), var(--dot-size));
+    grid-template-rows: repeat(var(--dot-rows, 1), var(--dot-size));
+    grid-auto-flow: row;
+    grid-auto-rows: var(--dot-size);
+    gap: var(--dot-gap);
+    width: 100%;
+    justify-content: center;
+    align-content: start;
+    overflow: visible;
+  }
+
+  .dot-day, .dot-day-placeholder {
+    width: var(--dot-size);
+    height: var(--dot-size);
+    border-radius: 50%;
+  }
+
+  .dot-day {
+    background: var(--surface-2);
+    transition: transform 0.1s ease, background 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .dot-day.clean { background: var(--success); }
+  .dot-day.slip { background: #ef4444; }
+  .dot-day.future {
+    background: var(--text-soft);
+    opacity: 0.24;
+  }
+  .dot-day.today { box-shadow: inset 0 0 0 2px var(--accent); }
+
+  .dot-calendar-toggle { margin-bottom: 20px; }
+  .dot-calendar-toggle.active {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .dot-popup-calendar { margin-top: 2px; }
+  .dot-period-carousel { margin-bottom: 4px; }
+  .dot-popup-hint {
+    font-size: 11px;
+    color: var(--text-soft);
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  /* Pager slot under dot grid */
+  .dot-pager-slot { width: 100%; }
+
+  .dot-more-btn {
+    margin-top: 14px;
+    width: 100%;
+    padding: 11px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--accent-soft);
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.2s ease;
+  }
+  .dot-more-btn:active { transform: scale(0.97); }
+
+  .dot-pager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .dot-pager-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: transform 0.1s ease, background 0.2s ease, opacity 0.2s ease;
+  }
+  .dot-pager-btn:active:not(:disabled) { transform: scale(0.9); }
+  .dot-pager-btn:disabled { opacity: 0.35; cursor: default; }
+  .dot-pager-label {
+    min-width: 88px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: var(--text-soft);
+    font-variant-numeric: tabular-nums;
+  }
+
+  #standardDotCalendar, #bentoDotCalendar { display: none; }
+  #standardCalendarNormal, #bentoCalendarNormal { display: block; }
+  #dayStatusModal { z-index: 220 !important; }
+
   /* Trigger Chart & Diary */
   .trigger-chart {
     margin-bottom: 24px;
@@ -887,48 +1039,6 @@
     transition: all 0.2s ease;
   }
   .particle-toggle-card.active .particle-toggle-status {
-    background: var(--accent);
-    color: #1a1d29;
-    border-color: transparent;
-  }
-
-  /* Haptic Toggle Card */
-  .haptic-toggle-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    margin-top: 14px;
-    text-align: left;
-  }
-  .haptic-toggle-card:active {
-    transform: scale(0.98);
-  }
-  .haptic-toggle-card.active {
-    border-color: var(--accent);
-    background: var(--accent-soft);
-  }
-  .haptic-toggle-content {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .haptic-toggle-status {
-    font-size: 12px;
-    font-weight: 700;
-    padding: 6px 12px;
-    border-radius: 20px;
-    background: var(--surface);
-    color: var(--text-soft);
-    border: 1px solid var(--border);
-    transition: all 0.2s ease;
-  }
-  .haptic-toggle-card.active .haptic-toggle-status {
     background: var(--accent);
     color: #1a1d29;
     border-color: transparent;
@@ -1355,18 +1465,30 @@
         </div>
 
         <div class="section-title">Calendar</div>
-        <div class="calendar">
-          <div class="cal-header">
-            <div class="cal-title" id="calTitle">July 2026</div>
-            <div class="cal-nav">
-              <button id="calPrev">‹</button>
-              <button id="calNext">›</button>
+        <div id="standardCalendarNormal">
+          <div class="calendar">
+            <div class="cal-header">
+              <div class="cal-title" id="calTitle">July 2026</div>
+              <div class="cal-nav">
+                <button id="calPrev">‹</button>
+                <button id="calNext">›</button>
+              </div>
             </div>
+            <div class="cal-weekdays">
+              <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+            </div>
+            <div class="cal-days" id="calDays"></div>
           </div>
-          <div class="cal-weekdays">
-            <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+        </div>
+        <div class="dot-calendar-card" id="standardDotCalendar">
+          <div class="dot-calendar-header">
+            <div>
+              <div class="dot-calendar-title">Dot Calendar</div>
+            </div>
+            <div class="dot-calendar-open-badge">Open</div>
           </div>
-          <div class="cal-days" id="calDays"></div>
+          <div class="dot-grid" id="standardDotCalendarGrid"></div>
+          <div class="dot-pager-slot" id="standardDotPagerSlot"></div>
         </div>
       </div>
 
@@ -1452,20 +1574,32 @@
 
         <!-- 4. Calendar (Interactive Bento Card) -->
         <div class="bento-card bento-cal-card span-2">
-          <div class="bento-cal-header">
-            <div class="bento-card-title">Calendar</div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <div class="bento-cal-title" id="bentoCalTitle">Month Year</div>
-              <div class="cal-nav">
-                <button id="bentoCalPrev" aria-label="Previous month">‹</button>
-                <button id="bentoCalNext" aria-label="Next month">›</button>
+          <div id="bentoCalendarNormal">
+            <div class="bento-cal-header">
+              <div class="bento-card-title">Calendar</div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="bento-cal-title" id="bentoCalTitle">Month Year</div>
+                <div class="cal-nav">
+                  <button id="bentoCalPrev" aria-label="Previous month">‹</button>
+                  <button id="bentoCalNext" aria-label="Next month">›</button>
+                </div>
               </div>
             </div>
+            <div class="bento-cal-weekdays">
+              <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+            </div>
+            <div class="bento-cal-grid" id="bentoCalDays"></div>
           </div>
-          <div class="bento-cal-weekdays">
-            <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+          <div class="dot-calendar-card dot-calendar-card-bento" id="bentoDotCalendar">
+            <div class="dot-calendar-header">
+              <div>
+                <div class="dot-calendar-title">Dot Calendar</div>
+              </div>
+              <div class="dot-calendar-open-badge">Open</div>
+            </div>
+            <div class="dot-grid" id="bentoDotCalendarGrid"></div>
+            <div class="dot-pager-slot" id="bentoDotPagerSlot"></div>
           </div>
-          <div class="bento-cal-grid" id="bentoCalDays"></div>
         </div>
 
         <!-- 5. Track Urge (Clickable) -->
@@ -1564,7 +1698,7 @@
       </svg>
     </div>
     <div class="welcome-title">Welcome to Clarity</div>
-    <div class="welcome-subtitle">Every clean day is a flash.<br>Set your date and stay clean</div>
+    <div class="welcome-subtitle">Every clean day is a flash.<br>Set start date and prepare for the flight</div>
 
     <div class="modal-label">Start Date & Time</div>
     <input type="datetime-local" id="welcomeStartTime" />
@@ -1638,6 +1772,29 @@
         <div class="layout-card-title">Bento-Grid</div>
       </div>
     </div>
+
+    <div class="particle-toggle-card dot-calendar-toggle" id="dotCalendarToggleCard">
+      <div class="particle-toggle-content">
+        <div class="seasonal-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="7" cy="7" r="1.5" fill="currentColor" stroke="none"></circle>
+            <circle cx="12" cy="7" r="1.5" fill="currentColor" stroke="none"></circle>
+            <circle cx="17" cy="7" r="1.5" fill="currentColor" stroke="none"></circle>
+            <circle cx="7" cy="12" r="1.5" fill="currentColor" stroke="none"></circle>
+            <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"></circle>
+            <circle cx="17" cy="12" r="1.5" fill="currentColor" stroke="none"></circle>
+            <circle cx="7" cy="17" r="1.5" fill="currentColor" stroke="none"></circle>
+            <circle cx="12" cy="17" r="1.5" fill="currentColor" stroke="none"></circle>
+            <circle cx="17" cy="17" r="1.5" fill="currentColor" stroke="none"></circle>
+          </svg>
+        </div>
+        <div class="seasonal-info" style="text-align: left;">
+          <div class="seasonal-title">Dot Calendar</div>
+          <div class="seasonal-sub">Compact life-calendar view</div>
+        </div>
+      </div>
+      <div class="particle-toggle-status" id="dotCalendarBadge">Off</div>
+    </div>
     
     <!-- Seasonal & Live Themes Switcher -->
     <div class="modal-label">App Aesthetics</div>
@@ -1678,27 +1835,24 @@
 
     <div class="modal-label">App Color</div>
     <div class="color-grid" id="colorGrid"></div>
-
-    <!-- Haptic feedback toggle -->
-    <div class="haptic-toggle-card active" id="hapticToggleBtn">
-      <div class="haptic-toggle-content">
-        <div class="seasonal-icon" id="hapticIcon">
+    
+    <!-- Auto Color feature -->
+    <div class="particle-toggle-card" id="autoColorToggleCard" style="margin-top: 12px; margin-bottom: 0;">
+      <div class="particle-toggle-content">
+        <div class="seasonal-icon" style="background: var(--surface);">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 8a6 6 0 0 1 0 8"/>
-            <path d="M6 8a6 6 0 0 0 0 8"/>
-            <rect x="9" y="5" width="6" height="14" rx="2"/>
+            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
           </svg>
         </div>
         <div class="seasonal-info" style="text-align: left;">
-          <div class="seasonal-title">Haptic feedback</div>
-          <div class="seasonal-sub" id="hapticSub">Vibration on tap</div>
+          <div class="seasonal-title">Auto Color</div>
+          <div class="seasonal-sub">Matches active theme</div>
         </div>
       </div>
-      <div class="haptic-toggle-status" id="hapticBadge">On</div>
+      <div class="particle-toggle-status" id="autoColorBadge">Off</div>
     </div>
     
     <div style="margin-top: 24px; display: flex; flex-direction: column; gap: 10px;">
-      <button class="btn" id="deleteAllBtn" style="width: 100%; color: #ef4444; border-color: rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.05);">Delete all records</button>
       <button class="btn" id="aboutBtn" style="width: 100%;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle>
@@ -1707,6 +1861,7 @@
         </svg>
         About this app
       </button>
+      <button class="btn" id="deleteAllBtn" style="width: 100%; color: #ef4444; border-color: rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.05);">Delete all records</button>
     </div>
   </div>
 </div>
@@ -1719,13 +1874,13 @@
       <button class="modal-close" data-close="aboutModal">×</button>
     </div>
     <div class="milestone-modal-content">
-      <div class="milestone-modal-icon" style="background: linear-gradient(135deg, var(--accent), var(--accent)); color: #1a1d29;">
+      <div class="milestone-modal-icon" id="aboutAppIcon" style="background: linear-gradient(135deg, var(--accent), var(--accent)); color: #1a1d29; cursor: pointer;">
         <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#1a1d29" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/>
         </svg>
       </div>
       <div class="milestone-modal-period" style="font-size: 20px; font-weight: 800; margin-bottom: 4px;">Lightning's Clarity</div>
-      <div style="font-size: 13px; font-weight: 600; color: var(--text-soft); margin-bottom: 16px;">Version 20261005-1900-Haptic</div>
+      <div style="font-size: 13px; font-weight: 600; color: var(--text-soft); margin-bottom: 16px;">Version 20261006-1815-Dot</div>
       <a href="https://clck.ru/3WJsqj" target="_blank" rel="noopener noreferrer" class="about-github-badge">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
@@ -1735,6 +1890,34 @@
     </div>
     <div class="modal-actions" style="margin-top: 22px;">
       <button class="btn primary" data-close="aboutModal" style="width: 100%;">Got it</button>
+    </div>
+  </div>
+</div>
+
+<!-- Developer Menu Modal -->
+<div class="modal-overlay" id="devMenuModal" style="z-index: 160;">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Developer Menu</div>
+      <button class="modal-close" data-close="devMenuModal">×</button>
+    </div>
+    
+    <div class="modal-label">Force Season</div>
+    <div class="target-carousel" id="devSeasonCarousel">
+      <div class="target-card active" data-val="auto">Auto</div>
+      <div class="target-card" data-val="winter">Winter</div>
+      <div class="target-card" data-val="spring">Spring</div>
+      <div class="target-card" data-val="summer">Summer</div>
+      <div class="target-card" data-val="autumn">Autumn</div>
+    </div>
+    
+    <div class="modal-label">Force Time of Day</div>
+    <div class="target-carousel" id="devTimeCarousel" style="margin-bottom: 20px;">
+      <div class="target-card active" data-val="auto">Auto</div>
+      <div class="target-card" data-val="morning">Morning</div>
+      <div class="target-card" data-val="day">Day</div>
+      <div class="target-card" data-val="evening">Evening</div>
+      <div class="target-card" data-val="night">Night</div>
     </div>
   </div>
 </div>
@@ -1773,7 +1956,38 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="resetModal">
+<!-- Dot Calendar Pop-up -->
+<div class="modal-overlay" id="dotCalendarModal" style="z-index: 130;">
+  <div class="modal" style="max-height: 90vh;">
+    <div class="modal-header">
+      <div class="modal-title">Calendar</div>
+      <button class="modal-close" data-close="dotCalendarModal">×</button>
+    </div>
+
+    <div class="calendar dot-popup-calendar">
+      <div class="cal-header">
+        <div class="cal-title" id="dotPopupCalTitle">Month Year</div>
+        <div class="cal-nav">
+          <button id="dotPopupCalPrev" aria-label="Previous month">‹</button>
+          <button id="dotPopupCalNext" aria-label="Next month">›</button>
+        </div>
+      </div>
+      <div class="cal-weekdays">
+        <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+      </div>
+      <div class="cal-days" id="dotPopupCalDays"></div>
+    </div>
+
+    <div class="modal-label">Dot Calendar Period</div>
+    <div class="target-carousel dot-period-carousel" id="dotPeriodCarousel">
+      <div class="target-card" data-period="90">90 days</div>
+      <div class="target-card" data-period="180">180 days</div>
+      <div class="target-card" data-period="365">365 days</div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="resetModal" style="z-index: 230;">
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title">Reset Timer</div>
@@ -1890,7 +2104,7 @@
   // --- App Colors ---
   const appColors = [
     { name: 'Sun', hex: '#f5b301', soft: 'rgba(245, 179, 1, 0.15)' },
-    { name: 'Sky', hex: '#3b82f6', soft: 'rgba(59, 130, 246, 0.15)' },
+    { name: 'Sky', hex: '#4d6bfe', soft: 'rgba(77, 107, 254, 0.15)' },
     { name: 'Grass', hex: '#10b981', soft: 'rgba(16, 185, 129, 0.15)' },
     { name: 'Lilac', hex: '#8b5cf6', soft: 'rgba(139, 92, 246, 0.15)' },
     { name: 'Sunset', hex: '#f43f5e', soft: 'rgba(244, 63, 94, 0.15)' }
@@ -1944,9 +2158,13 @@
     seasonalThemeEnabled: false,
     liveThemeEnabled: false,
     particlesEnabled: true,
-    hapticEnabled: true,
+    autoColorEnabled: false,
     hasSeenWelcome: false,
-    appMode: 'standard'
+    appMode: 'standard',
+    dotCalendarEnabled: false,
+    dotCalendarPeriod: 90,
+    devSeasonOverride: 'auto',
+    devTimeOverride: 'auto'
   };
 
   function loadData() {
@@ -1962,10 +2180,15 @@
       if(parsed.seasonalThemeEnabled === undefined) parsed.seasonalThemeEnabled = false;
       if(parsed.liveThemeEnabled === undefined) parsed.liveThemeEnabled = false;
       if(parsed.particlesEnabled === undefined) parsed.particlesEnabled = true;
-      if(parsed.hapticEnabled === undefined) parsed.hapticEnabled = true;
+      if(parsed.autoColorEnabled === undefined) parsed.autoColorEnabled = false;
       if(parsed.hasSeenWelcome === undefined) parsed.hasSeenWelcome = false;
       if(!parsed.appMode) parsed.appMode = 'standard';
+      if(parsed.dotCalendarEnabled === undefined) parsed.dotCalendarEnabled = false;
+      if(![90, 180, 365].includes(Number(parsed.dotCalendarPeriod))) parsed.dotCalendarPeriod = 90;
+      parsed.dotCalendarPeriod = Number(parsed.dotCalendarPeriod);
       if(parsed.bestStreakDate === undefined) parsed.bestStreakDate = null;
+      if(parsed.devSeasonOverride === undefined) parsed.devSeasonOverride = 'auto';
+      if(parsed.devTimeOverride === undefined) parsed.devTimeOverride = 'auto';
       return { ...defaultData, ...parsed };
     } catch (e) {
       return { ...defaultData, hasSeenWelcome: false };
@@ -1982,69 +2205,69 @@
     setTimeout(() => toast.classList.remove('show'), 3000);
   }
 
-  // --- Haptic Feedback System ---
-  function triggerHaptic(duration = 12) {
-    if (!state.hapticEnabled) return;
-    if (!('vibrate' in navigator)) return;
-    try {
-      navigator.vibrate(duration);
-    } catch (e) {}
-  }
-
-  function updateHapticUI() {
-    const btn = document.getElementById('hapticToggleBtn');
-    const badge = document.getElementById('hapticBadge');
-    const sub = document.getElementById('hapticSub');
-    if (!btn || !badge) return;
-
-    if (state.hapticEnabled) {
-      btn.classList.add('active');
+  // --- Auto Color Logic ---
+  function updateAutoColorUI() {
+    const card = document.getElementById('autoColorToggleCard');
+    const badge = document.getElementById('autoColorBadge');
+    if (!card || !badge) return;
+    if (state.autoColorEnabled) {
+      card.classList.add('active');
       badge.textContent = 'On';
-      if (sub) sub.textContent = 'Vibration on tap';
     } else {
-      btn.classList.remove('active');
+      card.classList.remove('active');
       badge.textContent = 'Off';
-      if (sub) sub.textContent = 'Vibration off';
     }
   }
 
-  const hapticToggleBtn = document.getElementById('hapticToggleBtn');
-  if (hapticToggleBtn) {
-    hapticToggleBtn.addEventListener('click', () => {
-      state.hapticEnabled = !state.hapticEnabled;
+  function applyAutoColor() {
+    if (!state.autoColorEnabled) return;
+    let newIdx = state.colorIndex;
+
+    if (state.seasonalThemeEnabled) {
+      const seasonMap = { spring: 2, summer: 0, autumn: 0, winter: 1 };
+      newIdx = seasonMap[currentSeason] ?? 0;
+    } else if (state.liveThemeEnabled) {
+      const liveMap = { morning: 4, day: 1, evening: 0, night: 3 };
+      const phase = getCurrentLiveTimePhase();
+      newIdx = liveMap[phase] ?? 0;
+    } else {
+      return; // Do nothing continuously if no themes are active
+    }
+
+    if (newIdx !== state.colorIndex) {
+      state.colorIndex = newIdx;
       saveData();
-      updateHapticUI();
-      if (state.hapticEnabled) {
-        triggerHaptic(16);
-        showToast('Haptic feedback enabled');
-      } else {
-        showToast('Haptic feedback disabled');
+      applyAppColor();
+      renderColorGrids();
+    }
+  }
+
+  const autoColorToggleCard = document.getElementById('autoColorToggleCard');
+  if (autoColorToggleCard) {
+    autoColorToggleCard.addEventListener('click', () => {
+      state.autoColorEnabled = !state.autoColorEnabled;
+      saveData();
+      updateAutoColorUI();
+
+      if (state.autoColorEnabled) {
+        if (!state.seasonalThemeEnabled && !state.liveThemeEnabled) {
+          state.colorIndex = Math.floor(Math.random() * appColors.length);
+          saveData();
+          applyAppColor();
+          renderColorGrids();
+          showToast('This option works better when themes are enabled');
+        } else {
+          applyAutoColor();
+        }
       }
     });
   }
 
-  // Global tactile feedback on pressing any interactive object
-  document.addEventListener('pointerdown', (e) => {
-    if (!state.hapticEnabled) return;
-    if (e.target === document.documentElement || e.target === document.body || e.target.id === 'particles-container') {
-      return;
-    }
-    const targetEl = e.target.closest(
-      'button, a, input, label, select, textarea, [role="button"], [data-close], [data-screen], ' +
-      '[data-tab], [data-mode], [data-status], [data-val], [data-date], [data-trigger], [data-index], ' +
-      '.btn, .icon-btn, .nav-btn, .segmented-btn, .bento-card, .counter-unit, .achievement, .best-streak, ' +
-      '.cal-day, .cal-nav button, .color-card, .target-card, .trigger-btn, .phrase-refresh, .phrase-card, ' +
-      '.modal-close, .seasonal-card, .layout-card-btn, .particle-toggle-card, .haptic-toggle-card, ' +
-      '.checkbox-wrap, .logo-icon, .urge-entry, .about-github-badge'
-    ) || (window.getComputedStyle(e.target).cursor === 'pointer');
-
-    if (targetEl) {
-      triggerHaptic(12);
-    }
-  }, { capture: true, passive: true });
-
   // --- Themes Logic ---
   function getCurrentSeason() {
+    if (state.devSeasonOverride && state.devSeasonOverride !== 'auto') {
+      return state.devSeasonOverride;
+    }
     const month = new Date().getMonth();
     if (month >= 2 && month <= 4) return 'spring';
     if (month >= 5 && month <= 7) return 'summer';
@@ -2063,6 +2286,9 @@
   }
 
   function getCurrentLiveTimePhase() {
+    if (state.devTimeOverride && state.devTimeOverride !== 'auto') {
+      return state.devTimeOverride;
+    }
     const now = new Date();
     const h = now.getHours();
     if (h >= 6 && h < 12) return 'morning';
@@ -2091,12 +2317,13 @@
     updateLiveUI();
     updateParticlesUI();
     applyHolidayTheme();
+    applyAutoColor();
   }
 
   function applyHolidayTheme() {
     const logo = document.getElementById('lightningIcon');
     if (!logo) return;
-    if (state.seasonalThemeEnabled) {
+    if (state.seasonalThemeEnabled && state.devSeasonOverride === 'auto') {
       const h = getCurrentHoliday();
       if (h && logoIcons[h]) {
         logo.innerHTML = logoIcons[h];
@@ -2113,7 +2340,7 @@
     if (!btn) return;
 
     const holiday = getCurrentHoliday();
-    if (holiday && settingsIcons[holiday]) {
+    if (holiday && settingsIcons[holiday] && state.devSeasonOverride === 'auto') {
       iconContainer.innerHTML = settingsIcons[holiday];
     } else {
       iconContainer.innerHTML = seasonalSVGs[currentSeason];
@@ -2121,7 +2348,7 @@
 
     if (state.seasonalThemeEnabled) {
       btn.classList.add('active');
-      if (holiday) {
+      if (holiday && state.devSeasonOverride === 'auto') {
         const holidayNames = { valentine: "Valentine's", halloween: 'Halloween', newyear: 'New Year' };
         sub.textContent = `On (${holidayNames[holiday] || 'Holiday'})`;
       } else {
@@ -2323,7 +2550,7 @@
   checkTimeEvents();
   applyTheme();
   applyAppColor();
-  updateHapticUI();
+  updateAutoColorUI();
   
   if (state.seasonalThemeEnabled && state.particlesEnabled) {
     setTimeout(spawnParticles, 500); 
@@ -2565,8 +2792,10 @@
         btn.innerHTML = `<div class="color-circle" style="background-color: ${color.hex}"></div><div class="color-name">${color.name}</div>`;
         btn.onclick = () => {
           state.colorIndex = idx;
+          state.autoColorEnabled = false; // Disable auto color on manual selection
           saveData();
           applyAppColor();
+          updateAutoColorUI();
           document.querySelectorAll('.color-grid').forEach(g => {
             const cards = g.querySelectorAll('.color-card');
             cards.forEach((c, i) => c.classList.toggle('active', i === idx));
@@ -2585,7 +2814,7 @@
   document.getElementById('settingsBtn').addEventListener('click', () => {
     checkTimeEvents();
     renderColorGrids();
-    updateHapticUI();
+    updateDotCalendarUI();
     
     if (state.appMode === 'bento') {
       layoutBtnStandard.classList.remove('active');
@@ -2598,11 +2827,96 @@
     openModal('settingsModal');
   });
 
-  // --- About Modal Handler ---
+  // --- About Modal Handler & Developer Easter Egg ---
   const aboutBtn = document.getElementById('aboutBtn');
   if (aboutBtn) {
     aboutBtn.addEventListener('click', () => {
       openModal('aboutModal');
+    });
+  }
+
+  let aboutClickCount = 0;
+  let aboutClickTimer = null;
+  const aboutAppIcon = document.getElementById('aboutAppIcon');
+  if (aboutAppIcon) {
+    aboutAppIcon.addEventListener('click', () => {
+      aboutClickCount++;
+      if (aboutClickCount === 3) {
+        closeModal('aboutModal');
+        renderDevMenu();
+        openModal('devMenuModal');
+        aboutClickCount = 0;
+      }
+      clearTimeout(aboutClickTimer);
+      aboutClickTimer = setTimeout(() => {
+        aboutClickCount = 0;
+      }, 400); // 400ms window for triple click
+    });
+  }
+
+  // --- Developer Menu Logic ---
+  const dotCalendarToggleCard = document.getElementById('dotCalendarToggleCard');
+  const dotCalendarBadge = document.getElementById('dotCalendarBadge');
+
+  function updateDotCalendarUI() {
+    if (!dotCalendarToggleCard || !dotCalendarBadge) return;
+    dotCalendarToggleCard.classList.toggle('active', !!state.dotCalendarEnabled);
+    dotCalendarBadge.textContent = state.dotCalendarEnabled ? 'On' : 'Off';
+  }
+
+  function applyDotCalendarMode() {
+    renderCalendar();
+    renderBentoCalendar();
+    renderDotCalendarGrid('standardDotCalendarGrid');
+    renderDotCalendarGrid('bentoDotCalendarGrid');
+    renderDotPeriodUI();
+    updateDotCalendarUI();
+  }
+
+  if (dotCalendarToggleCard) {
+    dotCalendarToggleCard.addEventListener('click', () => {
+      state.dotCalendarEnabled = !state.dotCalendarEnabled;
+      saveData();
+      applyDotCalendarMode();
+      showToast(state.dotCalendarEnabled ? 'Dot Calendar enabled' : 'Dot Calendar disabled');
+    });
+  }
+
+  function renderDevMenu() {
+    document.querySelectorAll('#devSeasonCarousel .target-card').forEach(c => {
+      c.classList.toggle('active', c.dataset.val === state.devSeasonOverride);
+    });
+    document.querySelectorAll('#devTimeCarousel .target-card').forEach(c => {
+      c.classList.toggle('active', c.dataset.val === state.devTimeOverride);
+    });
+  }
+
+  const devSeasonCarousel = document.getElementById('devSeasonCarousel');
+  if (devSeasonCarousel) {
+    devSeasonCarousel.addEventListener('click', (e) => {
+      if (e.target.classList.contains('target-card')) {
+        state.devSeasonOverride = e.target.dataset.val;
+        saveData();
+        renderDevMenu();
+        checkTimeEvents();
+        const container = document.getElementById('particles-container');
+        if (container) container.innerHTML = '';
+        if (state.seasonalThemeEnabled && state.particlesEnabled) spawnParticles();
+        showToast(`Season forced: ${state.devSeasonOverride}`);
+      }
+    });
+  }
+
+  const devTimeCarousel = document.getElementById('devTimeCarousel');
+  if (devTimeCarousel) {
+    devTimeCarousel.addEventListener('click', (e) => {
+      if (e.target.classList.contains('target-card')) {
+        state.devTimeOverride = e.target.dataset.val;
+        saveData();
+        renderDevMenu();
+        checkTimeEvents();
+        showToast(`Time forced: ${state.devTimeOverride}`);
+      }
     });
   }
   
@@ -2770,6 +3084,7 @@
     updateCounter(); 
     renderInfo();
     renderBentoView();
+    renderDotPopupCalendar();
   });
 
   // --- Welcome Pop-up Logic ---
@@ -2845,7 +3160,6 @@
     updateCounter();
     renderInfo();
     renderBentoView();
-    showToast('Welcome to Clarity!');
   });
 
   // --- Emergency phrases ---
@@ -3192,12 +3506,28 @@
 
     if (dayStart >= streakStartDay) return 'clean';
     for (let i = 0; i < state.history.length; i++) {
-      if (dayStart >= state.history[i].start && dayStart < state.history[i].end) return 'clean';
+      // Compare by calendar day: the attempt's start is an exact time (e.g. 14:30),
+      // so comparing it with midnight made the first day of every attempt "blank".
+      const hs = new Date(state.history[i].start);
+      const histStartDay = new Date(hs.getFullYear(), hs.getMonth(), hs.getDate()).getTime();
+      if (dayStart >= histStartDay && dayStart < state.history[i].end) return 'clean';
     }
     return 'blank';
   }
 
   function renderCalendar() {
+    const normal = document.getElementById('standardCalendarNormal');
+    const dots = document.getElementById('standardDotCalendar');
+    if (state.dotCalendarEnabled) {
+      if (normal) normal.style.display = 'none';
+      if (dots) dots.style.display = 'block';
+      renderDotCalendarGrid('standardDotCalendarGrid');
+      return;
+    }
+
+    if (normal) normal.style.display = 'block';
+    if (dots) dots.style.display = 'none';
+
     const year = calView.getFullYear();
     const month = calView.getMonth();
     calTitle.textContent = MONTHS[month] + ' ' + year;
@@ -3235,6 +3565,291 @@
 
   calDays.addEventListener('click', handleCalendarDayClick);
 
+  const dotPopupCalTitle = document.getElementById('dotPopupCalTitle');
+  const dotPopupCalDays = document.getElementById('dotPopupCalDays');
+  const dotPopupCalPrev = document.getElementById('dotPopupCalPrev');
+  const dotPopupCalNext = document.getElementById('dotPopupCalNext');
+  const dotPeriodCarousel = document.getElementById('dotPeriodCarousel');
+  let dotPopupCalView = new Date();
+  dotPopupCalView.setDate(1);
+
+  function renderDotPeriodUI() {
+    if (!dotPeriodCarousel) return;
+    dotPeriodCarousel.querySelectorAll('.target-card').forEach(card => {
+      card.classList.toggle('active', Number(card.dataset.period) === Number(state.dotCalendarPeriod));
+    });
+  }
+
+  let dotCalendarPage = 1;
+
+  function getTodayStart() {
+    const t = new Date();
+    return new Date(t.getFullYear(), t.getMonth(), t.getDate()).getTime();
+  }
+
+  function getDotCalendarRecordedDates() {
+    const recorded = new Set();
+    const todayStart = getTodayStart();
+
+    const addDay = (dayStart) => {
+      const ts = Number(dayStart);
+      if (!Number.isFinite(ts) || ts > todayStart) return;
+      if (state.deletedDays && state.deletedDays.includes(ts)) return;
+      recorded.add(ts);
+    };
+
+    // Walks calendar days (setDate keeps it DST-safe) instead of adding
+    // 86400000 ms, so stored timestamps always match getDayStatus().
+    const addRange = (fromTs, toTs) => {
+      if (!Number.isFinite(fromTs) || !Number.isFinite(toTs)) return;
+      const cursor = new Date(fromTs);
+      cursor.setHours(0, 0, 0, 0);
+      while (cursor.getTime() <= toTs && cursor.getTime() <= todayStart) {
+        addDay(cursor.getTime());
+        cursor.setDate(cursor.getDate() + 1);
+      }
+    };
+
+    // Explicitly stored day statuses are recorded information, even when the
+    // day is marked blank or as a slip.
+    if (state.dayStatuses) {
+      Object.keys(state.dayStatuses).forEach(key => addDay(key));
+    }
+
+    // Every completed attempt contributes the days it actually covered.
+    if (Array.isArray(state.history)) {
+      state.history.forEach(h => {
+        if (!h) return;
+        addRange(Number(h.start), Number(h.end));
+      });
+    }
+
+    // The current attempt contributes from its first day through today.
+    if (Number.isFinite(Number(state.startTime))) {
+      addRange(Number(state.startTime), todayStart);
+    }
+
+    return Array.from(recorded).sort((a, b) => a - b);
+  }
+
+  // How many days back from today are covered by the record.
+  function getDotCalendarCoverage() {
+    const recorded = getDotCalendarRecordedDates();
+    if (!recorded.length) return { knownDays: 0, earliest: null };
+    const todayStart = getTodayStart();
+    return {
+      knownDays: Math.round((todayStart - recorded[0]) / 86400000) + 1,
+      earliest: recorded[0]
+    };
+  }
+
+  // Dot size stays fixed; the column count is the maximum that fits the block
+  // width. The leftover width is spread evenly across the gaps, so the grid
+  // always spans the card edge to edge, and the rows are padded up to a full
+  // rectangle so the block never has a ragged last row.
+  function getDotCalendarMetrics(grid) {
+    const width = Math.floor(grid.getBoundingClientRect().width);
+    if (!width) return null;
+
+    const dotSize = parseFloat(getComputedStyle(grid).getPropertyValue('--dot-size')) || 15;
+    const MIN_GAP = 2;
+    const period = Number(state.dotCalendarPeriod) || 90;
+
+    const maxColumns = Math.max(1, Math.floor((width + MIN_GAP) / (dotSize + MIN_GAP)));
+    const columns = Math.min(maxColumns, period);
+    const rows = Math.ceil(period / columns);
+    const totalCells = columns * rows;
+    const gap = columns > 1 ? (width - columns * dotSize) / (columns - 1) : 0;
+
+    return { width, dotSize, period, columns, rows, totalCells, gap };
+  }
+
+  function getDotCalendarPageCount(totalCells) {
+    const { knownDays } = getDotCalendarCoverage();
+    return Math.max(1, Math.ceil(knownDays / totalCells));
+  }
+
+  const dotGridObservers = {};
+
+  // Re-layout a dot grid whenever its available width changes
+  // (first show after display:none, rotation, window resize, scrollbar).
+  function observeDotGrid(grid, gridId) {
+    if (dotGridObservers[gridId] || typeof ResizeObserver === 'undefined') return;
+    dotGridObservers[gridId] = new ResizeObserver(() => {
+      const w = Math.floor(grid.getBoundingClientRect().width);
+      if (w !== Number(grid.dataset.layoutWidth || 0)) renderDotCalendarGrid(gridId);
+    });
+    dotGridObservers[gridId].observe(grid);
+  }
+
+  function renderDotCalendarGrid(gridId) {
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
+    observeDotGrid(grid, gridId);
+
+    const width = Math.floor(grid.getBoundingClientRect().width);
+    grid.dataset.layoutWidth = width;
+
+    // Hidden grid (its screen is not shown yet): the ResizeObserver re-renders
+    // it as soon as it gets a real width.
+    if (!width) {
+      grid.innerHTML = '';
+      renderDotPager(gridId);
+      return;
+    }
+
+    const metrics = getDotCalendarMetrics(grid);
+    const totalCells = metrics.totalCells;
+
+    grid.style.setProperty('--dot-columns', metrics.columns);
+    grid.style.setProperty('--dot-rows', metrics.rows);
+    grid.style.setProperty('--dot-gap', metrics.gap.toFixed(3) + 'px');
+
+    const totalPages = getDotCalendarPageCount(totalCells);
+    if (dotCalendarPage > totalPages) dotCalendarPage = totalPages;
+    if (dotCalendarPage < 1) dotCalendarPage = 1;
+
+    const { earliest } = getDotCalendarCoverage();
+    const todayStart = getTodayStart();
+
+    // Pages are fixed historical blocks. Page 1 is always the current block;
+    // once it fills, the next day starts a new Page 1 and the completed block
+    // becomes Page 2, then Page 3, and so on. This keeps the active page first.
+    const pageChunkFromOldest = totalPages - dotCalendarPage;
+    const cursor = new Date(earliest);
+    cursor.setHours(0, 0, 0, 0);
+    cursor.setDate(cursor.getDate() + pageChunkFromOldest * totalCells);
+
+    let html = '';
+    for (let i = 0; i < totalCells; i++) {
+      const dayStart = new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate()).getTime();
+      const status = getDayStatus(cursor);
+      const classes = ['dot-day'];
+      if (status === 'clean') classes.push('clean');
+      else if (status === 'slip') classes.push('slip');
+      else if (status === 'future') classes.push('future');
+      if (dayStart === todayStart) classes.push('today');
+
+      html += `<div class="${classes.join(' ')}" data-date="${dayStart}" aria-hidden="true"></div>`;
+      cursor.setDate(cursor.getDate() + 1);
+    }
+
+    grid.innerHTML = html;
+    renderDotPager(gridId);
+  }
+
+  // Page controls stay hidden until the initial page has been completed and
+  // a second page exists. From that moment onward, the arrows are the only
+  // page controls, with Page 1 always representing the current block.
+  function renderDotPager(gridId) {
+    const slotId = gridId === 'bentoDotCalendarGrid' ? 'bentoDotPagerSlot' : 'standardDotPagerSlot';
+    const slot = document.getElementById(slotId);
+    const grid = document.getElementById(gridId);
+    if (!slot || !grid) return;
+
+    const metrics = getDotCalendarMetrics(grid);
+    if (!metrics) { slot.innerHTML = ''; return; }
+
+    const totalCells = metrics.totalCells;
+    const { knownDays } = getDotCalendarCoverage();
+    const totalPages = Math.max(1, Math.ceil(knownDays / totalCells));
+    const page = Math.min(Math.max(1, dotCalendarPage), totalPages);
+
+    // The very first page must fill completely before any pagination UI appears.
+    // Once Page 2 exists, the controls remain available for normal navigation.
+    const initialPageCompleted = knownDays > totalCells;
+    if (!initialPageCompleted) {
+      slot.innerHTML = '';
+      return;
+    }
+
+    slot.innerHTML = `
+      <div class="dot-pager">
+        <button class="dot-pager-btn" data-dot-nav="newer" ${page <= 1 ? 'disabled' : ''} aria-label="Newer days">‹</button>
+        <div class="dot-pager-label">Page ${page} of ${totalPages}</div>
+        <button class="dot-pager-btn" data-dot-nav="older" ${page >= totalPages ? 'disabled' : ''} aria-label="Older days">›</button>
+      </div>`;
+  }
+
+  function renderDotPopupCalendar() {
+    if (!dotPopupCalDays || !dotPopupCalTitle) return;
+    const year = dotPopupCalView.getFullYear();
+    const month = dotPopupCalView.getMonth();
+    dotPopupCalTitle.textContent = MONTHS[month] + ' ' + year;
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const todayStart = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()).getTime();
+    let html = '';
+    for (let i = 0; i < firstDay; i++) html += '<div class="cal-day padding-empty"></div>';
+    for (let d = 1; d <= daysInMonth; d++) {
+      const date = new Date(year, month, d);
+      const dayStart = date.getTime();
+      const status = getDayStatus(date);
+      const classes = ['cal-day'];
+      if (dayStart === todayStart) classes.push('today');
+      if (status === 'future') classes.push('future');
+      else if (status === 'clean') classes.push('clean');
+      else if (status === 'slip') classes.push('slip');
+      html += `<div class="${classes.join(' ')}" data-date="${dayStart}">${d}</div>`;
+    }
+    dotPopupCalDays.innerHTML = html;
+    renderDotPeriodUI();
+  }
+
+  function openDotCalendar() {
+    dotPopupCalView = new Date();
+    dotPopupCalView.setDate(1);
+    renderDotPopupCalendar();
+    openModal('dotCalendarModal');
+  }
+
+  document.querySelectorAll('#standardDotCalendar, #bentoDotCalendar').forEach(el => {
+    el.addEventListener('click', openDotCalendar);
+  });
+
+  document.querySelectorAll('.dot-pager-slot').forEach(slot => {
+    slot.addEventListener('click', (e) => {
+      // Don't let it bubble to the card, which opens the pop-up calendar.
+      e.stopPropagation();
+      const btn = e.target.closest('[data-dot-nav]');
+      if (!btn || btn.disabled) return;
+
+      if (btn.dataset.dotNav === 'older') {
+        dotCalendarPage += 1;
+      } else {
+        dotCalendarPage -= 1;
+      }
+
+      renderDotCalendarGrid('standardDotCalendarGrid');
+      renderDotCalendarGrid('bentoDotCalendarGrid');
+    });
+  });
+
+  if (dotPopupCalDays) dotPopupCalDays.addEventListener('click', handleCalendarDayClick);
+  if (dotPopupCalPrev) dotPopupCalPrev.addEventListener('click', () => {
+    dotPopupCalView.setMonth(dotPopupCalView.getMonth() - 1);
+    renderDotPopupCalendar();
+  });
+  if (dotPopupCalNext) dotPopupCalNext.addEventListener('click', () => {
+    dotPopupCalView.setMonth(dotPopupCalView.getMonth() + 1);
+    renderDotPopupCalendar();
+  });
+
+  if (dotPeriodCarousel) dotPeriodCarousel.addEventListener('click', (e) => {
+    const card = e.target.closest('.target-card[data-period]');
+    if (!card) return;
+    state.dotCalendarPeriod = Number(card.dataset.period);
+    dotCalendarPage = 1;
+    saveData();
+    renderDotPeriodUI();
+    renderDotCalendarGrid('standardDotCalendarGrid');
+    renderDotCalendarGrid('bentoDotCalendarGrid');
+    showToast(`Dot Calendar: ${state.dotCalendarPeriod} days`);
+  });
+
+  document.querySelectorAll('#status-btn-placeholder').forEach(() => {});
+
   document.querySelectorAll('.status-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const status = e.currentTarget.dataset.status;
@@ -3267,14 +3882,14 @@
         state.startTime = new Date(state.startTime).getTime() - 86400000;
         if(!state.dayStatuses) state.dayStatuses = {};
         state.dayStatuses[dayStart] = 'clean';
-        saveData(); updateCounter(); renderInfo(); renderBentoView();
+        saveData(); updateCounter(); renderInfo(); renderBentoView(); renderDotPopupCalendar();
         showToast('Streak extended!');
         return;
       }
 
       if(!state.dayStatuses) state.dayStatuses = {};
       state.dayStatuses[dayStart] = status;
-      saveData(); renderInfo(); renderBentoView();
+      saveData(); renderInfo(); renderBentoView(); renderDotPopupCalendar();
     });
   });
 
@@ -3390,6 +4005,18 @@
   }
 
   function renderBentoCalendar() {
+    const normal = document.getElementById('bentoCalendarNormal');
+    const dots = document.getElementById('bentoDotCalendar');
+    if (state.dotCalendarEnabled) {
+      if (normal) normal.style.display = 'none';
+      if (dots) dots.style.display = 'block';
+      renderDotCalendarGrid('bentoDotCalendarGrid');
+      return;
+    }
+
+    if (normal) normal.style.display = 'block';
+    if (dots) dots.style.display = 'none';
+
     const bentoCalTitle = document.getElementById('bentoCalTitle');
     const bentoCalDaysEl = document.getElementById('bentoCalDays');
     if (!bentoCalDaysEl || !bentoCalTitle) return;
@@ -3441,6 +4068,7 @@
   // --- Initial Render & Mode Setup ---
   renderInfo();
   applyAppMode(state.appMode || 'standard');
+  applyDotCalendarMode();
 
   if (!state.hasSeenWelcome) {
     openWelcomeModal();
