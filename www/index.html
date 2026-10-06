@@ -525,21 +525,20 @@
        next row, so a growing page fills horizontally from the top row down. */
     --dot-size: 15px;
     --dot-gap: 2px;
-    display: grid;
-    grid-template-columns: repeat(var(--dot-columns, 10), var(--dot-size));
-    grid-template-rows: repeat(var(--dot-rows, 1), var(--dot-size));
-    grid-auto-flow: row;
-    grid-auto-rows: var(--dot-size);
+    display: flex;
+    flex-wrap: wrap;
     gap: var(--dot-gap);
     width: 100%;
     justify-content: center;
-    align-content: start;
+    align-content: flex-start;
     overflow: visible;
   }
 
   .dot-day, .dot-day-placeholder {
     width: var(--dot-size);
     height: var(--dot-size);
+    flex: 0 0 var(--dot-size);
+    box-sizing: border-box;
     border-radius: 50%;
   }
 
@@ -554,7 +553,6 @@
     background: var(--text-soft);
     opacity: 0.24;
   }
-  .dot-day.today { box-shadow: inset 0 0 0 2px var(--accent); }
 
   .dot-calendar-toggle { margin-bottom: 20px; }
   .dot-calendar-toggle.active {
@@ -562,7 +560,7 @@
     background: var(--accent-soft);
   }
   .dot-popup-calendar { margin-top: 2px; }
-  .dot-period-carousel { margin-bottom: 4px; }
+  .dot-period-carousel { margin-bottom: 4px; justify-content: center; }
   .dot-popup-hint {
     font-size: 11px;
     color: var(--text-soft);
@@ -1485,7 +1483,6 @@
             <div>
               <div class="dot-calendar-title">Dot Calendar</div>
             </div>
-            <div class="dot-calendar-open-badge">Open</div>
           </div>
           <div class="dot-grid" id="standardDotCalendarGrid"></div>
           <div class="dot-pager-slot" id="standardDotPagerSlot"></div>
@@ -1880,7 +1877,7 @@
         </svg>
       </div>
       <div class="milestone-modal-period" style="font-size: 20px; font-weight: 800; margin-bottom: 4px;">Lightning's Clarity</div>
-      <div style="font-size: 13px; font-weight: 600; color: var(--text-soft); margin-bottom: 16px;">Version 20261006-1815-Dot</div>
+      <div style="font-size: 13px; font-weight: 600; color: var(--text-soft); margin-bottom: 16px;">Version 20261005-1835-Bento</div>
       <a href="https://clck.ru/3WJsqj" target="_blank" rel="noopener noreferrer" class="about-github-badge">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
@@ -3643,25 +3640,29 @@
     };
   }
 
-  // Dot size stays fixed; the column count is the maximum that fits the block
-  // width. The leftover width is spread evenly across the gaps, so the grid
-  // always spans the card edge to edge, and the rows are padded up to a full
-  // rectangle so the block never has a ragged last row.
+  // Each period renders exactly 90 / 180 / 365 dots. The column count is
+  // chosen per period so the block is a balanced rectangle, and the dot size
+  // is computed so the block spans the full width: size = W / (cols + (cols-1)*r),
+  // where r is the gap-to-dot ratio. A partially filled last row (365 only)
+  // is centred, which keeps the picture symmetric.
+  const DOT_LAYOUTS = { 90: 15, 180: 20, 365: 25 };
+  const DOT_GAP_RATIO = 0.18;
+
   function getDotCalendarMetrics(grid) {
     const width = Math.floor(grid.getBoundingClientRect().width);
     if (!width) return null;
 
-    const dotSize = parseFloat(getComputedStyle(grid).getPropertyValue('--dot-size')) || 15;
-    const MIN_GAP = 2;
     const period = Number(state.dotCalendarPeriod) || 90;
-
-    const maxColumns = Math.max(1, Math.floor((width + MIN_GAP) / (dotSize + MIN_GAP)));
-    const columns = Math.min(maxColumns, period);
+    const columns = DOT_LAYOUTS[period] || 15;
     const rows = Math.ceil(period / columns);
-    const totalCells = columns * rows;
-    const gap = columns > 1 ? (width - columns * dotSize) / (columns - 1) : 0;
+    // Whole-pixel dot size and gap keep every dot a perfect circle.
+    let dotSize = Math.floor(width / (columns + (columns - 1) * DOT_GAP_RATIO));
+    let gap = Math.max(2, Math.round(dotSize * DOT_GAP_RATIO));
+    dotSize = Math.floor((width - (columns - 1) * gap) / columns);
+    const used = columns * dotSize + (columns - 1) * gap;
+    const sidePad = Math.floor((width - used) / 2);
 
-    return { width, dotSize, period, columns, rows, totalCells, gap };
+    return { width, dotSize, period, columns, rows, totalCells: period, gap, sidePad };
   }
 
   function getDotCalendarPageCount(totalCells) {
@@ -3701,9 +3702,12 @@
     const metrics = getDotCalendarMetrics(grid);
     const totalCells = metrics.totalCells;
 
-    grid.style.setProperty('--dot-columns', metrics.columns);
-    grid.style.setProperty('--dot-rows', metrics.rows);
-    grid.style.setProperty('--dot-gap', metrics.gap.toFixed(3) + 'px');
+    grid.style.setProperty('--dot-size', metrics.dotSize + 'px');
+    grid.style.setProperty('--dot-gap', metrics.gap + 'px');
+    // Side padding makes the content box exactly one row wide, so rows wrap
+    // at the intended column count and the whole block stays centred.
+    grid.style.boxSizing = 'border-box';
+    grid.style.paddingLeft = grid.style.paddingRight = metrics.sidePad + 'px';
 
     const totalPages = getDotCalendarPageCount(totalCells);
     if (dotCalendarPage > totalPages) dotCalendarPage = totalPages;
@@ -3728,7 +3732,6 @@
       if (status === 'clean') classes.push('clean');
       else if (status === 'slip') classes.push('slip');
       else if (status === 'future') classes.push('future');
-      if (dayStart === todayStart) classes.push('today');
 
       html += `<div class="${classes.join(' ')}" data-date="${dayStart}" aria-hidden="true"></div>`;
       cursor.setDate(cursor.getDate() + 1);
