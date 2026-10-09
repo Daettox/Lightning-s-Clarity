@@ -1316,9 +1316,24 @@
     user-select: none;
   }
   
-  .particle-autumn svg, .particle-winter svg {
+  .particle-winter svg {
     width: 24px;
     height: 24px;
+  }
+
+  /* Summer leaves: gentle flutter on the leaf itself, fall + sway on the wrapper */
+  .particle-summer svg, .particle-autumn svg {
+    display: block;
+    overflow: visible;
+    transform-origin: 50% 50%;
+    animation: leafFlutter 2.6s ease-in-out infinite alternate;
+    filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.12));
+  }
+
+  @keyframes leafFlutter {
+    0%   { transform: rotate(-16deg) scaleX(1); }
+    50%  { transform: rotate(4deg)   scaleX(0.72); }
+    100% { transform: rotate(16deg)  scaleX(1); }
   }
 
   @keyframes particleFall {
@@ -1334,15 +1349,8 @@
     100% { margin-left: -20px; }
   }
 
-  @keyframes particleFly {
-    0% { left: -50px; opacity: 0; transform: scale(0.8) translateY(0); }
-    10% { opacity: 0.8; transform: scale(0.95) translateY(-10px); }
-    80% { opacity: 0.8; }
-    100% { left: 100vw; opacity: 0; transform: scale(1.05) translateY(-30px); }
-  }
-
   .particle-spring { animation: particleFall 8s linear forwards, particleSway 3s ease-in-out infinite; }
-  .particle-summer { color: var(--text); opacity: 0.6; animation: particleFly 7.5s linear forwards; }
+  .particle-summer { animation: particleFall 10s linear forwards, particleSway 5s ease-in-out infinite; }
   .particle-autumn { animation: particleFall 7s linear forwards, particleSway 4s ease-in-out infinite; }
   .particle-winter { animation: particleFall 10s linear forwards, particleSway 5s ease-in-out infinite; }
 </style>
@@ -1824,7 +1832,7 @@
         </div>
         <div class="seasonal-info" style="text-align: left;">
           <div class="seasonal-title">Particle effects</div>
-          <div class="seasonal-sub" id="particlesSub">Snow, birds, etc.</div>
+          <div class="seasonal-sub" id="particlesSub">Snow, leaves, etc.</div>
         </div>
       </div>
       <div class="particle-toggle-status" id="particlesBadge">On</div>
@@ -2466,6 +2474,58 @@
     });
   }
 
+  // --- Summer leaf texture (two-tone flat leaf with midrib & veins) ---
+  const leafPalettes = [
+    ['#7be0a0', '#35b86b'],
+    ['#8fdc6e', '#4aaa3c'],
+    ['#5fd88a', '#1f9d55'],
+    ['#a8e28f', '#5bb85a'],
+    ['#6fd3a8', '#2a9d78']
+  ];
+
+  function createLeafSVG() {
+    const [light, dark] = leafPalettes[Math.floor(Math.random() * leafPalettes.length)];
+    const size = Math.round(16 + Math.random() * 8); // 16-24px
+    return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2C5.2 6.6 4.4 15.2 12 21.5Z" fill="${light}"/>
+      <path d="M12 2C18.8 6.6 19.6 15.2 12 21.5Z" fill="${dark}"/>
+      <path d="M12 5.5V22.5" stroke="#ffffff" stroke-opacity="0.55" stroke-width="1" stroke-linecap="round"/>
+      <path d="M12 10L8.8 7.6M12 14L8 11.2M12 10L15.2 7.6M12 14L16 11.2" stroke="#ffffff" stroke-opacity="0.3" stroke-width="0.8" stroke-linecap="round"/>
+    </svg>`;
+  }
+
+  // --- Autumn leaf texture (modern flat two-tone: rounded maple + classic leaf) ---
+  const autumnPalettes = [
+    ['#fbbf24', '#f59e0b'], // amber
+    ['#fb923c', '#ea580c'], // orange
+    ['#f87171', '#dc2626'], // red
+    ['#e0a458', '#b45309'], // ochre
+    ['#d6803a', '#9a3f12']  // copper
+  ];
+
+  function createAutumnLeafSVG() {
+    const [light, dark] = autumnPalettes[Math.floor(Math.random() * autumnPalettes.length)];
+    const size = Math.round(18 + Math.random() * 8); // 18-26px
+    const soft = 'stroke-linejoin="round" stroke-width="1.2"';
+    const veins = (d) => `<path d="${d}" stroke="#ffffff" stroke-opacity="0.4" stroke-width="0.9" stroke-linecap="round"/>`;
+    let body;
+    if (Math.random() < 0.5) {
+      // Rounded maple leaf
+      body = `
+        <path d="M12 2L9.8 6.2L7.4 5.2L8 9.6L3 8.8L5.8 12.4L4.4 14.6L9.2 15.2L9 18L11.4 16.8V21.5H12Z" fill="${light}" stroke="${light}" ${soft}/>
+        <path d="M12 2L14.2 6.2L16.6 5.2L16 9.6L21 8.8L18.2 12.4L19.6 14.6L14.8 15.2L15 18L12.6 16.8V21.5H12Z" fill="${dark}" stroke="${dark}" ${soft}/>
+        ${veins('M12 21V7M12 14L8.2 10.8M12 14L15.8 10.8')}`;
+    } else {
+      // Classic rounded leaf with stem
+      body = `
+        <path d="M12 3C6.5 5.5 4.5 11 7 16C8.4 18.6 10.4 20 12 21Z" fill="${light}" stroke="${light}" ${soft}/>
+        <path d="M12 3C17.5 5.5 19.5 11 17 16C15.6 18.6 13.6 20 12 21Z" fill="${dark}" stroke="${dark}" ${soft}/>
+        <path d="M12 21V23" stroke="${dark}" stroke-width="1.4" stroke-linecap="round"/>
+        ${veins('M12 20V6M12 15L8.6 12.2M12 15L15.4 12.2M12 11L9.4 8.8M12 11L14.6 8.8')}`;
+    }
+    return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">${body}</svg>`;
+  }
+
   function spawnParticles() {
     if (!state.seasonalThemeEnabled || !state.particlesEnabled) return;
     const container = document.getElementById('particles-container');
@@ -2481,14 +2541,12 @@
       particleClass = 'particle-spring';
       svg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="rgba(244, 114, 182, 0.75)" stroke="none"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/></svg>`;
     } else if (currentSeason === 'summer') {
-      count = 1;
+      count = 4; // same amount as winter snowflakes
       particleClass = 'particle-summer';
-      svg = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 14c3-3 6-3 9 0 3-3 6-3 9 0"/></svg>`;
     } else if (currentSeason === 'autumn') {
       count = 2;
       particleClass = 'particle-autumn';
-      color = '#d97706';
-      svg = seasonalSVGs.autumn;
+      // textured leaves are generated per particle (see createAutumnLeafSVG)
     } else if (currentSeason === 'winter') {
       count = 4;
       particleClass = 'particle-winter';
@@ -2501,12 +2559,15 @@
         if (!state.seasonalThemeEnabled || !state.particlesEnabled) return;
         const p = document.createElement('div');
         p.className = `particle ${particleClass}`;
-        p.innerHTML = svg;
+        p.innerHTML = currentSeason === 'summer' ? createLeafSVG()
+          : currentSeason === 'autumn' ? createAutumnLeafSVG() : svg;
         if (color) p.style.color = color;
 
         if (currentSeason === 'summer') {
-          p.style.top = Math.random() * 20 + 10 + 'vh';
-          p.style.animationDuration = '8s';
+          p.style.left = Math.random() * 80 + 10 + '%';
+          const fallDur = 10 + Math.random() * 3;   // same pace as snow
+          const swayDur = 4 + Math.random() * 2;
+          p.style.animationDuration = `${fallDur}s, ${swayDur}s`;
         } else {
           p.style.left = Math.random() * 80 + 10 + '%';
           const baseDur = currentSeason === 'winter' ? 10 : 7;
