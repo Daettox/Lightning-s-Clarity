@@ -1002,7 +1002,7 @@
   .backup-action-card { font-family: inherit; color: var(--text); appearance: none; -webkit-appearance: none; }
   .backup-actions-grid { margin-bottom: 0; }
   .more-settings-content[hidden] { display: none !important; }
-  .more-settings-content { margin-top: 2px; }
+  .more-settings-content { margin-top: 4px; padding-top: 8px; }
   .more-settings-toggle .more-settings-chevron { width: 17px; height: 17px; transition: transform 0.2s ease; }
   .more-settings-toggle[aria-expanded="true"] .more-settings-chevron { transform: rotate(180deg); }
   .backup-data-textarea, .backup-import-textarea {
@@ -1223,8 +1223,28 @@
   .welcome-overlay.show { display: flex; }
   /* Keep the first-run choice below in-app confirmation/error dialogs. */
   .welcome-choice-overlay { z-index: 180; }
-  .welcome-choice-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 22px; }
-  .welcome-choice-actions .btn { width: 100%; padding: 14px 16px; font-size: 15px; }
+  .welcome-choice-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 22px;
+  }
+  .welcome-choice-actions .seasonal-card {
+    min-width: 0;
+    min-height: 148px;
+    padding: 16px 10px;
+    gap: 10px;
+    font-family: inherit;
+  }
+  .welcome-choice-actions .seasonal-info { text-align: center; }
+  .welcome-choice-actions .seasonal-title { line-height: 1.25; }
+  .welcome-choice-actions .seasonal-sub { line-height: 1.4; }
+  @media (max-width: 340px) {
+    .welcome-choice-actions { gap: 8px; }
+    .welcome-choice-actions .seasonal-card { padding: 14px 7px; }
+    .welcome-choice-actions .seasonal-title { font-size: 13px; }
+    .welcome-choice-actions .seasonal-sub { font-size: 11px; }
+  }
 
   .welcome-box {
     background: var(--surface);
@@ -1724,10 +1744,30 @@
       </svg>
     </div>
     <div class="welcome-title" id="welcomeChoiceTitle">Welcome to Clarity</div>
-    <div class="welcome-subtitle">Every clean day is a flash.<br>Set start date and prepare for the flight</div>
+    <div class="welcome-subtitle">How do you want to start?</div>
     <div class="welcome-choice-actions">
-      <button type="button" class="btn primary" id="welcomeFreshStartBtn">A Fresh Start</button>
-      <button type="button" class="btn" id="welcomeUploadDataBtn">Upload Data</button>
+      <button type="button" class="seasonal-card" id="welcomeFreshStartBtn">
+        <div class="seasonal-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v3"></path><path d="M12 18v3"></path><path d="m5.64 5.64 2.12 2.12"></path><path d="m16.24 16.24 2.12 2.12"></path><path d="M3 12h3"></path><path d="M18 12h3"></path><path d="m5.64 18.36 2.12-2.12"></path><path d="m16.24 7.76 2.12-2.12"></path><circle cx="12" cy="12" r="4"></circle>
+          </svg>
+        </div>
+        <div class="seasonal-info">
+          <div class="seasonal-title">A Fresh Start</div>
+          <div class="seasonal-sub">Begin a new journey</div>
+        </div>
+      </button>
+      <button type="button" class="seasonal-card" id="welcomeUploadDataBtn">
+        <div class="seasonal-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 16V4"></path><path d="m7 9 5-5 5 5"></path><path d="M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"></path>
+          </svg>
+        </div>
+        <div class="seasonal-info">
+          <div class="seasonal-title">Upload Data</div>
+          <div class="seasonal-sub">Restore a saved journey</div>
+        </div>
+      </button>
     </div>
   </div>
 </div>
@@ -1949,7 +1989,7 @@
       <div class="modal-title">Export Backup</div>
       <button class="modal-close" data-close="backupExportModal" aria-label="Close">×</button>
     </div>
-    <div class="backup-help-text">Your backup contains your timer, calendar, diary, goals, and app settings. Keep it somewhere safe.</div>
+    <div class="backup-help-text">Your backup contains your timer, calendar, diary, goals, and app settings. Keep it somewhere safe</div>
     <textarea id="backupDataText" class="backup-data-textarea" readonly spellcheck="false" aria-label="Backup data"></textarea>
     <div class="modal-actions">
       <button type="button" class="btn primary" id="copyBackupBtn">Copy Backup</button>
@@ -1959,17 +1999,16 @@
   </div>
 </div>
 
-<!-- Import Backup Modal: supports a file, automatic clipboard read, or manual paste. -->
+<!-- Import Backup Modal: choose a file or paste backup text into the field. -->
 <div class="modal-overlay" id="backupImportModal" style="z-index: 170;">
   <div class="modal" style="text-align: left;">
     <div class="modal-header">
       <div class="modal-title">Import Backup</div>
       <button type="button" class="modal-close" id="closeBackupImportBtn" aria-label="Close">×</button>
     </div>
-    <div class="backup-help-text">Choose a .txt backup, paste copied backup data into the field, or try reading directly from your clipboard.</div>
+    <div class="backup-help-text">Choose a .txt backup or paste copied backup data into the field below</div>
     <textarea id="backupImportText" class="backup-import-textarea" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Paste backup data here" placeholder="Paste backup text here…"></textarea>
     <div class="modal-actions" style="margin-bottom: 10px;">
-      <button type="button" class="btn" id="pasteBackupClipboardBtn">Paste from Clipboard</button>
       <button type="button" class="btn" id="chooseBackupFileBtn">Choose .txt File</button>
     </div>
     <button type="button" class="btn primary" id="restoreBackupTextBtn" style="width: 100%;">Restore Backup</button>
@@ -2892,7 +2931,6 @@
 
   const backupImportModal = document.getElementById('backupImportModal');
   const backupImportText = document.getElementById('backupImportText');
-  const pasteBackupClipboardBtn = document.getElementById('pasteBackupClipboardBtn');
   const chooseBackupFileBtn = document.getElementById('chooseBackupFileBtn');
   const restoreBackupTextBtn = document.getElementById('restoreBackupTextBtn');
   const closeBackupImportBtn = document.getElementById('closeBackupImportBtn');
@@ -2921,29 +2959,6 @@
     }
   }
 
-  async function pasteBackupFromClipboard() {
-    try {
-      if (!navigator.clipboard || typeof navigator.clipboard.readText !== 'function') {
-        throw new Error('Clipboard reading is not available in this browser context.');
-      }
-      const clipboardText = await navigator.clipboard.readText();
-      if (!clipboardText.trim()) {
-        showBackupError('The clipboard is empty. Copy a backup first, or paste it into the text field manually.');
-        return;
-      }
-      backupImportText.value = clipboardText;
-      backupImportText.focus();
-      showToast('Backup text pasted from clipboard');
-    } catch (e) {
-      backupImportText.focus();
-      showDialog({
-        title: 'Clipboard Access Unavailable',
-        message: 'Allow clipboard access if prompted, or paste the copied backup directly into the text field.',
-        type: 'alert'
-      });
-    }
-  }
-
   function processBackupText(rawText) {
     try {
       const payload = JSON.parse(String(rawText || '').trim());
@@ -2952,7 +2967,7 @@
       closeModal('backupImportModal');
       showDialog({
         title: 'Restore Backup?',
-        message: 'Restoring this backup will replace the data currently stored on this device. This action cannot be undone.' + exportedAt,
+        message: 'Restoring this backup will replace the data currently stored on this device. This action cannot be undone' + exportedAt,
         type: 'confirm',
         confirmText: 'Restore',
         cancelText: 'Cancel',
@@ -3021,7 +3036,6 @@
   }
   document.getElementById('copyBackupBtn').addEventListener('click', copyBackupText);
   document.getElementById('downloadBackupBtn').addEventListener('click', showBackupDownloadWarning);
-  if (pasteBackupClipboardBtn) pasteBackupClipboardBtn.addEventListener('click', pasteBackupFromClipboard);
   if (chooseBackupFileBtn && backupImportFile) chooseBackupFileBtn.addEventListener('click', () => backupImportFile.click());
   if (restoreBackupTextBtn) restoreBackupTextBtn.addEventListener('click', () => processBackupText(backupImportText.value));
   if (closeBackupImportBtn) closeBackupImportBtn.addEventListener('click', closeBackupImport);
@@ -3367,7 +3381,7 @@
   document.getElementById('deleteAllBtn').addEventListener('click', () => {
     showDialog({
       title: 'Delete All Records',
-      message: 'Are you sure you want to delete all records? This action cannot be undone.',
+      message: 'Are you sure you want to delete all records? This action cannot be undone',
       type: 'confirm', confirmText: 'Delete', isDestructive: true,
       onConfirm: () => {
         state.startTime = Date.now();
