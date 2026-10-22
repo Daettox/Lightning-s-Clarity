@@ -1001,12 +1001,18 @@
   .seasonal-sub { font-size: 12px; color: var(--text-soft); }
   .backup-action-card { font-family: inherit; color: var(--text); appearance: none; -webkit-appearance: none; }
   .backup-actions-grid { margin-bottom: 0; }
-  .backup-data-textarea {
+  .more-settings-content[hidden] { display: none !important; }
+  .more-settings-content { margin-top: 2px; }
+  .more-settings-toggle .more-settings-chevron { width: 17px; height: 17px; transition: transform 0.2s ease; }
+  .more-settings-toggle[aria-expanded="true"] .more-settings-chevron { transform: rotate(180deg); }
+  .backup-data-textarea, .backup-import-textarea {
     display: block; width: 100%; min-height: 190px; max-height: 42vh; resize: vertical;
     padding: 12px; border: 1px solid var(--border); border-radius: 12px;
     background: var(--surface-2); color: var(--text); font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     text-align: left; overflow-wrap: anywhere; white-space: pre-wrap; word-break: break-word; margin: 12px 0 16px;
   }
+  .backup-import-textarea { min-height: 165px; }
+  .backup-data-textarea:focus, .backup-import-textarea:focus { outline: none; border-color: var(--accent); }
   .backup-help-text { color: var(--text-soft); font-size: 12px; line-height: 1.5; text-align: center; }
 
   /* Particle Effects Toggle Card */
@@ -1119,6 +1125,8 @@
     animation: popIn 0.3s ease;
     text-align: center;
   }
+  .dialog-box.export-warning-dialog { width: 92%; max-width: 360px; }
+  .dialog-box.export-warning-dialog .modal-actions .btn { padding: 10px 6px; font-size: 12px; white-space: nowrap; }
   @keyframes popIn {
     from { transform: scale(0.95); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
@@ -1213,6 +1221,10 @@
     animation: fadeIn 0.25s ease;
   }
   .welcome-overlay.show { display: flex; }
+  /* Keep the first-run choice below in-app confirmation/error dialogs. */
+  .welcome-choice-overlay { z-index: 180; }
+  .welcome-choice-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 22px; }
+  .welcome-choice-actions .btn { width: 100%; padding: 14px 16px; font-size: 15px; }
 
   .welcome-box {
     background: var(--surface);
@@ -1703,6 +1715,23 @@
   </div>
 </div>
 
+<!-- First-run choice screen -->
+<div class="welcome-overlay welcome-choice-overlay" id="welcomeChoiceOverlay" aria-labelledby="welcomeChoiceTitle">
+  <div class="welcome-box">
+    <div class="welcome-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#1a1d29" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/>
+      </svg>
+    </div>
+    <div class="welcome-title" id="welcomeChoiceTitle">Welcome to Clarity</div>
+    <div class="welcome-subtitle">Every clean day is a flash.<br>Set start date and prepare for the flight</div>
+    <div class="welcome-choice-actions">
+      <button type="button" class="btn primary" id="welcomeFreshStartBtn">A Fresh Start</button>
+      <button type="button" class="btn" id="welcomeUploadDataBtn">Upload Data</button>
+    </div>
+  </div>
+</div>
+
 <!-- Welcome Pop-up Modal (Centered) -->
 <div class="welcome-overlay" id="welcomeModal">
   <div class="welcome-box">
@@ -1866,6 +1895,11 @@
       <div class="particle-toggle-status" id="autoColorBadge">Off</div>
     </div>
     
+    <button type="button" class="btn more-settings-toggle" id="moreSettingsToggle" aria-expanded="false" aria-controls="moreSettingsContent" style="width: 100%; margin-top: 18px; justify-content: center; gap: 8px; text-align: center;">
+      <svg class="more-settings-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+      <span id="moreSettingsToggleLabel">More Settings</span>
+    </button>
+    <div id="moreSettingsContent" class="more-settings-content" hidden>
     <!-- Backup & Restore -->
     <div class="modal-label">Backup &amp; Restore</div>
     <div class="aesthetics-grid backup-actions-grid">
@@ -1888,7 +1922,7 @@
         </div>
         <div class="seasonal-info">
           <div class="seasonal-title">Import Data</div>
-          <div class="seasonal-sub">Restore from a .txt file</div>
+          <div class="seasonal-sub">File or pasted backup text</div>
         </div>
       </button>
     </div>
@@ -1904,6 +1938,7 @@
       </button>
       <button class="btn" id="deleteAllBtn" style="width: 100%; color: #ef4444; border-color: rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.05);">Delete all records</button>
     </div>
+    </div><!-- /More settings content -->
   </div>
 </div>
 
@@ -1921,6 +1956,24 @@
       <button type="button" class="btn" id="downloadBackupBtn">Download .txt</button>
     </div>
     <button type="button" class="btn" data-close="backupExportModal" style="width: 100%; margin-top: 10px;">Done</button>
+  </div>
+</div>
+
+<!-- Import Backup Modal: supports a file, automatic clipboard read, or manual paste. -->
+<div class="modal-overlay" id="backupImportModal" style="z-index: 170;">
+  <div class="modal" style="text-align: left;">
+    <div class="modal-header">
+      <div class="modal-title">Import Backup</div>
+      <button type="button" class="modal-close" id="closeBackupImportBtn" aria-label="Close">×</button>
+    </div>
+    <div class="backup-help-text">Choose a .txt backup, paste copied backup data into the field, or try reading directly from your clipboard.</div>
+    <textarea id="backupImportText" class="backup-import-textarea" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Paste backup data here" placeholder="Paste backup text here…"></textarea>
+    <div class="modal-actions" style="margin-bottom: 10px;">
+      <button type="button" class="btn" id="pasteBackupClipboardBtn">Paste from Clipboard</button>
+      <button type="button" class="btn" id="chooseBackupFileBtn">Choose .txt File</button>
+    </div>
+    <button type="button" class="btn primary" id="restoreBackupTextBtn" style="width: 100%;">Restore Backup</button>
+    <button type="button" class="btn" id="cancelBackupImportBtn" style="width: 100%; margin-top: 10px;">Cancel</button>
   </div>
 </div>
 
@@ -2689,6 +2742,8 @@
   function showDialog({ title, message, type = 'alert', confirmText = 'OK', cancelText = 'Cancel', isDestructive = false, onConfirm, onCancel }) {
     dTitle.textContent = title;
     dMessage.textContent = message;
+    const dialogBox = dialogOverlay.querySelector('.dialog-box');
+    if (dialogBox) dialogBox.classList.toggle('export-warning-dialog', title === 'Export Warning');
     dConfirm.textContent = confirmText;
     dCancel.textContent = cancelText;
 
@@ -2759,7 +2814,7 @@
     }
   }
 
-  function downloadBackupText() {
+  function downloadBackupFile() {
     try {
       const blob = new Blob([backupDataText.value || createBackupText()], { type: 'text/plain;charset=utf-8' });
       const url = URL.createObjectURL(blob);
@@ -2772,8 +2827,20 @@
       setTimeout(() => URL.revokeObjectURL(url), 1000);
       showToast('Backup file prepared');
     } catch (e) {
-      showDialog({ title: 'Export failed', message: 'The backup file could not be created. Please use Copy Backup instead.', type: 'alert' });
+      showDialog({ title: 'Export failed', message: 'The backup file could not be created. Please use Copy to Clipboard instead.', type: 'alert' });
     }
+  }
+
+  function showBackupDownloadWarning() {
+    showDialog({
+      title: 'Export Warning',
+      message: 'The function may not work well on some devices. We recommend using copying to the clipboard',
+      type: 'confirm',
+      confirmText: 'Continue Anyway',
+      cancelText: 'Copy to Clipboard',
+      onCancel: () => copyBackupText(),
+      onConfirm: () => downloadBackupFile()
+    });
   }
 
   function normalizeBackupData(payload) {
@@ -2823,47 +2890,121 @@
     showDialog({ title: 'Import failed', message, type: 'alert' });
   }
 
+  const backupImportModal = document.getElementById('backupImportModal');
+  const backupImportText = document.getElementById('backupImportText');
+  const pasteBackupClipboardBtn = document.getElementById('pasteBackupClipboardBtn');
+  const chooseBackupFileBtn = document.getElementById('chooseBackupFileBtn');
+  const restoreBackupTextBtn = document.getElementById('restoreBackupTextBtn');
+  const closeBackupImportBtn = document.getElementById('closeBackupImportBtn');
+  const cancelBackupImportBtn = document.getElementById('cancelBackupImportBtn');
+  let importOpenedFromWelcome = false;
+
+  function openBackupImport(fromWelcome = false) {
+    importOpenedFromWelcome = Boolean(fromWelcome);
+    if (importOpenedFromWelcome) {
+      const choice = document.getElementById('welcomeChoiceOverlay');
+      if (choice) choice.classList.remove('show');
+    }
+    backupImportText.value = '';
+    openModal('backupImportModal');
+    setTimeout(() => backupImportText.focus(), 50);
+  }
+
+  function closeBackupImport() {
+    closeModal('backupImportModal');
+    if (importOpenedFromWelcome) {
+      importOpenedFromWelcome = false;
+      const choice = document.getElementById('welcomeChoiceOverlay');
+      if (choice) choice.classList.add('show');
+    } else {
+      importOpenedFromWelcome = false;
+    }
+  }
+
+  async function pasteBackupFromClipboard() {
+    try {
+      if (!navigator.clipboard || typeof navigator.clipboard.readText !== 'function') {
+        throw new Error('Clipboard reading is not available in this browser context.');
+      }
+      const clipboardText = await navigator.clipboard.readText();
+      if (!clipboardText.trim()) {
+        showBackupError('The clipboard is empty. Copy a backup first, or paste it into the text field manually.');
+        return;
+      }
+      backupImportText.value = clipboardText;
+      backupImportText.focus();
+      showToast('Backup text pasted from clipboard');
+    } catch (e) {
+      backupImportText.focus();
+      showDialog({
+        title: 'Clipboard Access Unavailable',
+        message: 'Allow clipboard access if prompted, or paste the copied backup directly into the text field.',
+        type: 'alert'
+      });
+    }
+  }
+
+  function processBackupText(rawText) {
+    try {
+      const payload = JSON.parse(String(rawText || '').trim());
+      pendingBackupRestore = normalizeBackupData(payload);
+      const exportedAt = payload && payload.exportedAt ? `\n\nBackup created: ${new Date(payload.exportedAt).toLocaleString()}` : '';
+      closeModal('backupImportModal');
+      showDialog({
+        title: 'Restore Backup?',
+        message: 'Restoring this backup will replace the data currently stored on this device. This action cannot be undone.' + exportedAt,
+        type: 'confirm',
+        confirmText: 'Restore',
+        cancelText: 'Cancel',
+        isDestructive: true,
+        onConfirm: () => {
+          if (!pendingBackupRestore) return;
+          try {
+            // A successful restore completes onboarding even if the backup predates this flag.
+            pendingBackupRestore.hasSeenWelcome = true;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(pendingBackupRestore));
+            pendingBackupRestore = null;
+            importOpenedFromWelcome = false;
+            closeModal('settingsModal');
+            closeModal('backupExportModal');
+            closeModal('backupImportModal');
+            window.location.reload();
+          } catch (e) {
+            pendingBackupRestore = null;
+            // Keep the import interface available so the user can retry or return to onboarding.
+            openModal('backupImportModal');
+            showBackupError('The backup could not be saved on this device. Please check available storage and try again.');
+          }
+        },
+        onCancel: () => {
+          pendingBackupRestore = null;
+          if (importOpenedFromWelcome) {
+            importOpenedFromWelcome = false;
+            const choice = document.getElementById('welcomeChoiceOverlay');
+            if (choice) choice.classList.add('show');
+          } else {
+            openModal('backupImportModal');
+          }
+        }
+      });
+    } catch (e) {
+      pendingBackupRestore = null;
+      showBackupError(e && e.message && !String(e.message).includes('JSON')
+        ? e.message
+        : "The text could not be read as a valid backup. Paste an unmodified Lightning's Clarity backup.");
+    }
+  }
+
   function readAndValidateBackup(file) {
     if (!file) return;
     if (!/\.txt$/i.test(file.name)) {
       showBackupError('Please choose a backup saved as a .txt file.');
       return;
     }
-
     const reader = new FileReader();
     reader.onload = () => {
-      try {
-        const payload = JSON.parse(String(reader.result || ''));
-        pendingBackupRestore = normalizeBackupData(payload);
-        const exportedAt = payload && payload.exportedAt ? `\n\nBackup created: ${new Date(payload.exportedAt).toLocaleString()}` : '';
-        showDialog({
-          title: 'Restore Backup?',
-          message: 'Restoring this backup will replace the data currently stored on this device. This action cannot be undone.' + exportedAt,
-          type: 'confirm',
-          confirmText: 'Restore',
-          cancelText: 'Cancel',
-          isDestructive: true,
-          onConfirm: () => {
-            if (!pendingBackupRestore) return;
-            try {
-              localStorage.setItem(STORAGE_KEY, JSON.stringify(pendingBackupRestore));
-              pendingBackupRestore = null;
-              closeModal('settingsModal');
-              closeModal('backupExportModal');
-              window.location.reload();
-            } catch (e) {
-              pendingBackupRestore = null;
-              showBackupError('The backup could not be saved on this device. Please check available storage and try again.');
-            }
-          },
-          onCancel: () => { pendingBackupRestore = null; }
-        });
-      } catch (e) {
-        pendingBackupRestore = null;
-        showBackupError(e && e.message && !String(e.message).includes('JSON')
-          ? e.message
-          : "The file could not be read as a valid backup. Choose an unmodified Lightning's Clarity .txt backup.");
-      }
+      backupImportText.value = String(reader.result || '');
+      processBackupText(backupImportText.value);
     };
     reader.onerror = () => showBackupError('The selected file could not be read. Please try again.');
     reader.readAsText(file);
@@ -2871,7 +3012,7 @@
 
   if (exportBackupBtn) exportBackupBtn.addEventListener('click', openBackupExport);
   if (importBackupBtn && backupImportFile) {
-    importBackupBtn.addEventListener('click', () => backupImportFile.click());
+    importBackupBtn.addEventListener('click', () => openBackupImport(false));
     backupImportFile.addEventListener('change', event => {
       const file = event.target.files && event.target.files[0];
       event.target.value = ''; // Allow selecting the same file again.
@@ -2879,7 +3020,15 @@
     });
   }
   document.getElementById('copyBackupBtn').addEventListener('click', copyBackupText);
-  document.getElementById('downloadBackupBtn').addEventListener('click', downloadBackupText);
+  document.getElementById('downloadBackupBtn').addEventListener('click', showBackupDownloadWarning);
+  if (pasteBackupClipboardBtn) pasteBackupClipboardBtn.addEventListener('click', pasteBackupFromClipboard);
+  if (chooseBackupFileBtn && backupImportFile) chooseBackupFileBtn.addEventListener('click', () => backupImportFile.click());
+  if (restoreBackupTextBtn) restoreBackupTextBtn.addEventListener('click', () => processBackupText(backupImportText.value));
+  if (closeBackupImportBtn) closeBackupImportBtn.addEventListener('click', closeBackupImport);
+  if (cancelBackupImportBtn) cancelBackupImportBtn.addEventListener('click', closeBackupImport);
+  if (backupImportModal) backupImportModal.addEventListener('click', event => {
+    if (event.target === backupImportModal) closeBackupImport();
+  });
 
   // --- App Mode (Standard vs Bento-Grid) ---
   const layoutBtnStandard = document.getElementById('layoutBtnStandard');
@@ -3051,7 +3200,10 @@
 
   document.querySelectorAll('.modal-overlay:not(#customDialogOverlay)').forEach(ov => {
     ov.addEventListener('click', (e) => {
-      if (e.target === ov) ov.classList.remove('show');
+      if (e.target === ov) {
+        if (ov.id === 'backupImportModal') closeBackupImport();
+        else ov.classList.remove('show');
+      }
     });
   });
   
@@ -3089,6 +3241,18 @@
   }
 
   renderColorGrids();
+
+  const moreSettingsToggle = document.getElementById('moreSettingsToggle');
+  const moreSettingsContent = document.getElementById('moreSettingsContent');
+  const moreSettingsToggleLabel = document.getElementById('moreSettingsToggleLabel');
+  if (moreSettingsToggle && moreSettingsContent) {
+    moreSettingsToggle.addEventListener('click', () => {
+      const shouldExpand = moreSettingsContent.hidden;
+      moreSettingsContent.hidden = !shouldExpand;
+      moreSettingsToggle.setAttribute('aria-expanded', String(shouldExpand));
+      if (moreSettingsToggleLabel) moreSettingsToggleLabel.textContent = shouldExpand ? 'Less Settings' : 'More Settings';
+    });
+  }
 
   document.getElementById('settingsBtn').addEventListener('click', () => {
     checkTimeEvents();
@@ -3220,7 +3384,7 @@
         renderInfo();
         renderBentoView();
         setTimeout(() => {
-          openWelcomeModal();
+          openWelcomeChoice();
         }, 200);
       }
     });
@@ -3369,6 +3533,9 @@
   // --- Welcome Pop-up Logic ---
   let welcomeSelectedTargetDays = 7;
   const welcomeModal = document.getElementById('welcomeModal');
+  const welcomeChoiceOverlay = document.getElementById('welcomeChoiceOverlay');
+  const welcomeFreshStartBtn = document.getElementById('welcomeFreshStartBtn');
+  const welcomeUploadDataBtn = document.getElementById('welcomeUploadDataBtn');
   const welcomeStartTimeInput = document.getElementById('welcomeStartTime');
   const welcomeTargetCarousel = document.getElementById('welcomeTargetCarousel');
   const welcomeCustomTargetInput = document.getElementById('welcomeCustomTargetInput');
@@ -3397,7 +3564,28 @@
     }
   });
 
+  function openWelcomeChoice() {
+    if (welcomeModal) welcomeModal.classList.remove('show');
+    if (welcomeChoiceOverlay) welcomeChoiceOverlay.classList.add('show');
+  }
+
+  function closeWelcomeChoice() {
+    if (welcomeChoiceOverlay) welcomeChoiceOverlay.classList.remove('show');
+  }
+
+  if (welcomeFreshStartBtn) {
+    welcomeFreshStartBtn.addEventListener('click', () => {
+      closeWelcomeChoice();
+      openWelcomeModal();
+    });
+  }
+
+  if (welcomeUploadDataBtn) {
+    welcomeUploadDataBtn.addEventListener('click', () => openBackupImport(true));
+  }
+
   function openWelcomeModal() {
+    closeWelcomeChoice();
     const now = new Date();
     const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
     welcomeStartTimeInput.value = local.toISOString().slice(0, 16);
@@ -3435,6 +3623,7 @@
     state.hasSeenWelcome = true;
     saveData();
     closeWelcomeModal();
+    closeWelcomeChoice();
     applyAppMode(state.appMode);
     updateCounter();
     renderInfo();
@@ -4356,7 +4545,7 @@
   applyDotCalendarMode();
 
   if (!state.hasSeenWelcome) {
-    openWelcomeModal();
+    openWelcomeChoice();
   }
 
   setInterval(() => {
