@@ -1856,6 +1856,28 @@
       </div>
       <div class="particle-toggle-status" id="autoColorBadge">Off</div>
     </div>
+
+    <!-- Backup & Restore -->
+    <div class="modal-label">Backup &amp; Restore</div>
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <button class="btn" id="exportDataBtn" type="button" style="width: 100%;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Export data
+      </button>
+      <button class="btn" id="importDataBtn" type="button" style="width: 100%;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        Import data
+      </button>
+    </div>
+    <input type="file" id="importFileInput" accept=".json,application/json,text/json,text/plain,application/octet-stream" hidden>
     
     <div style="margin-top: 24px; display: flex; flex-direction: column; gap: 10px;">
       <button class="btn" id="aboutBtn" style="width: 100%;">
@@ -2978,6 +3000,172 @@
     });
   }
   
+  // --- Backup & Restore (JSON) ---
+  const BACKUP_APP_ID = 'lightnings_clarity';
+  const BACKUP_FORMAT_VERSION = 1;
+  const IS_MOBILE_UA = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+
+  function backupFileName() {
+    const d = new Date();
+    const p2 = n => String(n).padStart(2, '0');
+    return `lightnings-clarity-backup-${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}.json`;
+  }
+
+  function downloadViaAnchor(json, fileName) {
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    a.rel = 'noopener';
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    // Android needs the blob URL to stay alive long enough for the download to start
+    setTimeout(() => {
+      if (a.parentNode) a.parentNode.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 4000);
+  }
+
+  async function exportData() {
+    let json;
+    try {
+      json = JSON.stringify({
+        app: BACKUP_APP_ID,
+        formatVersion: BACKUP_FORMAT_VERSION,
+        exportedAt: new Date().toISOString(),
+        data: state
+      }, null, 2);
+    } catch (e) {
+      showDialog({ title: 'Export failed', message: 'Could not prepare the backup.', type: 'alert' });
+      return;
+    }
+    const fileName = backupFileName();
+
+    // 1) Mobile: native share sheet with a real file (Save to Files / Drive / messengers).
+    //    Most reliable on Android PWAs and WebView wrappers where blob downloads may be blocked.
+    if (IS_MOBILE_UA && typeof File === 'function' && navigator.canShare && navigator.share) {
+      for (const mime of ['application/json', 'text/plain']) {
+        try {
+          const file = new File([json], fileName, { type: mime });
+          if (!navigator.canShare({ files: [file] })) continue;
+          await navigator.share({ files: [file], title: 'Lightning\u2019s Clarity backup' });
+          showToast('Backup exported');
+          return;
+        } catch (e) {
+          if (e && e.name === 'AbortError') return; // user closed the share sheet
+          break; // any other error: fall back to a regular download
+        }
+      }
+    }
+
+    // 2) Regular download (desktop browsers, Android Chrome / installed PWA)
+    try {
+      downloadViaAnchor(json, fileName);
+      showToast(IS_MOBILE_UA ? 'Backup saved to Downloads' : 'Backup downloaded');
+    } catch (e) {
+      showDialog({ title: 'Export failed', message: 'Your browser could not save the file.', type: 'alert' });
+    }
+  }
+
+  function parseBackup(text) {
+    text = String(text || '').replace(/^\uFEFF/, '');
+    let obj;
+    try { obj = JSON.parse(text); }
+    catch (e) { throw new Error('The selected file is not valid JSON.'); }
+    if (!obj || typeof obj !== 'object' || Array.isArray(obj)) throw new Error('Unexpected file structure.');
+
+    let data = obj;
+    let meta = {};
+    if (obj.app !== undefined || obj.data !== undefined) {
+      if (obj.app !== BACKUP_APP_ID) throw new Error('This file is not a Lightning\u2019s Clarity backup.');
+      if (typeof obj.formatVersion === 'number' && obj.formatVersion > BACKUP_FORMAT_VERSION) {
+        throw new Error('This backup was created by a newer version of the app.');
+      }
+      meta = { exportedAt: obj.exportedAt };
+      data = obj.data;
+    }
+    if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('The backup contains no data.');
+
+    if (typeof data.startTime !== 'number' || !isFinite(data.startTime)) throw new Error('The backup is missing the counter start date.');
+    ['history', 'urges', 'deletedDays'].forEach(k => {
+      if (data[k] !== undefined && !Array.isArray(data[k])) throw new Error('The backup data is damaged (' + k + ').');
+    });
+    if (data.dayStatuses !== undefined &&
+        (data.dayStatuses === null || typeof data.dayStatuses !== 'object' || Array.isArray(data.dayStatuses))) {
+      throw new Error('The backup data is damaged (dayStatuses).');
+    }
+    if (data.bestStreak !== undefined && typeof data.bestStreak !== 'number') throw new Error('The backup data is damaged (bestStreak).');
+
+    // Keep only known fields
+    const clean = {};
+    Object.keys(defaultData).forEach(k => { if (k in data) clean[k] = data[k]; });
+    return { data: clean, meta };
+  }
+
+  function applyImportedData(clean) {
+    const previous = localStorage.getItem(STORAGE_KEY);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(clean));
+      state = loadData();           // fills in any fields missing from older backups
+      state.hasSeenWelcome = true;  // skip the welcome screen after a restore
+      saveData();
+      try { sessionStorage.setItem('lc_restored', '1'); } catch (e) {}
+    } catch (e) {
+      try { if (previous !== null) localStorage.setItem(STORAGE_KEY, previous); } catch (e2) {}
+      showDialog({ title: 'Import failed', message: 'Could not save the restored data.', type: 'alert' });
+      return;
+    }
+    // A reload re-applies theme, color, layout and every screen from the restored data
+    setTimeout(() => location.reload(), 150);
+  }
+
+  function handleImportText(text) {
+    let parsed;
+    try { parsed = parseBackup(text); }
+    catch (e) {
+      showDialog({ title: 'Import failed', message: e.message, type: 'alert' });
+      return;
+    }
+    const d = parsed.data;
+    const fmt = ts => {
+      const dt = new Date(ts);
+      return isNaN(dt) ? '—' : dt.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    };
+    const lines = [];
+    if (parsed.meta.exportedAt) lines.push('Backup date: ' + fmt(parsed.meta.exportedAt));
+    lines.push('Counter started: ' + fmt(d.startTime));
+    lines.push('Urge entries: ' + (Array.isArray(d.urges) ? d.urges.length : 0));
+    if (typeof d.bestStreak === 'number') lines.push('Best streak: ' + d.bestStreak + ' d');
+
+    showDialog({
+      title: 'Restore backup?',
+      message: lines.join('\n') + '\n\nAll current data in the app will be replaced. This cannot be undone.',
+      type: 'confirm', confirmText: 'Restore', isDestructive: true,
+      onConfirm: () => applyImportedData(d)
+    });
+  }
+
+  const importFileInput = document.getElementById('importFileInput');
+  document.getElementById('exportDataBtn').addEventListener('click', exportData);
+  document.getElementById('importDataBtn').addEventListener('click', () => {
+    importFileInput.value = ''; // allow picking the same file twice in a row
+    importFileInput.click();
+  });
+  importFileInput.addEventListener('change', () => {
+    const file = importFileInput.files && importFileInput.files[0];
+    if (!file) return;
+    if (file.size > 20 * 1024 * 1024) {
+      showDialog({ title: 'Import failed', message: 'The file is too large to be a backup.', type: 'alert' });
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => handleImportText(reader.result);
+    reader.onerror = () => showDialog({ title: 'Import failed', message: 'Could not read the selected file.', type: 'alert' });
+    reader.readAsText(file);
+  });
+
   // --- Delete All Records ---
   document.getElementById('deleteAllBtn').addEventListener('click', () => {
     showDialog({
@@ -4137,6 +4325,13 @@
   if (!state.hasSeenWelcome) {
     openWelcomeModal();
   }
+
+  try {
+    if (sessionStorage.getItem('lc_restored')) {
+      sessionStorage.removeItem('lc_restored');
+      setTimeout(() => showToast('Data restored successfully'), 400);
+    }
+  } catch (e) {}
 
   setInterval(() => {
     if (document.getElementById('screenInfo').classList.contains('active') && 
