@@ -627,6 +627,48 @@
   #dayStatusModal { z-index: 220 !important; }
 
   /* Trigger Chart & Diary */
+  .trigger-stats-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 18px 0 10px;
+  }
+  .trigger-stats-heading .section-title { margin: 0; }
+  .bento-trigger-stats-heading { margin-top: 6px; }
+  .stats-switcher {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    margin-left: auto;
+    border-radius: 11px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    flex: 0 0 auto;
+  }
+  .stats-switch-btn {
+    min-height: 28px;
+    padding: 6px 10px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-soft);
+    font: inherit;
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 1.1;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  }
+  .stats-switch-btn.active {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
+  }
+  .stats-switch-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .trigger-chart {
     margin-bottom: 24px;
     background: var(--surface);
@@ -635,12 +677,22 @@
     padding: 16px;
     box-shadow: var(--shadow);
   }
-  .chart-bar-wrap { display: flex; align-items: center; margin-bottom: 12px; }
+  .chart-bar-wrap { display: flex; align-items: center; gap: 0; margin-bottom: 12px; }
   .chart-bar-wrap:last-child { margin-bottom: 0; }
-  .chart-label { width: 100px; font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .chart-bar-bg { flex: 1; height: 12px; background: var(--surface-2); border-radius: 6px; margin: 0 10px; overflow: hidden; }
+  .chart-label {
+    flex: 0 1 110px;
+    min-width: 0;
+    width: auto;
+    font-size: clamp(10px, 2.8vw, 12px);
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .chart-bar-bg { flex: 1 1 auto; min-width: 16px; height: 12px; background: var(--surface-2); border-radius: 6px; margin: 0 8px; overflow: hidden; }
   .chart-bar-fill { height: 100%; background: var(--accent); border-radius: 6px; width: 0%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-  .chart-value { width: 24px; font-size: 13px; font-weight: 700; color: var(--text); text-align: right; }
+  .chart-value { flex: 0 0 22px; font-size: 12px; font-weight: 700; color: var(--text); text-align: right; font-variant-numeric: tabular-nums; }
 
   .urges-diary { display: flex; flex-direction: column; gap: 8px; }
   .urge-entry {
@@ -651,6 +703,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 10px;
     box-shadow: var(--shadow);
     cursor: pointer;
     transition: transform 0.15s ease;
@@ -658,12 +711,25 @@
   .urge-entry:active { transform: scale(0.98); }
   .urge-entry.success { border-left: 4px solid var(--success); }
   .urge-entry.fail { border-left: 4px solid #ef4444; }
-  .urge-info { display: flex; flex-direction: column; gap: 4px; text-align: left; }
-  .urge-trigger { font-size: 14px; font-weight: 600; color: var(--text); }
+  .urge-info { display: flex; flex: 1 1 auto; min-width: 0; flex-direction: column; gap: 5px; text-align: left; }
+  .urge-trigger {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 9px;
+    min-width: 0;
+    font-size: clamp(11px, 3.35vw, 14px);
+    line-height: 1.35;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .urge-trigger-token { display: inline-block; white-space: nowrap; }
   .urge-date { font-size: 11px; color: var(--text-soft); }
-  .urge-status { font-size: 12px; font-weight: 700; }
+  .urge-status { flex: 0 0 auto; font-size: clamp(10px, 2.8vw, 12px); font-weight: 700; white-space: nowrap; }
   .urge-entry.success .urge-status { color: var(--success); }
   .urge-entry.fail .urge-status { color: #ef4444; }
+  .urge-details-triggers { font-size: 16px; font-weight: 600; margin-bottom: 10px; text-align: center; }
+  .urge-trigger-detail { display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 6px 10px; margin-top: 5px; color: var(--accent); font-size: clamp(12px, 3.4vw, 15px); line-height: 1.4; }
 
   /* Bottom nav */
   .bottom-nav {
@@ -863,6 +929,19 @@
     padding: 3px 8px;
     border-radius: 10px;
     align-self: flex-start;
+  }
+  .bento-emergency-card {
+    background: linear-gradient(135deg, var(--surface), var(--accent-soft));
+    border-color: var(--accent-soft);
+    min-height: 96px;
+    text-align: left;
+    font: inherit;
+    color: var(--text);
+  }
+  .bento-emergency-card .bento-action-icon {
+    background: var(--accent-soft);
+    border-color: var(--accent-soft);
+    color: var(--accent);
   }
 
   /* Mode Switcher */
@@ -1148,8 +1227,84 @@
     box-shadow: var(--shadow);
   }
   .phrase-text { font-size: 18px; font-weight: 700; line-height: 1.4; color: var(--text); text-align: center; }
-  .phrase-refresh { margin-top: 14px; width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); font-weight: 600; font-size: 14px; cursor: pointer; }
-  .phrase-refresh:active { transform: scale(0.97); }
+  .phrase-card { cursor: pointer; user-select: none; -webkit-user-select: none; transition: transform 0.15s ease; }
+  .phrase-card:active { transform: scale(0.98); }
+  .phrase-text.swap { animation: phraseSwap 0.28s ease; }
+  @keyframes phraseSwap { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .phrase-hint { margin-top: 12px; font-size: 11px; color: var(--text-soft); letter-spacing: 0.02em; }
+
+  /* --- Emergency situations --- */
+  .emergency-action-card { font-family: inherit; color: var(--text); appearance: none; -webkit-appearance: none; }
+  .emergency-action-card:active { transform: scale(0.97); }
+  .emg-actions-grid { margin-bottom: 0; }
+
+  .emg-progress { display: flex; justify-content: center; gap: 6px; margin-bottom: 14px; }
+  .emg-dot { width: 22px; height: 4px; border-radius: 4px; background: var(--surface-2); transition: background 0.25s ease; }
+  .emg-dot.done, .emg-dot.current { background: var(--accent); }
+  .emg-dot.done { opacity: 0.45; }
+
+  .emg-step-card {
+    background: linear-gradient(135deg, var(--surface-2), var(--surface));
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 26px 20px 20px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    min-height: 330px;
+  }
+  .emg-step-card.enter { animation: emgIn 0.28s ease; }
+  @keyframes emgIn { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
+  .emg-step-count { font-size: 12px; font-weight: 600; color: var(--text-soft); letter-spacing: 0.04em; }
+  .emg-step-icon {
+    width: 88px; height: 88px; border-radius: 26px;
+    background: var(--accent-soft); color: var(--text);
+    display: grid; place-items: center;
+  }
+  .emg-step-icon svg { width: 44px; height: 44px; }
+  .emg-step-text { font-size: 22px; font-weight: 700; line-height: 1.3; color: var(--text); overflow-wrap: anywhere; }
+  .emg-step-sub { font-size: 14px; line-height: 1.5; color: var(--text-soft); margin-top: -6px; }
+  .emg-step-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; width: 100%; }
+  .emg-check-btn {
+    width: 100%; height: 56px; border-radius: 16px; border: none; cursor: pointer;
+    background: var(--accent); color: #1a1d29;
+    display: grid; place-items: center;
+    box-shadow: 0 6px 18px var(--accent-soft);
+    transition: transform 0.15s ease;
+    font-family: inherit;
+  }
+  .emg-check-btn:active { transform: scale(0.96); }
+  .emg-check-btn svg { width: 26px; height: 26px; }
+
+  .emg-pick-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .emg-pick-item {
+    position: relative;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+    min-height: 104px; padding: 14px 10px;
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 16px;
+    color: var(--text); font-family: inherit; font-size: 13px; font-weight: 600; line-height: 1.25;
+    cursor: pointer; transition: all 0.2s ease; text-align: center;
+    appearance: none; -webkit-appearance: none;
+  }
+  .emg-pick-item:active { transform: scale(0.97); }
+  .emg-pick-item.selected { border-color: var(--accent); background: var(--accent-soft); }
+  .emg-pick-icon { width: 40px; height: 40px; border-radius: 12px; background: var(--surface); display: grid; place-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+  .emg-pick-icon svg { width: 22px; height: 22px; }
+  .emg-pick-badge {
+    position: absolute; top: 8px; right: 8px; min-width: 22px; height: 22px; border-radius: 11px;
+    background: var(--accent); color: #1a1d29; display: none; place-items: center;
+    font-size: 12px; font-weight: 800; line-height: 1;
+  }
+  .emg-pick-item.selected .emg-pick-badge { display: grid; }
+  .emg-text-input {
+    width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border);
+    background: var(--surface-2); color: var(--text); font-size: 14px; font-family: inherit;
+    text-align: center; margin-top: 12px;
+  }
+  .emg-text-input:focus { outline: none; border-color: var(--accent); }
+  #emgPickSave:disabled { opacity: 0.45; pointer-events: none; box-shadow: none; }
 
   .trigger-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
   .trigger-btn {
@@ -1223,6 +1378,10 @@
   .welcome-overlay.show { display: flex; }
   /* Keep the first-run choice below in-app confirmation/error dialogs. */
   .welcome-choice-overlay { z-index: 180; }
+  .welcome-emergency-box { max-width: 390px; }
+  .welcome-emergency-actions { margin-top: 18px; margin-bottom: 0; }
+  .welcome-emergency-actions .seasonal-card { min-width: 0; padding-left: 8px; padding-right: 8px; }
+  .welcome-emergency-actions .seasonal-sub { line-height: 1.35; }
   .welcome-choice-actions {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1540,7 +1699,13 @@
 
       <!-- Diary Tab -->
       <div id="info-tab-diary" style="display: none;">
-        <div class="section-title">Trigger Statistics</div>
+        <div class="trigger-stats-heading">
+          <div class="section-title">Trigger Statistics</div>
+          <div class="stats-switcher" role="group" aria-label="Statistics type">
+            <button type="button" class="stats-switch-btn active" data-stat-mode="triggers" aria-pressed="true">Triggers</button>
+            <button type="button" class="stats-switch-btn" data-stat-mode="time" aria-pressed="false">Time</button>
+          </div>
+        </div>
         <div id="triggerChart" class="trigger-chart"></div>
 
         <div class="section-title">Urges Diary</div>
@@ -1678,6 +1843,21 @@
           </div>
         </div>
 
+        <!-- 7. Emergency access, always last in Bento-Grid -->
+        <div class="bento-card bento-action-card bento-emergency-card span-2 clickable" id="bentoEmergencyCard" role="button" tabindex="0" aria-label="Open Emergency">
+          <div class="bento-action-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <div>
+            <div class="bento-action-title">Emergency</div>
+            <div class="bento-action-desc">Open your emergency plan</div>
+          </div>
+        </div>
+
       </div>
     </section>
   </main>
@@ -1709,7 +1889,13 @@
       <button class="modal-close" data-close="bentoDiaryModal">×</button>
     </div>
     
-    <div class="section-title" style="margin-top: 6px;">Trigger Statistics</div>
+    <div class="trigger-stats-heading bento-trigger-stats-heading">
+      <div class="section-title">Trigger Statistics</div>
+      <div class="stats-switcher" role="group" aria-label="Statistics type">
+        <button type="button" class="stats-switch-btn active" data-stat-mode="triggers" aria-pressed="true">Triggers</button>
+        <button type="button" class="stats-switch-btn" data-stat-mode="time" aria-pressed="false">Time</button>
+      </div>
+    </div>
     <div id="bentoTriggerChart" class="trigger-chart"></div>
 
     <div class="section-title">Urges Diary</div>
@@ -1820,6 +2006,41 @@
     <button class="btn primary" id="welcomeStartBtn" style="width: 100%; margin-top: 18px; padding: 14px 16px; font-size: 15px;">
       Get Started
     </button>
+  </div>
+</div>
+
+<!-- Welcome: Emergency Plan (third onboarding screen) -->
+<div class="welcome-overlay" id="welcomeEmergencyOverlay" aria-labelledby="welcomeEmergencyTitle">
+  <div class="welcome-box welcome-emergency-box">
+    <div class="welcome-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#1a1d29" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z"></path>
+        <path d="M12 8v4"></path>
+        <path d="M12 16h.01"></path>
+      </svg>
+    </div>
+    <div class="welcome-title" id="welcomeEmergencyTitle">A plan for emergency situations</div>
+    <div class="welcome-subtitle">Choose the actions you want to follow when an urge hits or after a slip. You can change them anytime in Settings.</div>
+
+    <div class="aesthetics-grid emg-actions-grid welcome-emergency-actions">
+      <button type="button" class="seasonal-card emergency-action-card" id="welcomeEmgSetUrgeBtn">
+        <div class="seasonal-icon" data-emg-icon="urge" aria-hidden="true"></div>
+        <div class="seasonal-info">
+          <div class="seasonal-title">Urge</div>
+          <div class="seasonal-sub" id="welcomeEmgSetUrgeSub"></div>
+        </div>
+      </button>
+      <button type="button" class="seasonal-card emergency-action-card" id="welcomeEmgSetSlipBtn">
+        <div class="seasonal-icon" data-emg-icon="slip" aria-hidden="true"></div>
+        <div class="seasonal-info">
+          <div class="seasonal-title">After a Slip</div>
+          <div class="seasonal-sub" id="welcomeEmgSetSlipSub"></div>
+        </div>
+      </button>
+    </div>
+
+    <button type="button" class="btn primary" id="welcomeEmergencyContinueBtn" style="width: 100%; margin-top: 18px; padding: 14px 16px; font-size: 15px;">Continue</button>
+    <button type="button" class="btn" id="welcomeEmergencyLaterBtn" style="width: 100%; margin-top: 10px; background: transparent; color: var(--text-soft);">Set up later</button>
   </div>
 </div>
 
@@ -1935,6 +2156,42 @@
       <div class="particle-toggle-status" id="autoColorBadge">Off</div>
     </div>
     
+    <!-- Emergency situations -->
+    <div class="modal-label" style="margin-top: 24px;">Emergency situations</div>
+    <div class="aesthetics-grid emg-actions-grid">
+      <button type="button" class="seasonal-card emergency-action-card" id="emgSetUrgeBtn">
+        <div class="seasonal-icon" data-emg-icon="urge"></div>
+        <div class="seasonal-info">
+          <div class="seasonal-title">Urge</div>
+          <div class="seasonal-sub" id="emgSetUrgeSub"></div>
+        </div>
+      </button>
+      <button type="button" class="seasonal-card emergency-action-card" id="emgSetSlipBtn">
+        <div class="seasonal-icon" data-emg-icon="slip"></div>
+        <div class="seasonal-info">
+          <div class="seasonal-title">After a Slip</div>
+          <div class="seasonal-sub" id="emgSetSlipSub"></div>
+        </div>
+      </button>
+    </div>
+
+    <!-- Offer to log an urge after the Urge flow -->
+    <div class="particle-toggle-card" id="emgLogPromptCard" style="margin-top: 12px; margin-bottom: 0;">
+      <div class="particle-toggle-content">
+        <div class="seasonal-icon" style="background: var(--surface);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"></path>
+          </svg>
+        </div>
+        <div class="seasonal-info" style="text-align: left;">
+          <div class="seasonal-title">Prompt to Log Urges</div>
+          <div class="seasonal-sub">Offer to log after Urge</div>
+        </div>
+      </div>
+      <div class="particle-toggle-status" id="emgLogPromptBadge">On</div>
+    </div>
+
     <button type="button" class="btn more-settings-toggle" id="moreSettingsToggle" aria-expanded="false" aria-controls="moreSettingsContent" style="width: 100%; margin-top: 18px; justify-content: center; gap: 8px; text-align: center;">
       <svg class="more-settings-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
       <span id="moreSettingsToggleLabel">More Settings</span>
@@ -2032,7 +2289,7 @@
         </svg>
       </div>
       <div class="milestone-modal-period" style="font-size: 20px; font-weight: 800; margin-bottom: 4px;">Lightning's Clarity</div>
-      <div style="font-size: 13px; font-weight: 600; color: var(--text-soft); margin-bottom: 16px;">Version 20261005-1835-Bento</div>
+      <div style="font-size: 13px; font-weight: 600; color: var(--text-soft); margin-bottom: 16px;">Version 20261023-1600-EmS</div>
       <a href="https://clck.ru/3WJsqj" target="_blank" rel="noopener noreferrer" class="about-github-badge">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
@@ -2181,10 +2438,55 @@
       <div class="modal-title">Reality Check</div>
       <button class="modal-close" data-close="emergencyModal">×</button>
     </div>
-    <div class="phrase-card">
+    <div class="phrase-card" id="phraseCard" role="button" tabindex="0" aria-label="Show another phrase">
       <div class="phrase-text" id="phraseText">Loading...</div>
+      <div class="phrase-hint">Tap for another phrase</div>
     </div>
-    <button class="phrase-refresh" id="nextPhrase">Tell me something else</button>
+    <div class="aesthetics-grid emg-actions-grid">
+      <button type="button" class="seasonal-card emergency-action-card" id="emgUrgeBtn">
+        <div class="seasonal-icon" data-emg-icon="urge"></div>
+        <div class="seasonal-info">
+          <div class="seasonal-title">Urge</div>
+          <div class="seasonal-sub">Ride out the wave</div>
+        </div>
+      </button>
+      <button type="button" class="seasonal-card emergency-action-card" id="emgSlipBtn">
+        <div class="seasonal-icon" data-emg-icon="slip"></div>
+        <div class="seasonal-info">
+          <div class="seasonal-title">I slipped</div>
+          <div class="seasonal-sub">Reset and move on</div>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Emergency: action cards flow -->
+<div class="modal-overlay" id="emergencyStepsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="emgStepsTitle">Urge</div>
+      <button class="modal-close" data-close="emergencyStepsModal" aria-label="Close">×</button>
+    </div>
+    <div class="emg-progress" id="emgProgress"></div>
+    <div class="emg-step-card" id="emgStepCard"></div>
+  </div>
+</div>
+
+<!-- Emergency: choose actions (opened from Settings) -->
+<div class="modal-overlay" id="emergencyPickModal" style="z-index: 270;">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="emgPickTitle">Urge</div>
+      <button class="modal-close" data-close="emergencyPickModal" aria-label="Close">×</button>
+    </div>
+    <div class="modal-label" id="emgPickCounter" style="margin-top: 0;"></div>
+    <div class="emg-pick-grid" id="emgPickGrid"></div>
+    <input type="text" id="emgOtherInput" class="emg-text-input" maxlength="60" placeholder="Write your own action" style="display: none;" autocomplete="off" />
+    <div class="modal-actions" style="margin-top: 18px;">
+      <button class="btn" data-close="emergencyPickModal">Cancel</button>
+      <button class="btn primary" id="emgPickSave">Save</button>
+    </div>
   </div>
 </div>
 
@@ -2299,6 +2601,63 @@
     { label: 'Other', days: 'custom' }
   ];
 
+  // --- Emergency actions catalog ---
+  const EMG_MIN = 2, EMG_MAX = 5;
+  const EMG_SVG = (inner) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${inner}</svg>`;
+  const EMG_ICONS = {
+    urge: EMG_SVG('<path d="M3 12h4l3-8 4 16 3-8h4"/>'),
+    slip: EMG_SVG('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'),
+    check: EMG_SVG('<path d="M20 6 9 17l-5-5"/>').replace('stroke-width="2"', 'stroke-width="2.8"'),
+    leave: EMG_SVG('<path d="M13 4h3a2 2 0 0 1 2 2v14"/><path d="M2 20h3"/><path d="M13 20h9"/><path d="M10 12v.01"/><path d="M13 4.56v16.16a1 1 0 0 1-1.24.97L5 20V5.56a2 2 0 0 1 1.52-1.94l4-1A2 2 0 0 1 13 4.56z"/>'),
+    water: EMG_SVG('<path d="M7 3h10l-1.2 16a2 2 0 0 1-2 1.8h-3.6a2 2 0 0 1-2-1.8z"/><path d="M7.6 9h8.8"/>'),
+    phone: EMG_SVG('<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/><path d="M3 3l18 18"/>'),
+    timer: EMG_SVG('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M9 2h6"/>'),
+    breathe: EMG_SVG('<path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/>'),
+    cold: EMG_SVG('<path d="M2 12h20"/><path d="M12 2v20"/><path d="m20 16-4-4 4-4"/><path d="m4 8 4 4-4 4"/><path d="m16 4-4 4-4-4"/><path d="m8 20 4-4 4 4"/>'),
+    pushups: EMG_SVG('<path d="M6 7v10"/><path d="M3 9v6"/><path d="M18 7v10"/><path d="M21 9v6"/><path d="M6 12h12"/>'),
+    access: EMG_SVG('<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/>'),
+    shower: EMG_SVG('<path d="m4 4 2.5 2.5"/><path d="M13.5 6.5a4.95 4.95 0 0 0-7 7"/><path d="M15 5 5 15"/><path d="M14 17v.01"/><path d="M10 16v.01"/><path d="M13 13v.01"/><path d="M16 10v.01"/><path d="M11 20v.01"/><path d="M17 14v.01"/><path d="M20 11v.01"/>'),
+    walk: EMG_SVG('<circle cx="14" cy="4" r="1.7"/><path d="M14 7.5l-2 5.5 3 3v4.5"/><path d="M12 13l-3 7"/><path d="M13.5 8.5 10 11"/><path d="M13.8 8.5l3.2 3.5"/>'),
+    call: EMG_SVG('<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>'),
+    other: EMG_SVG('<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/>'),
+    heart: EMG_SVG('<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>')
+  };
+  const EMG_CATALOG = {
+    urge: [
+      { id: 'leave',   label: 'Leave the Room',              icon: 'leave' },
+      { id: 'water',   label: 'Drink a Glass of Water',      icon: 'water' },
+      { id: 'phone',   label: 'Put the Phone Away',          icon: 'phone' },
+      { id: 'timer',   label: 'Set a Timer for 15 minutes',  icon: 'timer' },
+      { id: 'breathe', label: 'Take a Few Deep Breathes',    icon: 'breathe' },
+      { id: 'cold',    label: 'Cold Water',                  icon: 'cold' },
+      { id: 'pushups', label: 'Do Push-Ups',                 icon: 'pushups' },
+      { id: 'other',   label: 'Other',                       icon: 'other' }
+    ],
+    slip: [
+      { id: 'access',  label: 'Remove Access',               icon: 'access' },
+      { id: 'shower',  label: 'Take a Cold Shower',          icon: 'shower' },
+      { id: 'water',   label: 'Drink a Glass of Water',      icon: 'water' },
+      { id: 'walk',    label: 'Go for a Walk',               icon: 'walk' },
+      { id: 'call',    label: 'Call a Support Person',       icon: 'call' },
+      { id: 'other',   label: 'Other',                       icon: 'other' }
+    ]
+  };
+  const EMG_DEFAULTS = {
+    urge: { selected: ['leave', 'water', 'breathe'], custom: '' },
+    slip: { selected: ['access', 'water', 'walk'], custom: '' }
+  };
+  function sanitizeEmergencyConfig(cfg, kind) {
+    const validIds = EMG_CATALOG[kind].map(a => a.id);
+    const custom = cfg && typeof cfg.custom === 'string' ? cfg.custom.trim().slice(0, 60) : '';
+    let selected = cfg && Array.isArray(cfg.selected)
+      ? cfg.selected.filter((id, i, arr) => validIds.includes(id) && arr.indexOf(id) === i)
+      : [];
+    if (selected.includes('other') && !custom) selected = selected.filter(id => id !== 'other');
+    selected = selected.slice(0, EMG_MAX);
+    if (selected.length < EMG_MIN) return { selected: EMG_DEFAULTS[kind].selected.slice(), custom };
+    return { selected, custom };
+  }
+
   // --- Storage ---
   const STORAGE_KEY = 'lightnings_clarity_v2';
   const defaultData = {
@@ -2315,6 +2674,10 @@
     appMode: 'standard',
     dotCalendarEnabled: false,
     dotCalendarPeriod: 90,
+    emergencyUrge: { selected: EMG_DEFAULTS.urge.selected.slice(), custom: '' },
+    emergencySlip: { selected: EMG_DEFAULTS.slip.selected.slice(), custom: '' },
+    emergencyUrgeLogPrompt: true,
+    welcomeStep: 'choice',
     devSeasonOverride: 'auto',
     devTimeOverride: 'auto'
   };
@@ -2334,6 +2697,9 @@
       if(parsed.particlesEnabled === undefined) parsed.particlesEnabled = true;
       if(parsed.autoColorEnabled === undefined) parsed.autoColorEnabled = false;
       if(parsed.hasSeenWelcome === undefined) parsed.hasSeenWelcome = false;
+      if (!['choice', 'emergency', 'complete'].includes(parsed.welcomeStep)) {
+        parsed.welcomeStep = parsed.hasSeenWelcome ? 'complete' : 'choice';
+      }
       if(!parsed.appMode) parsed.appMode = 'standard';
       if(parsed.dotCalendarEnabled === undefined) parsed.dotCalendarEnabled = false;
       if(![90, 180, 365].includes(Number(parsed.dotCalendarPeriod))) parsed.dotCalendarPeriod = 90;
@@ -2341,6 +2707,9 @@
       if(parsed.bestStreakDate === undefined) parsed.bestStreakDate = null;
       if(parsed.devSeasonOverride === undefined) parsed.devSeasonOverride = 'auto';
       if(parsed.devTimeOverride === undefined) parsed.devTimeOverride = 'auto';
+      parsed.emergencyUrge = sanitizeEmergencyConfig(parsed.emergencyUrge, 'urge');
+      parsed.emergencySlip = sanitizeEmergencyConfig(parsed.emergencySlip, 'slip');
+      parsed.emergencyUrgeLogPrompt = parsed.emergencyUrgeLogPrompt !== false;
       return { ...defaultData, ...parsed };
     } catch (e) {
       return { ...defaultData, hasSeenWelcome: false };
@@ -2920,6 +3289,9 @@
     restored.theme = ['light', 'dark'].includes(restored.theme) ? restored.theme : defaultData.theme;
     restored.appMode = ['standard', 'bento'].includes(restored.appMode) ? restored.appMode : defaultData.appMode;
     restored.dotCalendarPeriod = [90, 180, 365].includes(Number(restored.dotCalendarPeriod)) ? Number(restored.dotCalendarPeriod) : defaultData.dotCalendarPeriod;
+    restored.emergencyUrge = sanitizeEmergencyConfig(restored.emergencyUrge, 'urge');
+    restored.emergencySlip = sanitizeEmergencyConfig(restored.emergencySlip, 'slip');
+    restored.emergencyUrgeLogPrompt = restored.emergencyUrgeLogPrompt !== false;
     restored.devSeasonOverride = ['auto', 'winter', 'spring', 'summer', 'autumn'].includes(restored.devSeasonOverride) ? restored.devSeasonOverride : 'auto';
     restored.devTimeOverride = ['auto', 'morning', 'day', 'evening', 'night'].includes(restored.devTimeOverride) ? restored.devTimeOverride : 'auto';
     return restored;
@@ -3587,6 +3959,23 @@
     if (welcomeChoiceOverlay) welcomeChoiceOverlay.classList.remove('show');
   }
 
+  const welcomeEmergencyOverlay = document.getElementById('welcomeEmergencyOverlay');
+  const welcomeEmergencyContinueBtn = document.getElementById('welcomeEmergencyContinueBtn');
+  const welcomeEmergencyLaterBtn = document.getElementById('welcomeEmergencyLaterBtn');
+
+  function openWelcomeEmergency() {
+    closeWelcomeChoice();
+    closeWelcomeModal();
+    if (welcomeEmergencyOverlay) welcomeEmergencyOverlay.classList.add('show');
+  }
+
+  function finishWelcomeEmergency() {
+    state.hasSeenWelcome = true;
+    state.welcomeStep = 'complete';
+    saveData();
+    if (welcomeEmergencyOverlay) welcomeEmergencyOverlay.classList.remove('show');
+  }
+
   if (welcomeFreshStartBtn) {
     welcomeFreshStartBtn.addEventListener('click', () => {
       closeWelcomeChoice();
@@ -3634,7 +4023,8 @@
     state.urges = [];
     state.deletedDays = [];
     state.dayStatuses = {};
-    state.hasSeenWelcome = true;
+    state.hasSeenWelcome = false;
+    state.welcomeStep = 'emergency';
     saveData();
     closeWelcomeModal();
     closeWelcomeChoice();
@@ -3642,7 +4032,11 @@
     updateCounter();
     renderInfo();
     renderBentoView();
+    openWelcomeEmergency();
   });
+
+  if (welcomeEmergencyContinueBtn) welcomeEmergencyContinueBtn.addEventListener('click', finishWelcomeEmergency);
+  if (welcomeEmergencyLaterBtn) welcomeEmergencyLaterBtn.addEventListener('click', finishWelcomeEmergency);
 
   // --- Emergency phrases ---
   const phrases = [
@@ -3659,7 +4053,7 @@
   ];
 
   const phraseText = document.getElementById('phraseText');
-  const nextPhraseBtn = document.getElementById('nextPhrase');
+  const phraseCard = document.getElementById('phraseCard');
   let lastPhraseIdx = -1;
 
   function showRandomPhrase() {
@@ -3667,10 +4061,248 @@
     do { idx = Math.floor(Math.random() * phrases.length); } while (idx === lastPhraseIdx);
     lastPhraseIdx = idx;
     phraseText.textContent = `"${phrases[idx]}"`;
+    phraseText.classList.remove('swap');
+    void phraseText.offsetWidth;
+    phraseText.classList.add('swap');
   }
 
-  document.getElementById('emergencyBtn').addEventListener('click', () => { showRandomPhrase(); openModal('emergencyModal'); });
-  nextPhraseBtn.addEventListener('click', showRandomPhrase);
+  function openEmergencyMenu() {
+    showRandomPhrase();
+    openModal('emergencyModal');
+  }
+
+  document.getElementById('emergencyBtn').addEventListener('click', openEmergencyMenu);
+  const bentoEmergencyCard = document.getElementById('bentoEmergencyCard');
+  if (bentoEmergencyCard) {
+    bentoEmergencyCard.addEventListener('click', openEmergencyMenu);
+    bentoEmergencyCard.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openEmergencyMenu();
+      }
+    });
+  }
+  phraseCard.addEventListener('click', showRandomPhrase);
+  phraseCard.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showRandomPhrase(); }
+  });
+
+  // --- Emergency situations: icons on buttons ---
+  document.querySelectorAll('[data-emg-icon]').forEach(el => { el.innerHTML = EMG_ICONS[el.dataset.emgIcon]; });
+
+  const EMG_STATE_KEY = { urge: 'emergencyUrge', slip: 'emergencySlip' };
+  const EMG_TITLES = { urge: 'Urge', slip: 'I slipped' };
+  const EMG_PICK_TITLES = { urge: 'Urge', slip: 'After a Slip' };
+  const EMG_FINISH = {
+    urge: { title: 'Well done', sub: 'Urges peak and pass. You just proved it again.' },
+    slip: { title: "You're still here", sub: 'A slip is a moment, not the end of your journey.' }
+  };
+
+  function getEmergencyActions(kind) {
+    const cfg = sanitizeEmergencyConfig(state[EMG_STATE_KEY[kind]], kind);
+    return cfg.selected.map(id => {
+      const a = EMG_CATALOG[kind].find(x => x.id === id);
+      return { id: a.id, icon: a.icon, label: a.id === 'other' ? cfg.custom : a.label };
+    });
+  }
+
+  function updateEmergencySettingsSubs() {
+    const fmt = (kind) => { const n = getEmergencyActions(kind).length; return `${n} action${n === 1 ? '' : 's'}`; };
+    document.getElementById('emgSetUrgeSub').textContent = fmt('urge');
+    document.getElementById('emgSetSlipSub').textContent = fmt('slip');
+    const welcomeUrgeSub = document.getElementById('welcomeEmgSetUrgeSub');
+    const welcomeSlipSub = document.getElementById('welcomeEmgSetSlipSub');
+    if (welcomeUrgeSub) welcomeUrgeSub.textContent = fmt('urge');
+    if (welcomeSlipSub) welcomeSlipSub.textContent = fmt('slip');
+  }
+  updateEmergencySettingsSubs();
+
+  const emgLogPromptCard = document.getElementById('emgLogPromptCard');
+  function updateEmergencyLogPromptUI() {
+    const on = state.emergencyUrgeLogPrompt !== false;
+    emgLogPromptCard.classList.toggle('active', on);
+    document.getElementById('emgLogPromptBadge').textContent = on ? 'On' : 'Off';
+  }
+  updateEmergencyLogPromptUI();
+  emgLogPromptCard.addEventListener('click', () => {
+    state.emergencyUrgeLogPrompt = !(state.emergencyUrgeLogPrompt !== false);
+    saveData();
+    updateEmergencyLogPromptUI();
+  });
+
+  // After the last card is confirmed
+  function finishEmergencyFlow(kind) {
+    closeModal('emergencyStepsModal');
+    if (kind === 'slip') {
+      setTimeout(() => showDialog({
+        title: 'Restart your timer?',
+        message: 'Would you like to start the timer from the beginning? Your current streak will be saved in your history',
+        type: 'confirm',
+        confirmText: 'Restart Timer',
+        cancelText: 'Not Now',
+        onConfirm: () => openResetModal()
+      }), 250);
+    } else if (state.emergencyUrgeLogPrompt !== false) {
+      setTimeout(() => showDialog({
+        title: 'Log this urge?',
+        message: 'Would you like to record it? Tracking urges helps you notice your triggers over time',
+        type: 'confirm',
+        confirmText: 'Log Urge',
+        cancelText: 'Skip',
+        onConfirm: () => openTrackUrgeModal()
+      }), 250);
+    }
+  }
+
+  // --- Emergency situations: action cards flow ---
+  const emgStepCard = document.getElementById('emgStepCard');
+  const emgProgress = document.getElementById('emgProgress');
+  let emgFlow = { kind: 'urge', actions: [], index: 0 };
+
+  function renderEmergencyStep() {
+    const { kind, actions, index } = emgFlow;
+    const finished = index >= actions.length;
+
+    emgProgress.innerHTML = '';
+    actions.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'emg-dot' + (finished || i < index ? ' done' : (i === index ? ' current' : ''));
+      emgProgress.appendChild(dot);
+    });
+
+    emgStepCard.innerHTML = '';
+    const count = document.createElement('div');
+    count.className = 'emg-step-count';
+    count.textContent = finished ? 'DONE' : `STEP ${index + 1} OF ${actions.length}`;
+
+    const body = document.createElement('div');
+    body.className = 'emg-step-body';
+    const icon = document.createElement('div');
+    icon.className = 'emg-step-icon';
+    const text = document.createElement('div');
+    text.className = 'emg-step-text';
+    body.appendChild(icon);
+    body.appendChild(text);
+
+    if (finished) {
+      icon.innerHTML = EMG_ICONS.heart;
+      text.textContent = EMG_FINISH[kind].title;
+      const sub = document.createElement('div');
+      sub.className = 'emg-step-sub';
+      sub.textContent = EMG_FINISH[kind].sub;
+      body.appendChild(sub);
+    } else {
+      icon.innerHTML = EMG_ICONS[actions[index].icon];
+      text.textContent = actions[index].label;
+    }
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'emg-check-btn';
+    btn.setAttribute('aria-label', finished ? 'Done' : 'Done, next step');
+    btn.innerHTML = EMG_ICONS.check;
+    btn.addEventListener('click', () => {
+      if (finished) { finishEmergencyFlow(kind); return; }
+      emgFlow.index += 1;
+      renderEmergencyStep();
+    });
+
+    emgStepCard.appendChild(count);
+    emgStepCard.appendChild(body);
+    emgStepCard.appendChild(btn);
+
+    emgStepCard.classList.remove('enter');
+    void emgStepCard.offsetWidth;
+    emgStepCard.classList.add('enter');
+  }
+
+  function startEmergencyFlow(kind) {
+    emgFlow = { kind, actions: getEmergencyActions(kind), index: 0 };
+    document.getElementById('emgStepsTitle').textContent = EMG_TITLES[kind];
+    renderEmergencyStep();
+    closeModal('emergencyModal');
+    openModal('emergencyStepsModal');
+  }
+
+  document.getElementById('emgUrgeBtn').addEventListener('click', () => startEmergencyFlow('urge'));
+  document.getElementById('emgSlipBtn').addEventListener('click', () => startEmergencyFlow('slip'));
+
+  // --- Emergency situations: choosing actions in Settings ---
+  const emgPickGrid = document.getElementById('emgPickGrid');
+  const emgPickCounter = document.getElementById('emgPickCounter');
+  const emgOtherInput = document.getElementById('emgOtherInput');
+  const emgPickSave = document.getElementById('emgPickSave');
+  let emgPick = { kind: 'urge', selected: [] };
+
+  function refreshEmergencyPick() {
+    const hasOther = emgPick.selected.includes('other');
+    emgOtherInput.style.display = hasOther ? 'block' : 'none';
+    const n = emgPick.selected.length;
+    emgPickCounter.textContent = n === 0
+      ? `Tap actions in the order you want them (${EMG_MIN}–${EMG_MAX})`
+      : `Selected ${n} of ${EMG_MAX} · Tap again to remove`;
+    const otherOk = !hasOther || emgOtherInput.value.trim().length > 0;
+    emgPickSave.disabled = !(n >= EMG_MIN && n <= EMG_MAX && otherOk);
+    emgPickGrid.querySelectorAll('.emg-pick-item').forEach(el => {
+      const pos = emgPick.selected.indexOf(el.dataset.id);
+      el.classList.toggle('selected', pos >= 0);
+      el.setAttribute('aria-pressed', pos >= 0 ? 'true' : 'false');
+      el.querySelector('.emg-pick-badge').textContent = pos >= 0 ? String(pos + 1) : '';
+    });
+  }
+
+  function openEmergencyPick(kind) {
+    const cfg = sanitizeEmergencyConfig(state[EMG_STATE_KEY[kind]], kind);
+    emgPick = { kind, selected: cfg.selected.slice() };
+    emgOtherInput.value = cfg.custom;
+    document.getElementById('emgPickTitle').textContent = EMG_PICK_TITLES[kind];
+
+    emgPickGrid.innerHTML = '';
+    EMG_CATALOG[kind].forEach(a => {
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'emg-pick-item';
+      item.dataset.id = a.id;
+      item.innerHTML = `<span class="emg-pick-badge"></span><span class="emg-pick-icon">${EMG_ICONS[a.icon]}</span>`;
+      const label = document.createElement('span');
+      label.textContent = a.label;
+      item.appendChild(label);
+      item.addEventListener('click', () => {
+        const pos = emgPick.selected.indexOf(a.id);
+        if (pos >= 0) {
+          emgPick.selected.splice(pos, 1);
+        } else {
+          if (emgPick.selected.length >= EMG_MAX) { showToast(`You can choose up to ${EMG_MAX} actions`); return; }
+          emgPick.selected.push(a.id);
+          if (a.id === 'other') setTimeout(() => emgOtherInput.focus(), 60);
+        }
+        refreshEmergencyPick();
+      });
+      emgPickGrid.appendChild(item);
+    });
+
+    refreshEmergencyPick();
+    openModal('emergencyPickModal');
+  }
+
+  emgOtherInput.addEventListener('input', refreshEmergencyPick);
+
+  emgPickSave.addEventListener('click', () => {
+    const kind = emgPick.kind;
+    const custom = emgOtherInput.value.trim();
+    const cfg = sanitizeEmergencyConfig({ selected: emgPick.selected, custom }, kind);
+    if (cfg.selected.length < EMG_MIN) { showToast(`Choose at least ${EMG_MIN} actions`); return; }
+    state[EMG_STATE_KEY[kind]] = cfg;
+    saveData();
+    updateEmergencySettingsSubs();
+    closeModal('emergencyPickModal');
+    showToast('Actions saved');
+  });
+
+  document.getElementById('emgSetUrgeBtn').addEventListener('click', () => openEmergencyPick('urge'));
+  document.getElementById('emgSetSlipBtn').addEventListener('click', () => openEmergencyPick('slip'));
+  document.getElementById('welcomeEmgSetUrgeBtn').addEventListener('click', () => openEmergencyPick('urge'));
+  document.getElementById('welcomeEmgSetSlipBtn').addEventListener('click', () => openEmergencyPick('slip'));
 
   // --- Urge Tracker ---
   const urgeBtn = document.getElementById('urgeBtn');
@@ -3848,28 +4480,48 @@
     openModal('milestoneModal');
   });
   
+  let triggerChartMode = 'triggers';
+
+  function escapeTriggerHTML(value) {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  // Keep every emoji + trigger label together, while allowing separate triggers to wrap.
+  function getUrgeTriggerTokensHTML(triggerString) {
+    const triggers = String(triggerString || '').split(/,\s*/).filter(Boolean);
+    if (!triggers.length) return '';
+    return triggers.map(trigger => `<span class="urge-trigger-token">${escapeTriggerHTML(trigger)}</span>`).join('');
+  }
+
+  function getNotEnoughDataHTML() {
+    return '<div style="text-align: center; color: var(--text-soft); font-size: 13px; padding: 20px 0;">Not enough data yet</div>';
+  }
+
   function getTriggerChartHTML() {
-    if (state.urges.length === 0) {
-      return '<div style="text-align: center; color: var(--text-soft); font-size: 13px; padding: 20px 0;">Not enough data yet</div>';
-    }
-    
+    if (!state.urges || state.urges.length === 0) return getNotEnoughDataHTML();
+
     const counts = {};
-    state.urges.forEach(u => {
-      if (!u.trigger) return;
-      u.trigger.split(', ').forEach(t => counts[t] = (counts[t] || 0) + 1);
+    state.urges.forEach(urge => {
+      if (!urge.trigger) return;
+      String(urge.trigger).split(/,\s*/).filter(Boolean).forEach(trigger => {
+        counts[trigger] = (counts[trigger] || 0) + 1;
+      });
     });
-    
+
     const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-    if (sorted.length === 0) {
-      return '<div style="text-align: center; color: var(--text-soft); font-size: 13px; padding: 20px 0;">Not enough data yet</div>';
-    }
-    
+    if (sorted.length === 0) return getNotEnoughDataHTML();
+
     const max = sorted[0][1];
     return sorted.map(([trigger, count]) => {
       const width = (count / max) * 100;
       return `
         <div class="chart-bar-wrap">
-          <div class="chart-label">${trigger}</div>
+          <div class="chart-label" title="${escapeTriggerHTML(trigger)}">${escapeTriggerHTML(trigger)}</div>
           <div class="chart-bar-bg"><div class="chart-bar-fill" style="width: ${width}%"></div></div>
           <div class="chart-value">${count}</div>
         </div>
@@ -3877,13 +4529,69 @@
     }).join('');
   }
 
+  function getTimeOfDayChartHTML() {
+    if (!state.urges || state.urges.length === 0) return getNotEnoughDataHTML();
+
+    const periods = [
+      { label: 'Morning 06–12', start: 6, end: 12, count: 0 },
+      { label: 'Day 12–18', start: 12, end: 18, count: 0 },
+      { label: 'Evening 18–24', start: 18, end: 24, count: 0 },
+      { label: 'Night 00–06', start: 0, end: 6, count: 0 }
+    ];
+    let validEntries = 0;
+
+    state.urges.forEach(urge => {
+      if (urge.time === null || urge.time === undefined || urge.time === '') return;
+      const date = new Date(urge.time);
+      if (!Number.isFinite(date.getTime())) return;
+      validEntries++;
+      const hour = date.getHours();
+      const period = hour >= 6 && hour < 12 ? periods[0]
+        : hour >= 12 && hour < 18 ? periods[1]
+        : hour >= 18 ? periods[2]
+        : periods[3];
+      period.count++;
+    });
+
+    if (validEntries === 0) return getNotEnoughDataHTML();
+    const max = Math.max(1, ...periods.map(period => period.count));
+    return periods.map(period => {
+      const width = (period.count / max) * 100;
+      return `
+        <div class="chart-bar-wrap">
+          <div class="chart-label" title="${period.label}">${period.label}</div>
+          <div class="chart-bar-bg"><div class="chart-bar-fill" style="width: ${width}%"></div></div>
+          <div class="chart-value">${period.count}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
   function renderTriggerChart() {
-    const html = getTriggerChartHTML();
+    const html = triggerChartMode === 'time' ? getTimeOfDayChartHTML() : getTriggerChartHTML();
     const chartContainer = document.getElementById('triggerChart');
     if (chartContainer) chartContainer.innerHTML = html;
     const bentoChartContainer = document.getElementById('bentoTriggerChart');
     if (bentoChartContainer) bentoChartContainer.innerHTML = html;
+
+    document.querySelectorAll('.stats-switch-btn').forEach(button => {
+      const active = button.dataset.statMode === triggerChartMode;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
   }
+
+  document.querySelectorAll('.stats-switcher').forEach(switcher => {
+    switcher.addEventListener('click', event => {
+      const button = event.target.closest('.stats-switch-btn');
+      if (!button) return;
+      const mode = button.dataset.statMode;
+      if (mode !== 'triggers' && mode !== 'time') return;
+      if (triggerChartMode === mode) return;
+      triggerChartMode = mode;
+      renderTriggerChart();
+    });
+  });
 
   function getUrgesDiaryHTML() {
     if (state.urges.length === 0) {
@@ -3901,7 +4609,7 @@
         return `
           <div class="urge-entry ${item.u.overcome ? 'success' : 'fail'}" data-index="${item.i}">
             <div class="urge-info">
-              <span class="urge-trigger">${item.u.trigger}</span>
+              <span class="urge-trigger">${getUrgeTriggerTokensHTML(item.u.trigger)}</span>
               <span class="urge-date">${dateStr}</span>
             </div>
             <div class="urge-status">${item.u.overcome ? '✅ Overcame' : '❌ Failed'}</div>
@@ -3927,7 +4635,7 @@
     const dateStr = new Date(u.time).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' });
     
     document.getElementById('urgeDetailsContent').innerHTML = `
-      <div style="font-size: 16px; font-weight: 600; margin-bottom: 10px; text-align: center;">Trigger(s): <span style="color: var(--accent); display: block; margin-top:4px;">${u.trigger}</span></div>
+      <div class="urge-details-triggers">Trigger(s): <span class="urge-trigger-detail">${getUrgeTriggerTokensHTML(u.trigger)}</span></div>
       <div style="font-size: 14px; font-weight: 600; color: ${u.overcome ? 'var(--success)' : '#ef4444'}; margin-bottom: 8px; text-align: center;">${u.overcome ? '✅ Successfully Overcame' : '❌ Failed to Overcome'}</div>
       <div style="font-size: 13px; color: var(--text-soft); margin-bottom: 8px; text-align: center;">Logged: ${dateStr}</div>
     `;
@@ -4559,7 +5267,8 @@
   applyDotCalendarMode();
 
   if (!state.hasSeenWelcome) {
-    openWelcomeChoice();
+    if (state.welcomeStep === 'emergency') openWelcomeEmergency();
+    else openWelcomeChoice();
   }
 
   setInterval(() => {
