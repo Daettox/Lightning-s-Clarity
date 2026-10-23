@@ -1378,6 +1378,81 @@
   .welcome-overlay.show { display: flex; }
   /* Keep the first-run choice below in-app confirmation/error dialogs. */
   .welcome-choice-overlay { z-index: 180; }
+
+  /* Welcome screens behave like a compact, touch-friendly carousel. */
+  .welcome-overlay.welcome-transition-top {
+    z-index: 260;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .welcome-overlay .welcome-box { touch-action: pan-y; will-change: transform, opacity; }
+  .welcome-overlay.welcome-enter-from-right .welcome-box {
+    animation: welcomeSlideInFromRight 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .welcome-overlay.welcome-enter-from-left .welcome-box {
+    animation: welcomeSlideInFromLeft 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .welcome-overlay.welcome-leave-left .welcome-box {
+    animation: welcomeSlideOutToLeft 220ms cubic-bezier(0.4, 0, 1, 1) both;
+    pointer-events: none;
+  }
+  .welcome-overlay.welcome-leave-right .welcome-box {
+    animation: welcomeSlideOutToRight 220ms cubic-bezier(0.4, 0, 1, 1) both;
+    pointer-events: none;
+  }
+  @keyframes welcomeSlideInFromRight {
+    from { opacity: 0.45; transform: translateX(34px) scale(0.985); }
+    to { opacity: 1; transform: translateX(0) scale(1); }
+  }
+  @keyframes welcomeSlideInFromLeft {
+    from { opacity: 0.45; transform: translateX(-34px) scale(0.985); }
+    to { opacity: 1; transform: translateX(0) scale(1); }
+  }
+  @keyframes welcomeSlideOutToLeft {
+    from { opacity: 1; transform: translateX(0) scale(1); }
+    to { opacity: 0.35; transform: translateX(-24px) scale(0.99); }
+  }
+  @keyframes welcomeSlideOutToRight {
+    from { opacity: 1; transform: translateX(0) scale(1); }
+    to { opacity: 0.35; transform: translateX(24px) scale(0.99); }
+  }
+  .welcome-pager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 18px;
+  }
+  .welcome-pager-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+  .welcome-pager-dots { display: inline-flex; align-items: center; gap: 4px; }
+  .welcome-pager-dots span {
+    display: block;
+    width: 5px;
+    height: 5px;
+    border-radius: 99px;
+    background: var(--text-soft);
+    opacity: 0.3;
+    transition: width 220ms ease, opacity 220ms ease, background 220ms ease;
+  }
+  .welcome-pager-dots span.active {
+    width: 16px;
+    background: var(--accent);
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .welcome-overlay.welcome-enter-from-right .welcome-box,
+    .welcome-overlay.welcome-enter-from-left .welcome-box,
+    .welcome-overlay.welcome-leave-left .welcome-box,
+    .welcome-overlay.welcome-leave-right .welcome-box {
+      animation-duration: 1ms;
+    }
+    .welcome-pager-dots span { transition-duration: 1ms; }
+  }
   .welcome-emergency-box { max-width: 390px; }
   .welcome-emergency-actions { margin-top: 18px; margin-bottom: 0; }
   .welcome-emergency-actions .seasonal-card { min-width: 0; padding-left: 8px; padding-right: 8px; }
@@ -1955,6 +2030,11 @@
         </div>
       </button>
     </div>
+    <div class="welcome-pager" data-welcome-pager="choice">
+      <div class="welcome-pager-main">
+        <div class="welcome-pager-dots" aria-hidden="true"><span class="active"></span><span></span><span></span></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2006,6 +2086,11 @@
     <button class="btn primary" id="welcomeStartBtn" style="width: 100%; margin-top: 18px; padding: 14px 16px; font-size: 15px;">
       Get Started
     </button>
+    <div class="welcome-pager" data-welcome-pager="setup">
+      <div class="welcome-pager-main">
+        <div class="welcome-pager-dots" aria-hidden="true"><span></span><span class="active"></span><span></span></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2041,6 +2126,11 @@
 
     <button type="button" class="btn primary" id="welcomeEmergencyContinueBtn" style="width: 100%; margin-top: 18px; padding: 14px 16px; font-size: 15px;">Continue</button>
     <button type="button" class="btn" id="welcomeEmergencyLaterBtn" style="width: 100%; margin-top: 10px; background: transparent; color: var(--text-soft);">Set up later</button>
+    <div class="welcome-pager" data-welcome-pager="emergency">
+      <div class="welcome-pager-main">
+        <div class="welcome-pager-dots" aria-hidden="true"><span></span><span></span><span class="active"></span></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2157,7 +2247,7 @@
     </div>
     
     <!-- Emergency situations -->
-    <div class="modal-label" style="margin-top: 24px;">Emergency situations</div>
+    <div class="modal-label" style="margin-top: 24px;">Emergency Situations</div>
     <div class="aesthetics-grid emg-actions-grid">
       <button type="button" class="seasonal-card emergency-action-card" id="emgSetUrgeBtn">
         <div class="seasonal-icon" data-emg-icon="urge"></div>
@@ -3926,6 +4016,155 @@
   const welcomeTargetCarousel = document.getElementById('welcomeTargetCarousel');
   const welcomeCustomTargetInput = document.getElementById('welcomeCustomTargetInput');
   const welcomeStartBtn = document.getElementById('welcomeStartBtn');
+  const welcomeEmergencyOverlay = document.getElementById('welcomeEmergencyOverlay');
+  const welcomeEmergencyContinueBtn = document.getElementById('welcomeEmergencyContinueBtn');
+  const welcomeEmergencyLaterBtn = document.getElementById('welcomeEmergencyLaterBtn');
+  const WELCOME_STEP_ORDER = ['choice', 'setup', 'emergency'];
+  const welcomeStepOverlays = {
+    choice: welcomeChoiceOverlay,
+    setup: welcomeModal,
+    emergency: welcomeEmergencyOverlay
+  };
+  let welcomeActiveStep = null;
+  let welcomeTransitionTimer = null;
+  let welcomeIsAnimating = false;
+  let welcomeSuppressClickUntil = 0;
+  // If onboarding was interrupted and the setup was already saved, do not reset the user's data again.
+  let welcomeSetupCompleted = state.welcomeStep === 'emergency' && !state.hasSeenWelcome;
+  let welcomeChoiceCompleted = welcomeSetupCompleted;
+
+  function updateWelcomePager(step) {
+    const index = WELCOME_STEP_ORDER.indexOf(step);
+    document.querySelectorAll('[data-welcome-pager]').forEach(pager => {
+      const pagerStep = pager.dataset.welcomePager;
+      const isCurrent = pagerStep === step;
+      pager.setAttribute('aria-current', isCurrent ? 'step' : 'false');
+      pager.querySelectorAll('.welcome-pager-dots span').forEach((dot, dotIndex) => {
+        dot.classList.toggle('active', dotIndex === index);
+      });
+      if (isCurrent) pager.removeAttribute('hidden');
+    });
+  }
+
+  function canSwipeWelcomeForward() {
+    if (welcomeActiveStep === 'choice') {
+      if (!welcomeChoiceCompleted) {
+        showToast('Choose A Fresh Start or Upload Data first');
+        return false;
+      }
+      showWelcomeSlide('setup', 1);
+      return true;
+    }
+    if (welcomeActiveStep === 'setup') {
+      if (!welcomeSetupCompleted) {
+        showToast('Finish setup before continuing');
+        return false;
+      }
+      showWelcomeSlide('emergency', 1);
+      return true;
+    }
+    return false; // The emergency plan is the final welcome screen.
+  }
+
+  function showWelcomeSlide(step, direction = 1, options = {}) {
+    const nextOverlay = welcomeStepOverlays[step];
+    if (!nextOverlay) return false;
+    const currentStep = welcomeActiveStep;
+    const currentOverlay = currentStep ? welcomeStepOverlays[currentStep] : null;
+    const animate = options.animate !== false && Boolean(currentOverlay && currentOverlay !== nextOverlay && currentOverlay.classList.contains('show'));
+
+    if (welcomeTransitionTimer) {
+      clearTimeout(welcomeTransitionTimer);
+      welcomeTransitionTimer = null;
+    }
+
+    if (currentOverlay && currentOverlay !== nextOverlay) {
+      currentOverlay.classList.remove('welcome-leave-left', 'welcome-leave-right', 'welcome-enter-from-left', 'welcome-enter-from-right', 'welcome-transition-top');
+      if (animate) {
+        currentOverlay.classList.add(direction >= 0 ? 'welcome-leave-left' : 'welcome-leave-right');
+      } else {
+        currentOverlay.classList.remove('show');
+      }
+    }
+
+    if (animate) {
+      nextOverlay.classList.remove('welcome-enter-from-left', 'welcome-enter-from-right', 'welcome-leave-left', 'welcome-leave-right');
+      nextOverlay.classList.add('show', 'welcome-transition-top');
+      nextOverlay.setAttribute('aria-hidden', 'false');
+      void nextOverlay.offsetWidth;
+      nextOverlay.classList.add(direction >= 0 ? 'welcome-enter-from-right' : 'welcome-enter-from-left');
+      welcomeIsAnimating = true;
+      welcomeTransitionTimer = setTimeout(() => {
+        if (currentOverlay && currentOverlay !== nextOverlay) {
+          currentOverlay.classList.remove('show', 'welcome-leave-left', 'welcome-leave-right', 'welcome-transition-top');
+          currentOverlay.setAttribute('aria-hidden', 'true');
+        }
+        nextOverlay.classList.remove('welcome-transition-top');
+        welcomeIsAnimating = false;
+        welcomeTransitionTimer = null;
+      }, 310);
+    } else {
+      Object.entries(welcomeStepOverlays).forEach(([name, overlay]) => {
+        if (!overlay) return;
+        overlay.classList.remove('welcome-leave-left', 'welcome-leave-right', 'welcome-enter-from-left', 'welcome-enter-from-right', 'welcome-transition-top');
+        overlay.classList.toggle('show', name === step);
+        overlay.setAttribute('aria-hidden', name === step ? 'false' : 'true');
+      });
+      welcomeIsAnimating = false;
+    }
+
+    welcomeActiveStep = step;
+    updateWelcomePager(step);
+    return true;
+  }
+
+  function handleWelcomeSwipe(direction) {
+    if (welcomeIsAnimating || !welcomeActiveStep) return;
+    const currentIndex = WELCOME_STEP_ORDER.indexOf(welcomeActiveStep);
+    if (direction < 0) {
+      // Moving back is always allowed, even when the current screen is incomplete.
+      if (currentIndex > 0) showWelcomeSlide(WELCOME_STEP_ORDER[currentIndex - 1], -1);
+      return;
+    }
+
+    canSwipeWelcomeForward();
+  }
+
+  // Track horizontal pointer gestures while leaving vertical card scrolling and form inputs untouched.
+  // A dragged control must not also fire its click action after the carousel has moved.
+  document.addEventListener('click', event => {
+    if (Date.now() >= welcomeSuppressClickUntil) return;
+    if (event.target && event.target.closest && event.target.closest('.welcome-overlay')) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+    }
+  }, true);
+
+  Object.values(welcomeStepOverlays).forEach(overlay => {
+    if (!overlay) return;
+    let pointerStart = null;
+    overlay.addEventListener('pointerdown', event => {
+      if (event.button !== undefined && event.button !== 0) return;
+      const target = event.target;
+      if (target && target.closest && target.closest('input, textarea, select, a, [contenteditable="true"], .target-carousel')) {
+        pointerStart = null;
+        return;
+      }
+      pointerStart = { x: event.clientX, y: event.clientY, id: event.pointerId };
+    }, { passive: true });
+    overlay.addEventListener('pointerup', event => {
+      if (!pointerStart || (pointerStart.id !== undefined && event.pointerId !== pointerStart.id)) return;
+      const dx = event.clientX - pointerStart.x;
+      const dy = event.clientY - pointerStart.y;
+      pointerStart = null;
+      if (Math.abs(dx) < 55 || Math.abs(dx) < Math.abs(dy) * 1.2) return;
+      welcomeSuppressClickUntil = Date.now() + 80;
+      event.preventDefault();
+      handleWelcomeSwipe(dx < 0 ? 1 : -1);
+    }, { passive: false });
+    overlay.addEventListener('pointercancel', () => { pointerStart = null; }, { passive: true });
+  });
 
   function renderWelcomeTargetCarousel() {
     const isCustom = !targets.find(x => x.days === welcomeSelectedTargetDays && x.days !== 'custom') || welcomeSelectedTargetDays === 'custom';
@@ -3951,34 +4190,36 @@
   });
 
   function openWelcomeChoice() {
-    if (welcomeModal) welcomeModal.classList.remove('show');
-    if (welcomeChoiceOverlay) welcomeChoiceOverlay.classList.add('show');
+    showWelcomeSlide('choice', -1, { force: true, animate: welcomeActiveStep !== null });
   }
 
   function closeWelcomeChoice() {
     if (welcomeChoiceOverlay) welcomeChoiceOverlay.classList.remove('show');
   }
 
-  const welcomeEmergencyOverlay = document.getElementById('welcomeEmergencyOverlay');
-  const welcomeEmergencyContinueBtn = document.getElementById('welcomeEmergencyContinueBtn');
-  const welcomeEmergencyLaterBtn = document.getElementById('welcomeEmergencyLaterBtn');
-
   function openWelcomeEmergency() {
-    closeWelcomeChoice();
-    closeWelcomeModal();
-    if (welcomeEmergencyOverlay) welcomeEmergencyOverlay.classList.add('show');
+    showWelcomeSlide('emergency', 1, { force: true, animate: welcomeActiveStep !== null });
   }
 
   function finishWelcomeEmergency() {
     state.hasSeenWelcome = true;
     state.welcomeStep = 'complete';
     saveData();
-    if (welcomeEmergencyOverlay) welcomeEmergencyOverlay.classList.remove('show');
+    Object.values(welcomeStepOverlays).forEach(overlay => {
+      if (!overlay) return;
+      overlay.classList.remove('show', 'welcome-transition-top', 'welcome-leave-left', 'welcome-leave-right', 'welcome-enter-from-left', 'welcome-enter-from-right');
+      overlay.setAttribute('aria-hidden', 'true');
+    });
+    welcomeActiveStep = null;
+    welcomeSetupCompleted = true;
+    if (welcomeTransitionTimer) clearTimeout(welcomeTransitionTimer);
+    welcomeTransitionTimer = null;
+    welcomeIsAnimating = false;
   }
 
   if (welcomeFreshStartBtn) {
     welcomeFreshStartBtn.addEventListener('click', () => {
-      closeWelcomeChoice();
+      welcomeChoiceCompleted = true;
       openWelcomeModal();
     });
   }
@@ -3988,33 +4229,44 @@
   }
 
   function openWelcomeModal() {
-    closeWelcomeChoice();
-    const now = new Date();
-    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    const dateToShow = welcomeSetupCompleted && state.startTime ? new Date(state.startTime) : new Date();
+    const local = new Date(dateToShow.getTime() - dateToShow.getTimezoneOffset() * 60000);
     welcomeStartTimeInput.value = local.toISOString().slice(0, 16);
     welcomeSelectedTargetDays = state.targetDays || 7;
     welcomeSelectedMode = state.appMode || 'standard';
     updateWelcomeLayoutUI();
     renderWelcomeTargetCarousel();
     renderColorGrids();
-    welcomeModal.classList.add('show');
+    showWelcomeSlide('setup', 1, { force: true, animate: welcomeActiveStep !== null });
   }
 
   function closeWelcomeModal() {
-    welcomeModal.classList.remove('show');
+    if (welcomeModal) welcomeModal.classList.remove('show');
   }
 
   welcomeStartBtn.addEventListener('click', () => {
     const val = welcomeStartTimeInput.value;
     const newStart = val ? new Date(val).getTime() : Date.now();
+    const targetDays = welcomeSelectedTargetDays === 'custom'
+      ? Math.max(1, parseInt(welcomeCustomTargetInput.value, 10) || 7)
+      : welcomeSelectedTargetDays;
 
-    if (welcomeSelectedTargetDays === 'custom') {
-      const customVal = parseInt(welcomeCustomTargetInput.value, 10);
-      state.targetDays = (customVal && customVal > 0) ? customVal : 7;
-    } else {
-      state.targetDays = welcomeSelectedTargetDays;
+    if (welcomeSetupCompleted) {
+      // The user returned to an already-saved step: apply edits without clearing their diary or history.
+      state.targetDays = targetDays;
+      state.appMode = welcomeSelectedMode;
+      state.startTime = newStart;
+      state.welcomeStep = 'emergency';
+      saveData();
+      applyAppMode(state.appMode);
+      updateCounter();
+      renderInfo();
+      renderBentoView();
+      openWelcomeEmergency();
+      return;
     }
 
+    state.targetDays = targetDays;
     state.appMode = welcomeSelectedMode;
     state.startTime = newStart;
     state.bestStreak = 0;
@@ -4026,8 +4278,7 @@
     state.hasSeenWelcome = false;
     state.welcomeStep = 'emergency';
     saveData();
-    closeWelcomeModal();
-    closeWelcomeChoice();
+    welcomeSetupCompleted = true;
     applyAppMode(state.appMode);
     updateCounter();
     renderInfo();
